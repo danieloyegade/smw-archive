@@ -1,0 +1,126 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import { projectBySlug, projects } from '../../data/projects';
+const base = import.meta.env.BASE_URL;
+const asset = (path: string) => `${base}${path.replace(/^\//, '')}`;
+
+export function getStaticPaths() {
+  return projects.map((project) => ({
+    params: { slug: project.slug },
+    props: { project },
+  }));
+}
+
+const { project } = Astro.props;
+const fallback = projectBySlug.get(project.slug) ?? project;
+---
+
+<BaseLayout title={`${fallback.title} | See My World Archive`} description={fallback.description}>
+  <main class="archive-page">
+    <a class="return" href={base}>Return to archive</a>
+    <section class="hero">
+      <div class="hero-copy">
+        <p class="eyebrow">SEE MY WORLD ARCHIVE</p>
+        <h1>{fallback.title}</h1>
+        <p class="meta">{fallback.category} / {fallback.year}</p>
+        <p class="description">{fallback.description}</p>
+      </div>
+      <figure class="image-frame">
+        <img src={asset(fallback.image)} alt={fallback.alt} loading="eager" />
+      </figure>
+    </section>
+  </main>
+
+  <style>
+    .archive-page {
+      min-height: 100svh;
+      background: var(--bg);
+      color: var(--text);
+      padding: 2rem;
+    }
+
+    .return {
+      display: inline-flex;
+      margin-bottom: 2rem;
+      color: var(--muted);
+      letter-spacing: 0.22em;
+      text-transform: uppercase;
+      font-size: 0.76rem;
+    }
+
+    .hero {
+      min-height: calc(100svh - 6rem);
+      display: grid;
+      grid-template-columns: minmax(0, 1.1fr) minmax(320px, 0.9fr);
+      gap: 3rem;
+      align-items: center;
+    }
+
+    .eyebrow {
+      margin: 0 0 1rem;
+      color: var(--muted);
+      letter-spacing: 0.28em;
+      font-size: 0.75rem;
+    }
+
+    h1 {
+      margin: 0;
+      font-size: clamp(3rem, 7vw, 6.5rem);
+      line-height: 0.95;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+      max-width: 10ch;
+    }
+
+    .meta {
+      margin: 1.1rem 0 0;
+      color: var(--muted);
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      font-size: 0.82rem;
+    }
+
+    .description {
+      margin: 1.6rem 0 0;
+      max-width: 34rem;
+      color: rgba(244, 241, 236, 0.82);
+      font-size: 1.06rem;
+      line-height: 1.7;
+    }
+
+    .image-frame {
+      margin: 0;
+      border: 1px solid rgba(255, 53, 53, 0.35);
+      background: linear-gradient(180deg, rgba(255, 53, 53, 0.08), rgba(255, 53, 53, 0.02));
+      padding: 1rem;
+      box-shadow: 0 20px 60px var(--shadow);
+    }
+
+    .image-frame img {
+      width: 100%;
+      aspect-ratio: 4 / 3;
+      object-fit: cover;
+      background: #111;
+    }
+
+    @media (max-width: 900px) {
+      .hero {
+        grid-template-columns: 1fr;
+      }
+
+      .image-frame {
+        order: -1;
+      }
+    }
+
+    @media (max-width: 700px) {
+      .archive-page {
+        padding: 1rem;
+      }
+
+      h1 {
+        font-size: clamp(2.7rem, 16vw, 4.2rem);
+      }
+    }
+  </style>
+</BaseLayout>
