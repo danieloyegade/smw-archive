@@ -9,7 +9,7 @@ type InitArchiveGlobeOptions = {
 };
 
 export function initArchiveGlobe({ canvas, titleEl, metaEl, projects }: InitArchiveGlobeOptions) {
-  const basePath = document.body.dataset.base ?? '/';
+  const basePath = (document.body.dataset.base ?? '/').replace(/\/?$/, '/');
   const renderer = new THREE.WebGLRenderer({
     canvas,
     antialias: true,
