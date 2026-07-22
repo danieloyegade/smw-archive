@@ -26082,6 +26082,7 @@ var WebGLRenderer = class {
 
 // src/scripts/archive-globe.ts
 function initArchiveGlobe({ canvas: canvas2, titleEl: titleEl2, metaEl: metaEl2, projects }) {
+  const basePath = (document.body.dataset.base ?? "/").replace(/\/?$/, "/");
   const renderer = new WebGLRenderer({
     canvas: canvas2,
     antialias: true,
@@ -26349,7 +26350,7 @@ function initArchiveGlobe({ canvas: canvas2, titleEl: titleEl2, metaEl: metaEl2,
       const hit = hitTest(event.clientX, event.clientY);
       const slug = hit?.userData?.slug ?? "";
       if (slug) {
-        window.location.href = `/archive/${slug}`;
+        window.location.href = `${basePath}archive/${slug}/`;
       }
     }
   }
