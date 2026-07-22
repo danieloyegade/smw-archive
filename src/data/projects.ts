@@ -143,13 +143,13 @@ export const projects: ArchiveProject[] = [
   },
   {
     id: 12,
-    title: 'Super Club at Portico',
+    title: 'Supper Club at Portico',
     slug: 'manchester-rave-archive',
-    category: 'Nightlife',
+    category: 'gathering',
     year: '2025',
     image: '/images/Super Club at portico.jpg',
-    alt: 'Super Club at Portico archive image',
-    description: 'A restless fragment of flyers, colour, sound, and motion after dark.',
+    alt: 'Supper Club at Portico archive image',
+    description: 'A restless gathering of flyers, colour, sound, and motion after dark.',
     imageAvailable: hasProjectImage('/images/Super Club at portico.jpg'),
   },
   {
