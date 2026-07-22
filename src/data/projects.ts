@@ -149,7 +149,7 @@ export const projects: ArchiveProject[] = [
     year: '2025',
     image: '/images/Super Club at portico.jpg',
     alt: 'Supper Club at Portico archive image',
-    description: 'A restless gathering of flyers, colour, sound, and motion after dark.',
+    description: 'Supper club at the portico library.',
     imageAvailable: hasProjectImage('/images/Super Club at portico.jpg'),
   },
   {
@@ -160,7 +160,7 @@ export const projects: ArchiveProject[] = [
     year: '2020',
     image: '/images/Isaiah Hull at Soup.jpg',
     alt: 'Isaiah Hull at Soup archive image',
-    description: 'A portrait-led project focused on presence, character, and lived expression.',
+    description: 'Isaiah performs at Soup.',
     imageAvailable: hasProjectImage('/images/Isaiah Hull at Soup.jpg'),
   },
   {
@@ -209,13 +209,13 @@ export const projects: ArchiveProject[] = [
   },
   {
     id: 18,
-    title: 'Dance in Manchester',
+    title: 'Liberation',
     slug: 'dance-in-manchester',
     category: 'Performance',
     year: '2021',
     image: '/images/Liberation, 2025-2.jpg',
-    alt: 'Dance in Manchester archive image',
-    description: 'A kinetic archive of movement, stage light, and the body in motion.',
+    alt: 'Liberation archive image',
+    description: 'Liberation at the Royal Exchange Theatre.',
     imageAvailable: hasProjectImage('/images/Liberation, 2025-2.jpg'),
   },
   {
