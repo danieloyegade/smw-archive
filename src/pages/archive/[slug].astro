@@ -23,11 +23,22 @@ const fallback = projectBySlug.get(project.slug) ?? project;
       <div class="hero-copy">
         <p class="eyebrow">SEE MY WORLD ARCHIVE</p>
         <h1>{fallback.title}</h1>
-        <p class="meta">{fallback.category} / {fallback.year}</p>
+        <p class="meta">
+          {fallback.category} / {fallback.year}
+          {fallback.places.length > 0 && <> / {fallback.places.join(' / ')}</>}
+        </p>
         <p class="description">{fallback.description}</p>
       </div>
       <figure class="image-frame">
-        <img src={asset(fallback.image)} alt={fallback.alt} loading="eager" />
+        {fallback.imageAvailable ? (
+          <img src={asset(fallback.image)} alt={fallback.alt} loading="eager" />
+        ) : (
+          <div class="image-placeholder" role="img" aria-label={`${fallback.title} archive placeholder`}>
+            <span>{String(fallback.id).padStart(2, '0')}</span>
+            <strong>{fallback.title}</strong>
+            <small>{fallback.category}</small>
+          </div>
+        )}
       </figure>
     </section>
   </main>
@@ -97,11 +108,47 @@ const fallback = projectBySlug.get(project.slug) ?? project;
       box-shadow: 0 20px 60px var(--shadow);
     }
 
-    .image-frame img {
+    .image-frame img,
+    .image-placeholder {
       width: 100%;
       aspect-ratio: 4 / 3;
+    }
+
+    .image-frame img {
       object-fit: cover;
       background: #111;
+    }
+
+    .image-placeholder {
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-end;
+      padding: clamp(1.2rem, 4vw, 3rem);
+      border: 1px solid rgba(255, 53, 53, 0.65);
+      background:
+        linear-gradient(135deg, rgba(255, 53, 53, 0.12), transparent 42%),
+        repeating-linear-gradient(135deg, transparent 0 34px, rgba(255, 255, 255, 0.025) 35px 36px),
+        #0b0b0b;
+      text-transform: uppercase;
+    }
+
+    .image-placeholder span {
+      margin-bottom: auto;
+      color: #ff3535;
+      font-size: clamp(2rem, 6vw, 5rem);
+      font-weight: 800;
+    }
+
+    .image-placeholder strong {
+      font-size: clamp(1.4rem, 3vw, 2.8rem);
+      line-height: 1;
+      letter-spacing: 0.05em;
+    }
+
+    .image-placeholder small {
+      margin-top: 0.7rem;
+      color: var(--muted);
+      letter-spacing: 0.2em;
     }
 
     @media (max-width: 900px) {

@@ -6,9 +6,28 @@ type InitArchiveGlobeOptions = {
   titleEl: HTMLElement;
   metaEl: HTMLElement;
   projects: ArchiveProject[];
+  zoomInButton?: HTMLButtonElement;
+  zoomOutButton?: HTMLButtonElement;
+  resetButton?: HTMLButtonElement;
+  searchInput?: HTMLInputElement;
+  searchResults?: HTMLElement;
+  resultCount?: HTMLElement;
+  resultList?: HTMLElement;
 };
 
-export function initArchiveGlobe({ canvas, titleEl, metaEl, projects }: InitArchiveGlobeOptions) {
+export function initArchiveGlobe({
+  canvas,
+  titleEl,
+  metaEl,
+  projects,
+  zoomInButton,
+  zoomOutButton,
+  resetButton,
+  searchInput,
+  searchResults,
+  resultCount,
+  resultList,
+}: InitArchiveGlobeOptions) {
   const basePath = (document.body.dataset.base ?? '/').replace(/\/?$/, '/');
   const renderer = new THREE.WebGLRenderer({
     canvas,
@@ -21,7 +40,7 @@ export function initArchiveGlobe({ canvas, titleEl, metaEl, projects }: InitArch
 
   const scene = new THREE.Scene();
   const camera = new THREE.PerspectiveCamera(35, 1, 0.1, 100);
-  camera.position.set(0, 0, 6.8);
+  camera.position.set(0, 0, 9.4);
 
   const globe = new THREE.Group();
   scene.add(globe);
@@ -177,6 +196,7 @@ export function initArchiveGlobe({ canvas, titleEl, metaEl, projects }: InitArch
 
   const raycaster = new THREE.Raycaster();
   const pointer = new THREE.Vector2(99, 99);
+  const activePointers = new Map<number, { x: number; y: number }>();
   const container = canvas.parentElement ?? canvas;
   const state = {
     dragging: false,
@@ -190,11 +210,16 @@ export function initArchiveGlobe({ canvas, titleEl, metaEl, projects }: InitArch
     rotationY: 0.45,
     reducedMotion: window.matchMedia('(prefers-reduced-motion: reduce)').matches,
     hoverCoolDown: 0,
+    zoom: 1,
+    fitDistance: 9.4,
+    pinchDistance: 0,
   };
 
   const activeCaption = (project: ArchiveProject | null) => {
-    titleEl.textContent = project ? project.title : 'DRAG TO EXPLORE THE ARCHIVE';
-    metaEl.textContent = project ? `${project.category} • ${project.year}` : '';
+    titleEl.textContent = project ? project.title : 'DRAG TO EXPLORE · SELECT TO OPEN';
+    metaEl.textContent = project
+      ? `${project.category} • ${project.year}${project.places.length ? ` • ${project.places[0]}` : ''}`
+      : '';
   };
 
   activeCaption(null);
@@ -208,8 +233,27 @@ export function initArchiveGlobe({ canvas, titleEl, metaEl, projects }: InitArch
     const width = Math.max(1, rect.width);
     const height = Math.max(1, rect.height);
     camera.aspect = width / height;
+    const verticalFov = THREE.MathUtils.degToRad(camera.fov);
+    const horizontalFov = 2 * Math.atan(Math.tan(verticalFov / 2) * camera.aspect);
+    const limitingFov = Math.min(verticalFov, horizontalFov);
+    const visualRadius = radius * 1.22;
+    state.fitDistance = visualRadius / (Math.sin(limitingFov / 2) * 0.78);
+    camera.position.z = state.fitDistance / state.zoom;
     camera.updateProjectionMatrix();
     renderer.setSize(width, height, false);
+  }
+
+  function setZoom(nextZoom: number) {
+    state.zoom = THREE.MathUtils.clamp(nextZoom, 0.82, 1.55);
+    camera.position.z = state.fitDistance / state.zoom;
+  }
+
+  function resetView() {
+    state.rotationX = -0.15;
+    state.rotationY = 0.45;
+    state.velocityX = 0;
+    state.velocityY = 0;
+    setZoom(1);
   }
 
   function updateCaptionBySlug(slug: string) {
@@ -257,6 +301,18 @@ export function initArchiveGlobe({ canvas, titleEl, metaEl, projects }: InitArch
   }
 
   function onPointerMove(event: PointerEvent) {
+    if (activePointers.has(event.pointerId)) {
+      activePointers.set(event.pointerId, { x: event.clientX, y: event.clientY });
+    }
+    if (activePointers.size === 2) {
+      const [first, second] = Array.from(activePointers.values());
+      const distance = Math.hypot(second.x - first.x, second.y - first.y);
+      if (state.pinchDistance) setZoom(state.zoom * (distance / state.pinchDistance));
+      state.pinchDistance = distance;
+      state.dragging = false;
+      return;
+    }
+
     if (state.dragging) {
       const dx = event.clientX - state.lastPointer.x;
       const dy = event.clientY - state.lastPointer.y;
@@ -292,6 +348,15 @@ export function initArchiveGlobe({ canvas, titleEl, metaEl, projects }: InitArch
   }
 
   function onPointerDown(event: PointerEvent) {
+    activePointers.set(event.pointerId, { x: event.clientX, y: event.clientY });
+    if (activePointers.size === 2) {
+      const [first, second] = Array.from(activePointers.values());
+      state.pinchDistance = Math.hypot(second.x - first.x, second.y - first.y);
+      state.dragging = false;
+      canvas.setPointerCapture(event.pointerId);
+      event.preventDefault();
+      return;
+    }
     const hit = hitTest(event.clientX, event.clientY);
     state.dragging = true;
     state.pointerDown = { x: event.clientX, y: event.clientY, time: performance.now() };
@@ -304,14 +369,95 @@ export function initArchiveGlobe({ canvas, titleEl, metaEl, projects }: InitArch
     event.preventDefault();
   }
 
+  function onWheel(event: WheelEvent) {
+    event.preventDefault();
+    setZoom(state.zoom * Math.exp(-event.deltaY * 0.001));
+  }
+
+  function onKeyDown(event: KeyboardEvent) {
+    const target = event.target;
+    const isTyping = target instanceof HTMLInputElement || target instanceof HTMLTextAreaElement;
+
+    if (event.key === '/' && !isTyping) {
+      event.preventDefault();
+      searchInput?.focus();
+      return;
+    }
+    if (isTyping) return;
+
+    const rotationStep = event.shiftKey ? 0.35 : 0.16;
+    if (event.key === 'ArrowLeft') state.rotationY -= rotationStep;
+    else if (event.key === 'ArrowRight') state.rotationY += rotationStep;
+    else if (event.key === 'ArrowUp') state.rotationX = Math.max(-1.05, state.rotationX - rotationStep);
+    else if (event.key === 'ArrowDown') state.rotationX = Math.min(1.05, state.rotationX + rotationStep);
+    else if (event.key === '+' || event.key === '=') setZoom(state.zoom * 1.12);
+    else if (event.key === '-' || event.key === '_') setZoom(state.zoom / 1.12);
+    else if (event.key === '0') resetView();
+    else return;
+    event.preventDefault();
+  }
+
+  function escapeHtml(value: string) {
+    return value.replace(/[&<>'"]/g, (character) => ({
+      '&': '&amp;',
+      '<': '&lt;',
+      '>': '&gt;',
+      "'": '&#39;',
+      '"': '&quot;',
+    })[character] ?? character);
+  }
+
+  function searchArchive() {
+    if (!searchInput || !searchResults || !resultCount || !resultList) return;
+    const query = searchInput.value.trim().toLocaleLowerCase();
+    searchResults.hidden = query.length === 0;
+    if (!query) {
+      resultList.replaceChildren();
+      resultCount.textContent = '';
+      return;
+    }
+
+    const terms = query.split(/\s+/).filter(Boolean);
+    const matches = projects.filter((project) => {
+      const haystack = [
+        project.title,
+        project.category,
+        project.year,
+        project.description,
+        ...project.places,
+        ...(project.keywords ?? []),
+      ].join(' ').toLocaleLowerCase();
+      return terms.every((term) => haystack.includes(term));
+    });
+
+    resultCount.textContent = `${matches.length} ${matches.length === 1 ? 'result' : 'results'}`;
+    if (matches.length === 0) {
+      resultList.innerHTML = '<p class="empty-result">No matching archive entries yet.</p>';
+      return;
+    }
+
+    resultList.innerHTML = matches.map((project) => `
+      <a href="${basePath}archive/${encodeURIComponent(project.slug)}/">
+        <span class="result-number">${String(project.id).padStart(2, '0')}</span>
+        <span>
+          <strong>${escapeHtml(project.title)}</strong>
+          <small>${escapeHtml(project.category)} · ${escapeHtml(project.year)}${project.places.length ? ` · ${escapeHtml(project.places.join(', '))}` : ''}</small>
+        </span>
+      </a>
+    `).join('');
+  }
+
   function onPointerUp(event: PointerEvent) {
     const wasDragging = state.dragging;
     const movedX = Math.abs(event.clientX - state.pointerDown.x);
     const movedY = Math.abs(event.clientY - state.pointerDown.y);
     const moved = Math.max(movedX, movedY);
+    const wasPinching = state.pinchDistance > 0;
+    activePointers.delete(event.pointerId);
+    if (activePointers.size < 2) state.pinchDistance = 0;
     stopDrag();
 
-    if (!wasDragging) return;
+    if (!wasDragging || wasPinching) return;
     if (moved < 8) {
       const hit = hitTest(event.clientX, event.clientY);
       const slug = hit?.userData?.slug ?? '';
@@ -319,6 +465,12 @@ export function initArchiveGlobe({ canvas, titleEl, metaEl, projects }: InitArch
         window.location.href = `${basePath}archive/${slug}/`;
       }
     }
+  }
+
+  function onPointerCancel(event: PointerEvent) {
+    activePointers.delete(event.pointerId);
+    if (activePointers.size < 2) state.pinchDistance = 0;
+    stopDrag();
   }
 
   function onPointerLeave() {
@@ -335,8 +487,21 @@ export function initArchiveGlobe({ canvas, titleEl, metaEl, projects }: InitArch
   canvas.addEventListener('pointermove', onPointerMove);
   canvas.addEventListener('pointerdown', onPointerDown);
   canvas.addEventListener('pointerup', onPointerUp);
-  canvas.addEventListener('pointercancel', stopDrag);
+  canvas.addEventListener('pointercancel', onPointerCancel);
   canvas.addEventListener('pointerleave', onPointerLeave);
+  canvas.addEventListener('wheel', onWheel, { passive: false });
+  window.addEventListener('keydown', onKeyDown);
+  zoomInButton?.addEventListener('click', () => setZoom(state.zoom * 1.15));
+  zoomOutButton?.addEventListener('click', () => setZoom(state.zoom / 1.15));
+  resetButton?.addEventListener('click', resetView);
+  searchInput?.addEventListener('input', searchArchive);
+  searchInput?.addEventListener('keydown', (event) => {
+    if (event.key === 'Escape') {
+      searchInput.value = '';
+      searchArchive();
+      searchInput.blur();
+    }
+  });
 
   resize();
   setCursor('grab');
@@ -345,8 +510,10 @@ export function initArchiveGlobe({ canvas, titleEl, metaEl, projects }: InitArch
   (window as Window & { __archiveGlobe?: unknown }).__archiveGlobe = {
     panelCount: panels.length,
     samplePanel: panels[0] ? panels[0].position.clone().toArray() : null,
-    rotationX: state.rotationX,
-    rotationY: state.rotationY,
+    get rotationX() { return state.rotationX; },
+    get rotationY() { return state.rotationY; },
+    get zoom() { return state.zoom; },
+    get cameraZ() { return camera.position.z; },
   };
 
   function render() {
@@ -400,6 +567,13 @@ const canvas = document.querySelector('#globe-canvas');
 const titleEl = document.querySelector('[data-caption-title]');
 const metaEl = document.querySelector('[data-caption-meta]');
 const dataEl = document.querySelector('#archive-project-data');
+const zoomInButton = document.querySelector('[data-zoom-in]');
+const zoomOutButton = document.querySelector('[data-zoom-out]');
+const resetButton = document.querySelector('[data-reset-view]');
+const searchInput = document.querySelector('[data-search-input]');
+const searchResults = document.querySelector('[data-search-results]');
+const resultCount = document.querySelector('[data-result-count]');
+const resultList = document.querySelector('[data-result-list]');
 
 if (
   canvas instanceof HTMLCanvasElement &&
@@ -412,5 +586,12 @@ if (
     titleEl,
     metaEl,
     projects: JSON.parse(dataEl.textContent || '[]'),
+    zoomInButton: zoomInButton instanceof HTMLButtonElement ? zoomInButton : undefined,
+    zoomOutButton: zoomOutButton instanceof HTMLButtonElement ? zoomOutButton : undefined,
+    resetButton: resetButton instanceof HTMLButtonElement ? resetButton : undefined,
+    searchInput: searchInput instanceof HTMLInputElement ? searchInput : undefined,
+    searchResults: searchResults instanceof HTMLElement ? searchResults : undefined,
+    resultCount: resultCount instanceof HTMLElement ? resultCount : undefined,
+    resultList: resultList instanceof HTMLElement ? resultList : undefined,
   });
 }

@@ -10,6 +10,8 @@ export interface ArchiveProject {
   image: string;
   alt: string;
   description: string;
+  places: string[];
+  keywords?: string[];
   imageAvailable: boolean;
 }
 
@@ -29,6 +31,7 @@ export const projects: ArchiveProject[] = [
     image: '/images/projects/project-01.webp',
     alt: 'Homage archive image',
     description: 'A study in memory, gesture, and the people who shaped the archive.',
+    places: ['Manchester'],
     imageAvailable: hasProjectImage('/images/projects/project-01.webp'),
   },
   {
@@ -40,6 +43,8 @@ export const projects: ArchiveProject[] = [
     image: '/images/projects/project-02.webp',
     alt: 'Poetic Justice archive image',
     description: 'A visual chapter pairing spoken word, posters, and moments of release.',
+    places: ['Manchester'],
+    keywords: ['poetry', 'spoken word', 'posters'],
     imageAvailable: hasProjectImage('/images/projects/project-02.webp'),
   },
   {
@@ -51,6 +56,8 @@ export const projects: ArchiveProject[] = [
     image: '/images/projects/project-03.webp',
     alt: 'Liberation archive image',
     description: 'Stories of collective movement, protest, and the afterimage of change.',
+    places: ['Manchester', 'Royal Exchange Theatre'],
+    keywords: ['protest', 'theatre'],
     imageAvailable: hasProjectImage('/images/projects/project-03.webp'),
   },
   {
@@ -62,6 +69,7 @@ export const projects: ArchiveProject[] = [
     image: '/images/projects/project-04.webp',
     alt: 'Everyday Manchester archive image',
     description: 'A city diary built from familiar streets, small encounters, and daily ritual.',
+    places: ['Manchester'],
     imageAvailable: hasProjectImage('/images/projects/project-04.webp'),
   },
   {
@@ -73,6 +81,7 @@ export const projects: ArchiveProject[] = [
     image: '/images/projects/project-05.webp',
     alt: 'Everyday People archive image',
     description: 'A record of ordinary presence, carried by faces, hands, and shared space.',
+    places: ['Manchester'],
     imageAvailable: hasProjectImage('/images/projects/project-05.webp'),
   },
   {
@@ -84,6 +93,8 @@ export const projects: ArchiveProject[] = [
     image: '/images/PAC80.JPG',
     alt: 'PAC 50 Years On archive image',
     description: 'An anniversary fragment tracing legacy, resilience, and public memory.',
+    places: ['Manchester'],
+    keywords: ['Pan-African Congress', 'anniversary'],
     imageAvailable: hasProjectImage('/images/PAC80.JPG'),
   },
   {
@@ -95,6 +106,8 @@ export const projects: ArchiveProject[] = [
     image: '/images/projects/project-07.webp',
     alt: 'Abasindi archive image',
     description: 'A heritage-led record of women’s organising, artistry, and community care.',
+    places: ['Manchester', 'Moss Side'],
+    keywords: ['women', 'organising'],
     imageAvailable: hasProjectImage('/images/projects/project-07.webp'),
   },
   {
@@ -106,6 +119,7 @@ export const projects: ArchiveProject[] = [
     image: '/images/ConnectedFragments-PrivateViewing-32.jpg.webp',
     alt: 'Connected Fragments archive image',
     description: 'A living institutional portrait of the people and programmes around Connected Fragments.',
+    places: ['Manchester', 'NIA Centre'],
     imageAvailable: hasProjectImage('/images/ConnectedFragments-PrivateViewing-32.jpg.webp'),
   },
   {
@@ -117,6 +131,7 @@ export const projects: ArchiveProject[] = [
     image: '/images/projects/project-09.webp',
     alt: 'Moss Side and Hulme archive image',
     description: 'An archive of streets, homes, and the long memory of two neighbourhoods.',
+    places: ['Moss Side', 'Hulme', 'Manchester'],
     imageAvailable: hasProjectImage('/images/projects/project-09.webp'),
   },
   {
@@ -128,6 +143,8 @@ export const projects: ArchiveProject[] = [
     image: '/images/lagos trip.jpg.webp',
     alt: 'Lagos Trip archive image',
     description: 'A biographical panel honouring scholarship, archive work, and radical thought.',
+    places: ['Lagos', 'Manchester'],
+    keywords: ['biography', 'scholarship'],
     imageAvailable: hasProjectImage('/images/lagos trip.jpg.webp'),
   },
   {
@@ -139,6 +156,8 @@ export const projects: ArchiveProject[] = [
     image: '/images/Liberation, 2025.jpg',
     alt: 'Liberation archive image',
     description: 'A domestic archive shaped by recipes, service, and the intimacy of shared meals.',
+    places: ['Manchester'],
+    keywords: ['food', 'recipes'],
     imageAvailable: hasProjectImage('/images/Liberation, 2025.jpg'),
   },
   {
@@ -150,6 +169,8 @@ export const projects: ArchiveProject[] = [
     image: '/images/Super Club at portico.jpg',
     alt: 'Supper Club at Portico archive image',
     description: 'Supper club at the portico library.',
+    places: ['Portico Library', 'Manchester'],
+    keywords: ['food', 'supper club'],
     imageAvailable: hasProjectImage('/images/Super Club at portico.jpg'),
   },
   {
@@ -161,6 +182,8 @@ export const projects: ArchiveProject[] = [
     image: '/images/Isaiah Hull at Soup.jpg',
     alt: 'Isaiah Hull at Soup archive image',
     description: 'Isaiah performs at Soup.',
+    places: ['Soup', 'Manchester'],
+    keywords: ['performance', 'poetry'],
     imageAvailable: hasProjectImage('/images/Isaiah Hull at Soup.jpg'),
   },
   {
@@ -172,6 +195,8 @@ export const projects: ArchiveProject[] = [
     image: '/images/projects/project-14.webp',
     alt: 'James Baldwin Schools Poetry archive image',
     description: 'A poetic classroom record that connects students, voices, and radical reading.',
+    places: ['Manchester'],
+    keywords: ['schools', 'poetry', 'James Baldwin'],
     imageAvailable: hasProjectImage('/images/projects/project-14.webp'),
   },
   {
@@ -183,6 +208,8 @@ export const projects: ArchiveProject[] = [
     image: '/images/projects/project-15.webp',
     alt: 'Oral Histories archive image',
     description: 'A listening project where testimony, pause, and memory become visible.',
+    places: ['Manchester'],
+    keywords: ['testimony', 'interviews'],
     imageAvailable: hasProjectImage('/images/projects/project-15.webp'),
   },
   {
@@ -194,6 +221,8 @@ export const projects: ArchiveProject[] = [
     image: '/images/manchesterLagosMePremiere-18.jpg.webp',
     alt: 'Manchester Lagos Me Premiere archive image',
     description: 'A festival fragment documenting screenings, audience energy, and moving image.',
+    places: ['Manchester', 'Lagos'],
+    keywords: ['film', 'premiere', 'festival'],
     imageAvailable: hasProjectImage('/images/manchesterLagosMePremiere-18.jpg.webp'),
   },
   {
@@ -205,6 +234,8 @@ export const projects: ArchiveProject[] = [
     image: '/images/projects/project-17.webp',
     alt: 'Community Workshops archive image',
     description: 'A participatory archive of making, teaching, collaboration, and exchange.',
+    places: ['Manchester'],
+    keywords: ['learning', 'making'],
     imageAvailable: hasProjectImage('/images/projects/project-17.webp'),
   },
   {
@@ -216,6 +247,8 @@ export const projects: ArchiveProject[] = [
     image: '/images/Liberation, 2025-2.jpg',
     alt: 'Liberation archive image',
     description: 'Liberation at the Royal Exchange Theatre.',
+    places: ['Royal Exchange Theatre', 'Manchester'],
+    keywords: ['dance', 'theatre', 'performance'],
     imageAvailable: hasProjectImage('/images/Liberation, 2025-2.jpg'),
   },
   {
@@ -227,6 +260,8 @@ export const projects: ArchiveProject[] = [
     image: '/images/panafrican-trail-poster.jpg.webp',
     alt: 'Pan-African Heritage Trail archive image',
     description: 'A documentary layer of banners, marches, organising, and public insistence.',
+    places: ['Manchester'],
+    keywords: ['Pan-African', 'heritage trail', 'activism'],
     imageAvailable: hasProjectImage('/images/panafrican-trail-poster.jpg.webp'),
   },
   {
@@ -238,6 +273,8 @@ export const projects: ArchiveProject[] = [
     image: '/images/projects/project-20.webp',
     alt: 'See My World Archive image',
     description: 'The archive index itself, gathering every fragment into one rotating world.',
+    places: ['Manchester', 'Lagos'],
+    keywords: ['archive', 'index'],
     imageAvailable: hasProjectImage('/images/projects/project-20.webp'),
   },
 ];
