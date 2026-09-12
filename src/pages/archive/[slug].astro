@@ -1,174 +1,446 @@
 ---
+import { Image } from 'astro:assets';
+import { render } from 'astro:content';
 import BaseLayout from '../../layouts/BaseLayout.astro';
-import { projectBySlug, projects } from '../../data/projects';
-const base = import.meta.env.BASE_URL;
-const publicBase = base.endsWith('/') ? base : `${base}/`;
-const asset = (path: string) => `${publicBase}${path.replace(/^\//, '')}`;
+import { legacySlugs } from '../../lib/legacy-slugs';
+import { DETAIL_IMAGE_WIDTH, getNeighbours, getProjects, getRelated, type ProjectEntry } from '../../lib/projects';
 
-export function getStaticPaths() {
-  return projects.map((project) => ({
-    params: { slug: project.slug },
-    props: { project },
+export async function getStaticPaths() {
+  const entries = await getProjects();
+
+  const pages = entries.map((entry) => ({
+    params: { slug: entry.id },
+    props: { entry, entries, redirectTo: undefined },
   }));
+
+  const redirects = Object.entries(legacySlugs).map(([from, to]) => ({
+    params: { slug: from },
+    props: {
+      entry: entries.find((candidate) => candidate.id === to)!,
+      entries,
+      redirectTo: to,
+    },
+  }));
+
+  return [...pages, ...redirects];
 }
 
-const { project } = Astro.props;
-const fallback = projectBySlug.get(project.slug) ?? project;
+interface Props {
+  entry: ProjectEntry;
+  entries: ProjectEntry[];
+  redirectTo?: string;
+}
+
+const { entry, entries, redirectTo } = Astro.props as Props;
+const { data } = entry;
+
+const base = import.meta.env.BASE_URL;
+const publicBase = base.endsWith('/') ? base : `${base}/`;
+const href = (slug: string) => `${publicBase}archive/${slug}/`;
+
+// The refresh target stays host-relative so the stub works on any origin
+// (preview server, Pages, a local build); only the canonical URL is absolute.
+const target = redirectTo ? href(redirectTo) : undefined;
+const canonicalTarget = redirectTo ? new URL(href(redirectTo), Astro.site).href : undefined;
+
+const { previous, next } = getNeighbours(entries, entry.id);
+const related = getRelated(entries, entry);
+const { Content } = await render(entry);
+
+// Never ask sharp to upscale: some sources are small posters, not camera masters.
+const heroWidth = data.image ? Math.min(DETAIL_IMAGE_WIDTH, data.image.width) : DETAIL_IMAGE_WIDTH;
+const heroDensities = data.image && data.image.width >= heroWidth * 2 ? [1, 2] : [1];
+
+const structuredData = {
+  '@context': 'https://schema.org',
+  '@type': 'CreativeWork',
+  name: data.title,
+  description: data.description,
+  dateCreated: data.year,
+  genre: data.category,
+  keywords: data.keywords.join(', '),
+  contentLocation: data.places.map((place) => ({ '@type': 'Place', name: place })),
+  isPartOf: { '@type': 'Collection', name: 'See My World Archive' },
+  url: new URL(href(entry.id), Astro.site).href,
+};
 ---
 
-<BaseLayout title={`${fallback.title} | See My World Archive`} description={fallback.description}>
-  <main class="archive-page">
-    <a class="return" href={publicBase}>Return to archive</a>
-    <section class="hero">
-      <div class="hero-copy">
-        <p class="eyebrow">SEE MY WORLD ARCHIVE</p>
-        <h1>{fallback.title}</h1>
-        <p class="meta">
-          {fallback.category} / {fallback.year}
-          {fallback.places.length > 0 && <> / {fallback.places.join(' / ')}</>}
-        </p>
-        <p class="description">{fallback.description}</p>
-      </div>
-      <figure class="image-frame">
-        {fallback.imageAvailable ? (
-          <img src={asset(fallback.image)} alt={fallback.alt} loading="eager" />
-        ) : (
-          <div class="image-placeholder" role="img" aria-label={`${fallback.title} archive placeholder`}>
-            <span>{String(fallback.id).padStart(2, '0')}</span>
-            <strong>{fallback.title}</strong>
-            <small>{fallback.category}</small>
+{
+  redirectTo ? (
+    <BaseLayout title={`${data.title} | See My World Archive`} description={data.description} noindex>
+      <meta slot="head" http-equiv="refresh" content={`0; url=${target}`} />
+      <link slot="head" rel="canonical" href={canonicalTarget} />
+      <main class="redirect-notice">
+        <p>This entry has moved.</p>
+        <a href={href(redirectTo)}>Continue to {data.title}</a>
+      </main>
+    </BaseLayout>
+  ) : (
+    <BaseLayout
+      title={`${data.title} | See My World Archive`}
+      description={data.description}
+      shareImage={data.image}
+    >
+      <script is:inline slot="head" type="application/ld+json" set:html={JSON.stringify(structuredData)} />
+
+      <main class="archive-page">
+        <nav class="page-nav" aria-label="Archive">
+          <a class="return" href={publicBase}>Return to archive</a>
+          <span class="position">{String(data.order).padStart(2, '0')} / {String(entries.length).padStart(2, '0')}</span>
+        </nav>
+
+        <article class="hero">
+          <div class="hero-copy">
+            <p class="eyebrow">SEE MY WORLD ARCHIVE</p>
+            <h1>{data.title}</h1>
+            <p class="meta">
+              {data.category} / {data.year}
+              {data.places.length > 0 && <> / {data.places.join(' / ')}</>}
+            </p>
+            <p class="description">{data.description}</p>
+            <div class="body-copy"><Content /></div>
+            {
+              data.keywords.length > 0 && (
+                <ul class="keywords" aria-label="Keywords">
+                  {data.keywords.map((keyword) => (
+                    <li>{keyword}</li>
+                  ))}
+                </ul>
+              )
+            }
           </div>
-        )}
-      </figure>
-    </section>
-  </main>
 
-  <style>
-    .archive-page {
-      min-height: 100svh;
-      background: var(--bg);
-      color: var(--text);
-      padding: 2rem;
-    }
+          <figure class="image-frame">
+            {
+              data.image && data.alt ? (
+                <Image
+                  src={data.image}
+                  alt={data.alt}
+                  width={heroWidth}
+                  densities={heroDensities}
+                  loading="eager"
+                  fetchpriority="high"
+                />
+              ) : (
+                <div class="image-placeholder" role="img" aria-label={`${data.title}: no photograph in the archive yet.`}>
+                  <span>{String(data.order).padStart(2, '0')}</span>
+                  <strong>{data.title}</strong>
+                  <small>{data.category}</small>
+                </div>
+              )
+            }
+          </figure>
+        </article>
 
-    .return {
-      display: inline-flex;
-      margin-bottom: 2rem;
-      color: var(--muted);
-      letter-spacing: 0.22em;
-      text-transform: uppercase;
-      font-size: 0.76rem;
-    }
+        {
+          related.length > 0 && (
+            <section class="related" aria-labelledby="related-heading">
+              <h2 id="related-heading">Related entries</h2>
+              <ul>
+                {related.map((item) => (
+                  <li>
+                    <a href={href(item.id)}>
+                      <strong>{item.data.title}</strong>
+                      <small>
+                        {item.data.category} · {item.data.year}
+                      </small>
+                    </a>
+                  </li>
+                ))}
+              </ul>
+            </section>
+          )
+        }
 
+        <nav class="pager" aria-label="Previous and next entries">
+          {
+            previous && (
+              <a class="pager-link" rel="prev" href={href(previous.id)}>
+                <small>← Previous</small>
+                <strong>{previous.data.title}</strong>
+              </a>
+            )
+          }
+          {
+            next && (
+              <a class="pager-link pager-next" rel="next" href={href(next.id)}>
+                <small>Next →</small>
+                <strong>{next.data.title}</strong>
+              </a>
+            )
+          }
+        </nav>
+      </main>
+    </BaseLayout>
+  )
+}
+
+<style>
+  .redirect-notice {
+    display: grid;
+    gap: 1rem;
+    place-content: center;
+    min-height: 100svh;
+    padding: 2rem;
+    text-align: center;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    font-size: 0.85rem;
+  }
+
+  .redirect-notice a {
+    color: #ff3535;
+  }
+
+  .archive-page {
+    max-width: 82rem;
+    margin: 0 auto;
+    padding: 2rem;
+  }
+
+  .page-nav {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    gap: 1rem;
+    margin-bottom: 2rem;
+  }
+
+  .return,
+  .position {
+    color: var(--muted);
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    font-size: 0.76rem;
+  }
+
+  .return:hover {
+    color: var(--text);
+  }
+
+  .hero {
+    display: grid;
+    grid-template-columns: minmax(0, 1.1fr) minmax(320px, 0.9fr);
+    gap: 3rem;
+    align-items: center;
+  }
+
+  .eyebrow {
+    margin: 0 0 1rem;
+    color: var(--muted);
+    letter-spacing: 0.28em;
+    font-size: 0.75rem;
+  }
+
+  h1 {
+    margin: 0;
+    font-size: clamp(2.6rem, 6vw, 5.5rem);
+    line-height: 0.98;
+    letter-spacing: 0.03em;
+    text-transform: uppercase;
+    max-width: 14ch;
+  }
+
+  .meta {
+    margin: 1.1rem 0 0;
+    color: var(--muted);
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    font-size: 0.82rem;
+  }
+
+  .description {
+    margin: 1.6rem 0 0;
+    max-width: 34rem;
+    color: rgba(244, 241, 236, 0.82);
+    font-size: 1.06rem;
+    line-height: 1.7;
+  }
+
+  .body-copy :global(p) {
+    max-width: 34rem;
+    color: rgba(244, 241, 236, 0.82);
+    font-size: 1rem;
+    line-height: 1.75;
+  }
+
+  .keywords {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.45rem;
+    margin: 1.8rem 0 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .keywords li {
+    padding: 0.3rem 0.65rem;
+    border: 1px solid rgba(255, 53, 53, 0.35);
+    color: var(--muted);
+    font-size: 0.68rem;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+  }
+
+  .image-frame {
+    margin: 0;
+    border: 1px solid rgba(255, 53, 53, 0.35);
+    background: linear-gradient(180deg, rgba(255, 53, 53, 0.08), rgba(255, 53, 53, 0.02));
+    padding: 1rem;
+    box-shadow: 0 20px 60px var(--shadow);
+  }
+
+  .image-placeholder {
+    width: 100%;
+    aspect-ratio: 4 / 3;
+  }
+
+  /*
+    Archive photographs are landscape and portrait alike, so they keep their own
+    proportions rather than being cropped to a house ratio; only the height is
+    capped so a tall frame cannot push the copy off screen. `height: auto` is
+    required because <Image> emits width/height attributes.
+  */
+  .image-frame :global(img) {
+    width: auto;
+    height: auto;
+    max-width: 100%;
+    max-height: min(78svh, 44rem);
+    margin-inline: auto;
+    background: #111;
+  }
+
+  .image-placeholder {
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    padding: clamp(1.2rem, 4vw, 3rem);
+    border: 1px solid rgba(255, 53, 53, 0.65);
+    background:
+      linear-gradient(135deg, rgba(255, 53, 53, 0.12), transparent 42%),
+      repeating-linear-gradient(135deg, transparent 0 34px, rgba(255, 255, 255, 0.025) 35px 36px),
+      #0b0b0b;
+    text-transform: uppercase;
+  }
+
+  .image-placeholder span {
+    margin-bottom: auto;
+    color: #ff3535;
+    font-size: clamp(2rem, 6vw, 5rem);
+    font-weight: 800;
+  }
+
+  .image-placeholder strong {
+    font-size: clamp(1.4rem, 3vw, 2.8rem);
+    line-height: 1;
+    letter-spacing: 0.05em;
+  }
+
+  .image-placeholder small {
+    margin-top: 0.7rem;
+    color: var(--muted);
+    letter-spacing: 0.2em;
+  }
+
+  .related {
+    margin-top: 5rem;
+  }
+
+  .related h2,
+  .pager small {
+    color: var(--muted);
+    font-size: 0.72rem;
+    font-weight: 700;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+  }
+
+  .related h2 {
+    margin: 0 0 1rem;
+  }
+
+  .related ul {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 15rem), 1fr));
+    gap: 1px;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    background: rgba(255, 255, 255, 0.12);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+  }
+
+  .related a {
+    display: block;
+    height: 100%;
+    padding: 1rem;
+    background: var(--bg);
+  }
+
+  .related a:hover,
+  .related a:focus-visible,
+  .pager-link:hover,
+  .pager-link:focus-visible {
+    background: rgba(255, 53, 53, 0.09);
+  }
+
+  .related strong,
+  .pager strong {
+    display: block;
+    font-size: 0.9rem;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+  }
+
+  .related small {
+    display: block;
+    margin-top: 0.3rem;
+    color: var(--muted);
+    font-size: 0.72rem;
+  }
+
+  .pager {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1px;
+    margin-top: 3rem;
+    background: rgba(255, 255, 255, 0.12);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+  }
+
+  .pager-link {
+    flex: 1 1 14rem;
+    padding: 1.1rem;
+    background: var(--bg);
+  }
+
+  .pager-next {
+    text-align: right;
+  }
+
+  .pager small {
+    display: block;
+    margin-bottom: 0.4rem;
+  }
+
+  @media (max-width: 900px) {
     .hero {
-      min-height: calc(100svh - 6rem);
-      display: grid;
-      grid-template-columns: minmax(0, 1.1fr) minmax(320px, 0.9fr);
-      gap: 3rem;
-      align-items: center;
-    }
-
-    .eyebrow {
-      margin: 0 0 1rem;
-      color: var(--muted);
-      letter-spacing: 0.28em;
-      font-size: 0.75rem;
-    }
-
-    h1 {
-      margin: 0;
-      font-size: clamp(3rem, 7vw, 6.5rem);
-      line-height: 0.95;
-      letter-spacing: 0.04em;
-      text-transform: uppercase;
-      max-width: 10ch;
-    }
-
-    .meta {
-      margin: 1.1rem 0 0;
-      color: var(--muted);
-      letter-spacing: 0.2em;
-      text-transform: uppercase;
-      font-size: 0.82rem;
-    }
-
-    .description {
-      margin: 1.6rem 0 0;
-      max-width: 34rem;
-      color: rgba(244, 241, 236, 0.82);
-      font-size: 1.06rem;
-      line-height: 1.7;
+      grid-template-columns: 1fr;
+      gap: 2rem;
     }
 
     .image-frame {
-      margin: 0;
-      border: 1px solid rgba(255, 53, 53, 0.35);
-      background: linear-gradient(180deg, rgba(255, 53, 53, 0.08), rgba(255, 53, 53, 0.02));
+      order: -1;
+    }
+  }
+
+  @media (max-width: 700px) {
+    .archive-page {
       padding: 1rem;
-      box-shadow: 0 20px 60px var(--shadow);
     }
 
-    .image-frame img,
-    .image-placeholder {
-      width: 100%;
-      aspect-ratio: 4 / 3;
+    h1 {
+      font-size: clamp(2.2rem, 12vw, 3.4rem);
     }
-
-    .image-frame img {
-      object-fit: cover;
-      background: #111;
-    }
-
-    .image-placeholder {
-      display: flex;
-      flex-direction: column;
-      justify-content: flex-end;
-      padding: clamp(1.2rem, 4vw, 3rem);
-      border: 1px solid rgba(255, 53, 53, 0.65);
-      background:
-        linear-gradient(135deg, rgba(255, 53, 53, 0.12), transparent 42%),
-        repeating-linear-gradient(135deg, transparent 0 34px, rgba(255, 255, 255, 0.025) 35px 36px),
-        #0b0b0b;
-      text-transform: uppercase;
-    }
-
-    .image-placeholder span {
-      margin-bottom: auto;
-      color: #ff3535;
-      font-size: clamp(2rem, 6vw, 5rem);
-      font-weight: 800;
-    }
-
-    .image-placeholder strong {
-      font-size: clamp(1.4rem, 3vw, 2.8rem);
-      line-height: 1;
-      letter-spacing: 0.05em;
-    }
-
-    .image-placeholder small {
-      margin-top: 0.7rem;
-      color: var(--muted);
-      letter-spacing: 0.2em;
-    }
-
-    @media (max-width: 900px) {
-      .hero {
-        grid-template-columns: 1fr;
-      }
-
-      .image-frame {
-        order: -1;
-      }
-    }
-
-    @media (max-width: 700px) {
-      .archive-page {
-        padding: 1rem;
-      }
-
-      h1 {
-        font-size: clamp(2.7rem, 16vw, 4.2rem);
-      }
-    }
-  </style>
-</BaseLayout>
+  }
+</style>

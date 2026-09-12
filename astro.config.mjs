@@ -1,4 +1,5 @@
 import { defineConfig } from 'astro/config';
+import sitemap from '@astrojs/sitemap';
 
 const isGitHubPages = process.env.GITHUB_ACTIONS === 'true';
 const siteUrl = isGitHubPages
@@ -8,4 +9,5 @@ const siteUrl = isGitHubPages
 export default defineConfig({
   site: siteUrl,
   base: isGitHubPages ? '/smw-archive' : '/',
+  integrations: [sitemap()],
 });
