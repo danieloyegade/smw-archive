@@ -1,21 +1,44 @@
 ---
-import { projects } from '../data/projects';
+import { getImage } from 'astro:assets';
+import { getProjects, toClientProjects } from '../lib/projects';
+
+const entries = await getProjects();
+const clientProjects = await toClientProjects(entries);
+
 const base = import.meta.env.BASE_URL;
 const publicBase = base.endsWith('/') ? base : `${base}/`;
-const asset = (path: string) => `${publicBase}${path.replace(/^\//, '')}`;
-const serializedProjects = projects.map((project) => ({
-  ...project,
-  image: asset(project.image),
-}));
+
+/** Small thumbnails for the list view. */
+const thumbnails = new Map(
+  await Promise.all(
+    entries
+      .filter((entry) => entry.data.image)
+      .map(async (entry) => {
+        const thumbnail = await getImage({
+          src: entry.data.image!,
+          width: 160,
+          height: 120,
+          fit: 'cover',
+          format: 'webp',
+        });
+        return [entry.id, thumbnail.src] as const;
+      }),
+  ),
+);
 ---
 
-<section class="archive-shell">
+<section class="archive-shell" data-archive-shell>
   <header class="archive-header">
     <div>
       <p class="brand">SEE MY WORLD</p>
       <p class="brand-sub">ARCHIVE</p>
     </div>
-    <div class="header-note">DRAG, SCROLL OR USE ARROW KEYS</div>
+    <div class="header-actions">
+      <p class="header-note" data-globe-hint>DRAG, SCROLL OR USE ARROW KEYS</p>
+      <button class="view-toggle" type="button" data-view-toggle aria-pressed="false">
+        <span data-view-toggle-label>List view</span>
+      </button>
+    </div>
   </header>
 
   <section class="search-panel" aria-label="Search the archive">
@@ -37,23 +60,73 @@ const serializedProjects = projects.map((project) => ({
     </div>
   </section>
 
-  <div class="globe-controls" aria-label="Globe controls">
+  <div class="globe-controls" data-globe-controls aria-label="Globe controls">
     <button type="button" data-zoom-in aria-label="Zoom in">+</button>
     <button type="button" data-zoom-out aria-label="Zoom out">−</button>
     <button class="reset-control" type="button" data-reset-view>Reset view</button>
   </div>
 
-  <div class="stage">
-    <div class="caption" aria-live="polite">
+  <div class="stage" data-stage>
+    <div class="caption" aria-hidden="true">
       <div class="caption-title" data-caption-title>DRAG TO EXPLORE · SELECT TO OPEN</div>
       <div class="caption-meta" data-caption-meta></div>
     </div>
-    <canvas id="globe-canvas" aria-label="Interactive archive globe"></canvas>
+    <canvas id="globe-canvas" data-globe-canvas aria-hidden="true"></canvas>
+  </div>
+
+  <!--
+    The authoritative, always-rendered index. The globe is an enhancement layered
+    over this list: without JavaScript or WebGL, or with a screen reader or
+    keyboard, this is the archive.
+  -->
+  <div class="archive-list" data-archive-list>
+    <h1 class="list-heading">See My World Archive</h1>
+    <p class="list-intro">
+      {entries.length} entries of photography, performance and community history across Manchester and Lagos.
+    </p>
+    <p class="globe-fallback" data-globe-fallback hidden>
+      The interactive globe could not start in this browser, so the archive is shown as a list.
+    </p>
+    <ol class="list-grid">
+      {
+        entries.map((entry) => (
+          <li>
+            <a href={`${publicBase}archive/${entry.id}/`}>
+              <span class="list-number">{String(entry.data.order).padStart(2, '0')}</span>
+              {thumbnails.has(entry.id) ? (
+                <img
+                  class="list-thumb"
+                  src={thumbnails.get(entry.id)}
+                  alt=""
+                  width="160"
+                  height="120"
+                  loading="lazy"
+                  decoding="async"
+                />
+              ) : (
+                <span class="list-thumb list-thumb-empty" aria-hidden="true" />
+              )}
+              <span class="list-copy">
+                <strong>{entry.data.title}</strong>
+                <small>
+                  {entry.data.category} · {entry.data.year}
+                  {entry.data.places.length > 0 && ` · ${entry.data.places.join(', ')}`}
+                </small>
+              </span>
+            </a>
+          </li>
+        ))
+      }
+    </ol>
   </div>
 </section>
 
-<script type="application/json" id="archive-project-data" set:html={JSON.stringify(serializedProjects)}></script>
-<script type="module" src={`${publicBase}archive-globe.js`}></script>
+<script is:inline type="application/json" data-archive-projects set:html={JSON.stringify(clientProjects)}></script>
+
+<script>
+  import { mountArchiveGlobe } from '../scripts/archive-globe';
+  mountArchiveGlobe();
+</script>
 
 <style>
   .archive-shell {
@@ -63,7 +136,44 @@ const serializedProjects = projects.map((project) => ({
       radial-gradient(circle at 50% 44%, rgba(255, 46, 46, 0.08), transparent 28%),
       radial-gradient(circle at 50% 50%, rgba(255, 255, 255, 0.04), transparent 36%),
       var(--bg);
+  }
+
+  /*
+    List view is the default so that the archive is complete before any script
+    runs. `data-view` is only ever set by the globe script, and only after the
+    WebGL context is live.
+  */
+  .stage,
+  .globe-controls,
+  .header-note,
+  .view-toggle {
+    display: none;
+  }
+
+  [data-view] .view-toggle {
+    display: inline-flex;
+  }
+
+  [data-view='globe'] {
     overflow: hidden;
+  }
+
+  [data-view='globe'] .stage {
+    display: block;
+  }
+
+  [data-view='globe'] .globe-controls {
+    display: flex;
+  }
+
+  [data-view='globe'] .archive-list {
+    display: none;
+  }
+
+  @media (min-width: 761px) {
+    [data-view='globe'] .header-note {
+      display: block;
+    }
   }
 
   .archive-header {
@@ -74,10 +184,37 @@ const serializedProjects = projects.map((project) => ({
     display: flex;
     justify-content: space-between;
     align-items: flex-start;
+    gap: 1rem;
     padding: 1.5rem 1.6rem;
-    z-index: 2;
-    pointer-events: none;
+    z-index: 5;
     letter-spacing: 0.26em;
+  }
+
+  .header-actions {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 0.6rem;
+  }
+
+  .view-toggle {
+    align-items: center;
+    min-height: 2.4rem;
+    padding: 0 0.9rem;
+    border: 1px solid rgba(255, 255, 255, 0.22);
+    background: rgba(5, 5, 5, 0.82);
+    color: var(--text);
+    font: inherit;
+    font-size: 0.66rem;
+    font-weight: 700;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    cursor: pointer;
+    backdrop-filter: blur(14px);
+  }
+
+  .view-toggle:hover {
+    border-color: var(--line);
   }
 
   .search-panel {
@@ -178,7 +315,6 @@ const serializedProjects = projects.map((project) => ({
   .result-list :global(a:hover),
   .result-list :global(a:focus-visible) {
     background: rgba(255, 53, 53, 0.1);
-    outline: none;
   }
 
   .result-list :global(.result-number) {
@@ -217,7 +353,6 @@ const serializedProjects = projects.map((project) => ({
     right: 1.6rem;
     bottom: 1.6rem;
     z-index: 4;
-    display: flex;
     gap: 0.4rem;
   }
 
@@ -233,10 +368,8 @@ const serializedProjects = projects.map((project) => ({
     backdrop-filter: blur(14px);
   }
 
-  .globe-controls button:hover,
-  .globe-controls button:focus-visible {
+  .globe-controls button:hover {
     border-color: var(--line);
-    outline: none;
   }
 
   .globe-controls .reset-control {
@@ -270,7 +403,6 @@ const serializedProjects = projects.map((project) => ({
   }
 
   .header-note {
-    margin-top: 0.16rem;
     font-size: 0.72rem;
     color: var(--muted);
   }
@@ -313,9 +445,108 @@ const serializedProjects = projects.map((project) => ({
     letter-spacing: 0.24em;
   }
 
+  /* ---- List view ---- */
+
+  .archive-list {
+    padding: 12rem 1.6rem 5rem;
+    max-width: 78rem;
+    margin: 0 auto;
+  }
+
+  .list-heading {
+    margin: 0;
+    font-size: clamp(2rem, 6vw, 3.6rem);
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    line-height: 1;
+  }
+
+  .list-intro {
+    margin: 1rem 0 0;
+    max-width: 42rem;
+    color: var(--muted);
+    font-size: 0.95rem;
+    line-height: 1.7;
+  }
+
+  .globe-fallback {
+    margin: 1.4rem 0 0;
+    padding: 0.8rem 1rem;
+    border-left: 2px solid var(--line);
+    background: rgba(255, 53, 53, 0.07);
+    color: var(--text);
+    font-size: 0.85rem;
+  }
+
+  .list-grid {
+    margin: 2.6rem 0 0;
+    padding: 0;
+    list-style: none;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(min(100%, 21rem), 1fr));
+    gap: 1px;
+    background: rgba(255, 255, 255, 0.12);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+  }
+
+  .list-grid a {
+    display: grid;
+    grid-template-columns: 2.4rem 5rem minmax(0, 1fr);
+    gap: 0.9rem;
+    align-items: center;
+    height: 100%;
+    padding: 1rem;
+    background: var(--bg);
+    transition: background 140ms ease;
+  }
+
+  .list-grid a:hover,
+  .list-grid a:focus-visible {
+    background: rgba(255, 53, 53, 0.09);
+  }
+
+  .list-number {
+    color: #ff3535;
+    font-size: 0.72rem;
+    letter-spacing: 0.1em;
+  }
+
+  .list-thumb {
+    width: 5rem;
+    height: 3.75rem;
+    object-fit: cover;
+    background: var(--bg-soft);
+  }
+
+  .list-thumb-empty {
+    display: block;
+    border: 1px solid rgba(255, 53, 53, 0.4);
+    background:
+      repeating-linear-gradient(135deg, transparent 0 8px, rgba(255, 255, 255, 0.04) 9px 10px),
+      var(--bg-soft);
+  }
+
+  .list-copy strong,
+  .list-copy small {
+    display: block;
+  }
+
+  .list-copy strong {
+    font-size: 0.9rem;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+  }
+
+  .list-copy small {
+    margin-top: 0.3rem;
+    color: var(--muted);
+    font-size: 0.72rem;
+    line-height: 1.4;
+  }
+
   @media (max-width: 760px) {
     .archive-header {
-      padding: 1rem 1rem;
+      padding: 1rem;
     }
 
     .search-panel {
@@ -353,10 +584,6 @@ const serializedProjects = projects.map((project) => ({
       font-size: 1rem;
     }
 
-    .header-note {
-      display: none;
-    }
-
     .caption {
       bottom: 1.4rem;
       width: calc(100vw - 8.5rem);
@@ -373,11 +600,19 @@ const serializedProjects = projects.map((project) => ({
     .caption-meta {
       font-size: 0.73rem;
     }
-  }
 
-  @media (prefers-reduced-motion: reduce) {
-    #globe-canvas {
-      scroll-behavior: auto;
+    .archive-list {
+      padding: 10rem 1rem 4rem;
+    }
+
+    .list-grid a {
+      grid-template-columns: 2rem 4rem minmax(0, 1fr);
+      gap: 0.7rem;
+    }
+
+    .list-thumb {
+      width: 4rem;
+      height: 3rem;
     }
   }
 </style>
