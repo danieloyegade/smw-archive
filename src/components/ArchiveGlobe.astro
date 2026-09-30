@@ -1,383 +1,355 @@
 ---
 import { projects } from '../data/projects';
 const base = import.meta.env.BASE_URL;
-const publicBase = base.endsWith('/') ? base : `${base}/`;
-const asset = (path: string) => `${publicBase}${path.replace(/^\//, '')}`;
-const serializedProjects = projects.map((project) => ({
-  ...project,
-  image: asset(project.image),
-}));
+const publicBase = base.endsWith('/') ? base : base + '/';
+const asset = (path: string) => publicBase + path.replace(/^\//, '');
+const years = [...new Set(projects.map((project) => project.year))];
+const serializedProjects = projects.map((project) => ({ ...project, image: asset(project.image) }));
 ---
 
-<section class="archive-shell">
-  <header class="archive-header">
-    <div>
-      <p class="brand">SEE MY WORLD</p>
-      <p class="brand-sub">ARCHIVE</p>
-    </div>
-    <div class="header-note">DRAG, SCROLL OR USE ARROW KEYS</div>
+<div class="archive-shell">
+  <header class="site-header">
+    <a class="wordmark" href={publicBase} aria-label="See My World archive home">
+      <img src={asset('/images/events/see-my-world-logo.webp')} alt="See My World" />
+    </a>
+    <nav aria-label="Main navigation">
+      <a href="#browse">Explore</a>
+      <a href={publicBase + 'about/'}>About</a>
+    </nav>
   </header>
 
-  <section class="search-panel" aria-label="Search the archive">
-    <label class="search-label" for="archive-search">Search the archive</label>
-    <div class="search-field">
-      <span aria-hidden="true">⌕</span>
-      <input
-        id="archive-search"
-        type="search"
-        placeholder="Projects, places, years…"
-        autocomplete="off"
-        data-search-input
-      />
-      <kbd>/</kbd>
-    </div>
-    <div class="search-results" data-search-results hidden>
-      <p class="result-count" data-result-count aria-live="polite"></p>
-      <div class="result-list" data-result-list></div>
-    </div>
-  </section>
+  <main>
+    <section class="intro" aria-labelledby="page-title">
+      <div class="intro-copy">
+        <p class="eyebrow"><span class="pulse" aria-hidden="true"></span> A festival of Pan-African experiences</p>
+        <h1 id="page-title">A world of <em>stories.</em></h1>
+        <p class="intro-description">
+          Explore the people, places and moments behind See My World, a living programme of
+          Pan-African art, culture and connection.
+        </p>
+        <a class="intro-link" href="#world">Enter the archive <span aria-hidden="true">↓</span></a>
+      </div>
+      <div class="intro-aside" aria-hidden="true">
+        <span>Manchester</span>
+        <span class="intro-line"></span>
+        <span>Lagos</span>
+        <span class="intro-line"></span>
+        <span>Beyond</span>
+      </div>
+    </section>
 
-  <div class="globe-controls" aria-label="Globe controls">
-    <button type="button" data-zoom-in aria-label="Zoom in">+</button>
-    <button type="button" data-zoom-out aria-label="Zoom out">−</button>
-    <button class="reset-control" type="button" data-reset-view>Reset view</button>
-  </div>
+    <section class="experience" id="world" aria-label="Interactive archive">
+      <div class="globe-side">
+        <div class="section-marker"><span>01 / The world</span><span>Drag to explore · Select an image to open</span></div>
+        <div class="stage">
+          <button class="expand-button" type="button" data-enter-immersive aria-label="Explore the globe full screen"><span aria-hidden="true">⤢</span> Explore full screen</button>
+          <div class="immersive-toolbar" data-immersive-toolbar>
+            <span class="immersive-brand">SEE MY WORLD <span>/</span> EXPLORE MODE</span>
+            <div>
+              <button type="button" data-toggle-rail aria-expanded="false" aria-controls="immersive-rail">Stories <span aria-hidden="true">☰</span></button>
+              <button type="button" data-close-immersive>Exit full screen <span aria-hidden="true">×</span></button>
+            </div>
+          </div>
+          <canvas id="globe-canvas" aria-label="Interactive archive globe. Browse the event links alongside it for keyboard access."></canvas>
+          <div class="globe-center-label" aria-hidden="true"><span>SEE MY</span><span>WORLD</span></div>
+          <div class="caption" aria-live="polite">
+            <span class="caption-kicker" data-caption-kicker>EXPLORE THE ARCHIVE</span>
+            <strong class="caption-title" data-caption-title>Every image holds a story.</strong>
+            <span class="caption-meta" data-caption-meta>Drag the globe or choose an event from the list.</span>
+          </div>
+          <article class="story-preview" data-story-preview hidden aria-labelledby="preview-title">
+            <button class="preview-close" type="button" data-close-preview aria-label="Close story preview">×</button>
+            <img data-preview-image src={asset(projects[0].image)} alt="" />
+            <div class="preview-copy">
+              <span data-preview-kicker></span>
+              <h3 id="preview-title" data-preview-title></h3>
+              <p data-preview-description></p>
+              <small data-preview-meta></small>
+              <a data-preview-link href="#">Open this story <span aria-hidden="true">↗</span></a>
+            </div>
+          </article>
+          <div class="globe-controls" aria-label="Globe controls">
+            <button type="button" data-zoom-in aria-label="Zoom in">+</button>
+            <button type="button" data-zoom-out aria-label="Zoom out">−</button>
+            <button class="reset-control" type="button" data-reset-view aria-label="Reset globe view">Reset</button>
+          </div>
+        </div>
+        <aside class="immersive-rail" id="immersive-rail" data-immersive-rail aria-label="Explore archive stories">
+          <div class="rail-heading"><span>THE ARCHIVE / {projects.length} STORIES</span><button type="button" data-hide-rail aria-label="Close story list">×</button></div>
+          <label for="immersive-search">Find a story</label>
+          <input id="immersive-search" type="search" placeholder="Search people, places, events…" data-immersive-search />
+          <div class="immersive-years" role="group" aria-label="Filter globe by year">
+            <button type="button" class="is-active" data-immersive-year="all" aria-pressed="true">All</button>
+            {years.map((year) => <button type="button" data-immersive-year={year} aria-pressed="false">{year}</button>)}
+          </div>
+          <div class="immersive-stories">
+            {projects.map((project) => (
+              <button type="button" data-immersive-story={project.slug}>
+                <img src={asset(project.image)} alt="" loading="lazy" />
+                <span><small>{project.category} · {project.year}</small><strong>{project.title}</strong></span>
+                <span aria-hidden="true">↗</span>
+              </button>
+            ))}
+          </div>
+          <p class="immersive-empty" data-immersive-empty hidden>No stories match this search.</p>
+        </aside>
+        <div class="story-transition" data-story-transition hidden aria-live="polite">
+          <img data-transition-image src={asset(projects[0].image)} alt="" />
+          <div class="transition-shade"></div>
+          <div class="transition-copy"><span>Entering the story</span><strong data-transition-title></strong><small>SEE MY WORLD / THE ARCHIVE</small></div>
+        </div>
+        <div class="stage-footer"><span>Archive / 2020 to 2024</span><span>Manchester ↔ Lagos</span></div>
+      </div>
 
-  <div class="stage">
-    <div class="caption" aria-live="polite">
-      <div class="caption-title" data-caption-title>DRAG TO EXPLORE · SELECT TO OPEN</div>
-      <div class="caption-meta" data-caption-meta></div>
-    </div>
-    <canvas id="globe-canvas" aria-label="Interactive archive globe"></canvas>
-  </div>
-</section>
+      <aside class="discover-panel" aria-labelledby="discover-title">
+        <div class="discover-heading">
+          <span class="section-number">02 / Discover</span>
+          <h2 id="discover-title">Find your way in.</h2>
+          <p>Search by event, place, year or theme. The globe and event list respond together.</p>
+        </div>
+        <label class="search-label" for="archive-search">Search the archive</label>
+        <div class="search-field">
+          <span class="search-icon" aria-hidden="true">⌕</span>
+          <input id="archive-search" type="search" placeholder="Try Lagos, film, 2024…" autocomplete="off" data-search-input />
+          <kbd>/</kbd>
+        </div>
+        <div class="filter-header"><span>By year</span><span data-result-count aria-live="polite">{projects.length} stories</span></div>
+        <div class="year-filters" role="group" aria-label="Filter by year">
+          <button type="button" class="is-active" data-year-button="all" aria-pressed="true">All years</button>
+          {years.map((year) => <button type="button" data-year-button={year} aria-pressed="false">{year}</button>)}
+        </div>
+        <div class="result-list" data-result-list>
+          {projects.map((project) => (
+            <a href={publicBase + 'archive/' + project.slug + '/'} data-result-link={project.slug} data-year={project.year}>
+              <img src={asset(project.image)} alt="" loading="lazy" />
+              <span class="result-copy">
+                <small>{project.category} <span aria-hidden="true">·</span> {project.year}</small>
+                <strong>{project.title}</strong>
+              </span>
+              <span class="result-arrow" aria-hidden="true">↗</span>
+            </a>
+          ))}
+        </div>
+        <p class="empty-result" data-empty-result hidden>No stories match your search. Try a different word or year.</p>
+      </aside>
+    </section>
+
+    <section class="browse-section" id="browse" aria-labelledby="browse-title">
+      <div class="browse-heading">
+        <div><span class="section-number">03 / The collection</span><h2 id="browse-title">Explore every story<span class="green-dot">.</span></h2></div>
+        <p>Real moments from the See My World archive, from its first festival to an exchange across cities.</p>
+      </div>
+      <div class="project-grid" data-project-grid>
+        {projects.map((project) => (
+          <a class="project-card" href={publicBase + 'archive/' + project.slug + '/'} data-project-card data-year={project.year} data-slug={project.slug}>
+            <div class="project-image"><img src={asset(project.image)} alt={project.alt} loading="lazy" /><span class="card-action" aria-hidden="true">↗</span></div>
+            <div class="card-topline"><span>{String(project.id).padStart(2, '0')} / {project.category}</span><span>{project.year}</span></div>
+            <h3>{project.title}</h3>
+            <p>{project.venue}</p>
+          </a>
+        ))}
+      </div>
+      <p class="grid-empty" data-grid-empty hidden>No stories found for this search.</p>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <span>SEE MY WORLD <span class="footer-green">/</span> AN INTERACTIVE ARCHIVE</span>
+    <a href={publicBase + 'about/'}>About See My World ↗</a>
+  </footer>
+</div>
 
 <script type="application/json" id="archive-project-data" set:html={JSON.stringify(serializedProjects)}></script>
-<script type="module" src={`${publicBase}archive-globe.js`}></script>
+<script>import '../scripts/archive-globe';</script>
 
 <style>
-  .archive-shell {
-    position: relative;
-    min-height: 100svh;
-    background:
-      radial-gradient(circle at 50% 44%, rgba(255, 46, 46, 0.08), transparent 28%),
-      radial-gradient(circle at 50% 50%, rgba(255, 255, 255, 0.04), transparent 36%),
-      var(--bg);
-    overflow: hidden;
+  .archive-shell { min-height: 100vh; background: #050505; color: #f8f8f5; }
+  .site-header { min-height: 106px; border-bottom: 1px solid #722322; display: flex; align-items: center; justify-content: space-between; gap: 2rem; padding: 1.4rem clamp(1.25rem, 3vw, 3.5rem); }
+  .wordmark { display: block; width: min(430px, 39vw); }
+  .wordmark img { width: 100%; height: auto; }
+  .site-header nav { display: flex; align-items: center; gap: clamp(1rem, 2.4vw, 2.5rem); }
+  .site-header nav a { font-size: .69rem; font-weight: 800; letter-spacing: .13em; text-transform: uppercase; white-space: nowrap; }
+  .site-header nav a:hover, .site-header nav a:focus-visible, .site-footer a:hover { color: #70bd73; }
+  .site-header nav span { color: #ef4b43; }
+  .intro { min-height: 360px; display: flex; align-items: end; justify-content: space-between; gap: 2rem; padding: clamp(3.5rem, 6vw, 6.5rem) clamp(1.25rem, 5vw, 6rem) 3.3rem; border-bottom: 1px solid #722322; position: relative; overflow: hidden; }
+  .intro::after { content: ''; position: absolute; right: 8%; top: -130px; width: 530px; height: 530px; border: 1px solid rgba(239,75,67,.11); border-radius: 50%; pointer-events: none; }
+  .intro-copy { max-width: 830px; position: relative; z-index: 1; }
+  .eyebrow, .section-number { color: #ef4b43; text-transform: uppercase; letter-spacing: .17em; font-size: .72rem; font-weight: 800; }
+  .eyebrow { margin: 0 0 1.35rem; display: flex; align-items: center; gap: .6rem; }
+  .pulse { width: 7px; height: 7px; border-radius: 50%; background: #ef4b43; box-shadow: 0 0 0 5px rgba(239,75,67,.15); }
+  h1, h2, h3, p { margin-top: 0; }
+  h1 { margin-bottom: 1.25rem; font-size: clamp(3.5rem, 6.3vw, 7.5rem); line-height: .91; letter-spacing: -.075em; text-transform: uppercase; max-width: 12ch; }
+  h1 em { color: #69b96e; font-style: normal; }
+  .intro-description { max-width: 580px; color: #b6b7b1; font-size: clamp(1rem, 1.2vw, 1.16rem); line-height: 1.6; }
+  .intro-link { display: inline-flex; gap: 1.4rem; align-items: center; border-bottom: 1px solid #ef4b43; padding-bottom: .52rem; margin-top: .8rem; font-size: .75rem; font-weight: 800; letter-spacing: .14em; text-transform: uppercase; }
+  .intro-link span { color: #ef4b43; font-size: 1.1rem; }
+  .intro-link:hover { color: #69b96e; }
+  .intro-aside { display: flex; align-items: center; gap: .65rem; writing-mode: vertical-rl; text-transform: uppercase; letter-spacing: .2em; color: #888d86; font-size: .62rem; font-weight: 700; white-space: nowrap; }
+  .intro-line { display: block; height: 28px; width: 1px; background: #ef4b43; }
+  .experience { display: grid; grid-template-columns: minmax(0, 1.45fr) minmax(360px, .8fr); min-height: 660px; border-bottom: 1px solid #722322; }
+  .globe-side { min-width: 0; border-right: 1px solid #722322; display: flex; flex-direction: column; position: relative; }
+  .section-marker, .stage-footer { display: flex; justify-content: space-between; gap: 1rem; color: #888d86; font-size: .64rem; font-weight: 800; letter-spacing: .14em; text-transform: uppercase; }
+  .section-marker { padding: 1.2rem 1.7rem; border-bottom: 1px solid rgba(165,48,46,.45); }
+  .section-marker span:first-child { color: #ef4b43; }
+  .stage-footer { padding: 1rem 1.7rem; border-top: 1px solid rgba(165,48,46,.45); }
+  .stage { flex: 1; min-height: 510px; position: relative; background: radial-gradient(circle at 50% 50%, rgba(118,22,20,.18), transparent 42%); overflow: hidden; }
+  #globe-canvas { display: block; width: 100%; height: 100%; touch-action: none; }
+  #globe-canvas:focus-visible { outline: 2px solid #69b96e; outline-offset: -5px; }
+  .expand-button { position: absolute; z-index: 6; top: 1.1rem; right: 1.2rem; display: flex; align-items: center; gap: .65rem; min-height: 2.8rem; padding: 0 .9rem; border: 1px solid #a03b36; background: #080808ec; color: #fff; text-transform: uppercase; letter-spacing: .12em; font: inherit; font-size: .66rem; font-weight: 900; cursor: pointer; }
+  .expand-button span { color: #69b96e; font-size: 1.35rem; line-height: 1; }
+  .expand-button:hover, .expand-button:focus-visible { background: #69b96e; border-color: #69b96e; color: #050505; }
+  .expand-button:hover span, .expand-button:focus-visible span { color: #050505; }
+  .immersive-toolbar, .immersive-rail { display: none; }
+  .story-preview { position: absolute; z-index: 11; left: 1.5rem; bottom: 5.8rem; display: grid; grid-template-columns: 125px minmax(0,1fr); width: min(500px, calc(100% - 3rem)); min-height: 176px; background: #090c09f5; border: 1px solid #69b96e; box-shadow: 0 18px 60px #000b; }
+  .story-preview[hidden], .immersive-stories button[hidden], .immersive-empty[hidden] { display: none !important; }
+  .story-transition { position: fixed; inset: 0; z-index: 1001; overflow: hidden; background: #080808; opacity: 0; pointer-events: none; transition: opacity .24s ease; }
+  .story-transition[hidden] { display: none !important; }
+  .story-transition.is-active { opacity: 1; pointer-events: auto; }
+  .story-transition > img { width: 100%; height: 100%; object-fit: cover; transform: scale(.86); filter: brightness(.6); transition: transform .65s cubic-bezier(.2,.7,.1,1), filter .65s ease; }
+  .story-transition.is-active > img { transform: scale(1.08); filter: brightness(1); }
+  .transition-shade { position: absolute; inset: 0; background: linear-gradient(90deg, #000d, #0005 75%), linear-gradient(0deg, #000c, transparent 60%); }
+  .transition-copy { position: absolute; inset: auto 5vw 8vh; display: flex; flex-direction: column; gap: 1rem; text-transform: uppercase; opacity: 0; transform: translateY(24px); transition: opacity .4s .1s ease, transform .4s .1s ease; }
+  .story-transition.is-active .transition-copy { opacity: 1; transform: translateY(0); }
+  .transition-copy span, .transition-copy small { color: #69b96e; font-size: .7rem; font-weight: 900; letter-spacing: .17em; }
+  .transition-copy strong { color: #fff; max-width: 13ch; font-size: clamp(3rem, 7vw, 8rem); line-height: .91; letter-spacing: -.065em; }
+  .transition-copy small { color: #fff; font-size: .6rem; }
+  .story-preview > img { width: 100%; height: 100%; object-fit: cover; }
+  .preview-copy { min-width: 0; padding: 1.1rem 1.5rem 1rem 1.1rem; }
+  .preview-copy > span, .preview-copy small { color: #69b96e; font-size: .61rem; font-weight: 900; letter-spacing: .13em; text-transform: uppercase; }
+  .preview-copy h3 { font-size: clamp(1rem, 1.5vw, 1.4rem); line-height: 1.05; text-transform: uppercase; margin: .42rem 0 .5rem; }
+  .preview-copy p { color: #c6cbc4; font-size: .73rem; line-height: 1.4; margin: 0 0 .55rem; }
+  .preview-copy small { display: block; color: #aeb4ac; letter-spacing: .06em; }
+  .preview-copy a { display: inline-flex; gap: .7rem; margin-top: .7rem; border-bottom: 1px solid #ef4b43; padding-bottom: .28rem; font-size: .64rem; font-weight: 900; letter-spacing: .1em; text-transform: uppercase; }
+  .preview-copy a span { color: #ef4b43; }
+  .preview-copy a:hover { color: #69b96e; }
+  .preview-close { position: absolute; top: .25rem; right: .35rem; border: 0; background: transparent; color: #fff; font-size: 1.4rem; cursor: pointer; }
+  .globe-side.is-immersive, .globe-side:fullscreen { position: fixed; inset: 0; z-index: 1000; width: 100%; height: 100dvh; border: 0; background: #050505; }
+  .globe-side.is-immersive .section-marker, .globe-side:fullscreen .section-marker, .globe-side.is-immersive .stage-footer, .globe-side:fullscreen .stage-footer, .globe-side.is-immersive .expand-button, .globe-side:fullscreen .expand-button { display: none; }
+  .globe-side.is-immersive .stage, .globe-side:fullscreen .stage { min-height: 0; width: 100%; }
+  .globe-side.is-immersive .immersive-toolbar, .globe-side:fullscreen .immersive-toolbar { position: absolute; z-index: 12; top: 0; left: 0; right: 0; display: flex; align-items: center; justify-content: space-between; gap: 1rem; height: 64px; padding: 0 1.5rem; border-bottom: 1px solid #682421; background: #050505e8; }
+  .immersive-brand { font-size: .78rem; font-weight: 900; letter-spacing: .16em; white-space: nowrap; }
+  .immersive-brand span { color: #69b96e; }
+  .immersive-toolbar > div { display: flex; gap: .5rem; }
+  .immersive-toolbar button { border: 1px solid #67312d; background: #111; color: #fff; min-height: 2.3rem; padding: 0 .8rem; font: inherit; font-size: .63rem; font-weight: 900; letter-spacing: .1em; text-transform: uppercase; cursor: pointer; }
+  .immersive-toolbar button:hover, .immersive-toolbar button:focus-visible { border-color: #69b96e; color: #69b96e; }
+  .immersive-toolbar button span { color: #ef4b43; margin-left: .5rem; font-size: 1rem; }
+  .globe-side.is-immersive .caption, .globe-side:fullscreen .caption { bottom: 2rem; }
+  .globe-side.has-preview .caption { display: none; }
+  .globe-side.is-immersive.rail-open .immersive-rail, .globe-side:fullscreen.rail-open .immersive-rail { display: flex; flex-direction: column; position: absolute; z-index: 9; top: 64px; right: 0; bottom: 0; width: min(360px, 95vw); padding: 1.4rem; border-left: 1px solid #792c28; background: #080b08f5; box-shadow: -16px 0 60px #0008; }
+  .rail-heading { display: flex; justify-content: space-between; align-items: center; color: #ef4b43; font-size: .68rem; font-weight: 900; letter-spacing: .14em; }
+  .rail-heading button { border: 0; background: transparent; color: #fff; font-size: 1.5rem; cursor: pointer; }
+  .immersive-rail label { margin: 1.55rem 0 .6rem; color: #aeb4ac; text-transform: uppercase; letter-spacing: .12em; font-size: .62rem; font-weight: 900; }
+  .immersive-rail input { min-height: 2.8rem; border: 1px solid #75403b; padding: 0 .75rem; background: #111; color: #fff; font: inherit; font-size: .77rem; }
+  .immersive-rail input:focus { outline: 2px solid #69b96e; outline-offset: 2px; }
+  .immersive-years { display: flex; flex-wrap: wrap; gap: .35rem; margin: 1rem 0 1.2rem; }
+  .immersive-years button { border: 1px solid #464b45; background: #0b0b0b; color: #afb3ac; padding: .5rem .56rem; font: inherit; font-size: .61rem; font-weight: 900; cursor: pointer; }
+  .immersive-years button:hover, .immersive-years button:focus-visible, .immersive-years button.is-active { background: #69b96e; border-color: #69b96e; color: #050505; }
+  .immersive-stories { min-height: 0; overflow-y: auto; margin: 0 -1.4rem; border-top: 1px solid #373e36; }
+  .immersive-stories button { display: grid; grid-template-columns: 3.1rem minmax(0,1fr) .8rem; align-items: center; gap: .65rem; width: 100%; border: 0; border-bottom: 1px solid #333a32; padding: .62rem 1.4rem; background: transparent; color: #fff; text-align: left; cursor: pointer; }
+  .immersive-stories button:hover, .immersive-stories button:focus-visible { background: #1a2a1b; outline: 0; }
+  .immersive-stories img { width: 3.1rem; height: 3.1rem; object-fit: cover; }
+  .immersive-stories span:nth-child(2) { display: flex; flex-direction: column; gap: .2rem; }
+  .immersive-stories small { color: #69b96e; font-size: .57rem; font-weight: 900; letter-spacing: .08em; text-transform: uppercase; }
+  .immersive-stories strong { font-size: .7rem; line-height: 1.15; text-transform: uppercase; }
+  .immersive-stories button > span:last-child { color: #ef4b43; }
+  .immersive-empty { color: #c6cbc4; font-size: .8rem; }
+  .globe-center-label { position: absolute; top: 50%; left: 50%; transform: translate(-50%,-50%); pointer-events: none; display: flex; flex-direction: column; text-align: center; font-size: clamp(.75rem, 1.1vw, 1.1rem); line-height: 1; letter-spacing: .35em; font-weight: 900; color: rgba(255,255,255,.48); text-shadow: 0 0 12px #000; }
+  .caption { position: absolute; left: 1.7rem; bottom: 1.5rem; max-width: min(60%, 350px); display: flex; flex-direction: column; gap: .3rem; pointer-events: none; text-shadow: 0 2px 10px #000; }
+  .caption-kicker { color: #69b96e; font-size: .64rem; font-weight: 900; letter-spacing: .17em; }
+  .caption-title { font-size: clamp(1rem, 1.6vw, 1.55rem); line-height: 1.08; text-transform: uppercase; }
+  .caption-meta { color: #c2c4bd; font-size: .73rem; line-height: 1.4; }
+  .globe-controls { position: absolute; right: 1.2rem; bottom: 1.2rem; display: flex; gap: .3rem; }
+  .globe-controls button { min-width: 2.5rem; height: 2.5rem; border: 1px solid #74403d; background: #080808df; color: #fff; font: inherit; font-weight: 700; cursor: pointer; }
+  .globe-controls button:hover, .globe-controls button:focus-visible { border-color: #ef4b43; color: #ef4b43; }
+  .globe-controls .reset-control { padding: 0 .8rem; text-transform: uppercase; letter-spacing: .1em; font-size: .61rem; }
+  .discover-panel { display: flex; flex-direction: column; padding: 2.3rem clamp(1.2rem, 2.5vw, 3rem) 0; min-height: 0; }
+  .discover-heading h2 { font-size: clamp(2rem, 2.8vw, 3.15rem); text-transform: uppercase; letter-spacing: -.055em; line-height: 1; margin: 1.25rem 0 .8rem; }
+  .discover-heading p { color: #a5a8a2; font-size: .87rem; line-height: 1.5; max-width: 30rem; margin-bottom: 2rem; }
+  .search-label, .filter-header { color: #b4b8b0; text-transform: uppercase; letter-spacing: .13em; font-size: .63rem; font-weight: 800; }
+  .search-label { margin-bottom: .65rem; }
+  .search-field { display: flex; align-items: center; gap: .7rem; border: 1px solid #7a3937; min-height: 3.15rem; padding: 0 .8rem; background: #0d0d0d; }
+  .search-field:focus-within { border-color: #ef4b43; }
+  .search-icon { color: #ef4b43; font-size: 1.5rem; }
+  .search-field input { border: 0; outline: 0; min-width: 0; flex: 1; background: transparent; color: #fff; font: inherit; font-size: .85rem; }
+  .search-field input::placeholder { color: #858780; }
+  .search-field kbd { border: 1px solid #42423f; padding: .1rem .33rem; color: #a5a8a2; font: inherit; font-size: .65rem; }
+  .filter-header { display: flex; justify-content: space-between; margin: 1.65rem 0 .75rem; }
+  .filter-header span:last-child { color: #69b96e; }
+  .year-filters { display: flex; flex-wrap: wrap; gap: .4rem; margin-bottom: 1.5rem; }
+  .year-filters button { background: #090909; color: #a7aaa4; border: 1px solid #40423e; padding: .56rem .78rem; cursor: pointer; font: inherit; font-size: .66rem; font-weight: 800; letter-spacing: .06em; }
+  .year-filters button:hover, .year-filters button:focus-visible, .year-filters button.is-active { background: #69b96e; border-color: #69b96e; color: #050505; }
+  .result-list { overflow-y: auto; max-height: 390px; margin: 0 calc(-1 * clamp(1.2rem, 2.5vw, 3rem)); border-top: 1px solid #393936; }
+  .result-list a { display: grid; grid-template-columns: 3.7rem minmax(0, 1fr) 1rem; align-items: center; gap: .8rem; padding: .72rem clamp(1.2rem, 2.5vw, 3rem); border-bottom: 1px solid #292a28; }
+  .result-list a[hidden], .project-card[hidden], .empty-result[hidden], .grid-empty[hidden] { display: none !important; }
+  .result-list a:hover, .result-list a:focus-visible { background: #151d16; outline: 0; }
+  .result-list img { width: 3.7rem; height: 3.7rem; object-fit: cover; }
+  .result-copy { display: flex; flex-direction: column; gap: .22rem; min-width: 0; }
+  .result-copy small { color: #69b96e; font-size: .59rem; letter-spacing: .12em; text-transform: uppercase; font-weight: 800; }
+  .result-copy strong { font-size: .75rem; line-height: 1.22; text-transform: uppercase; }
+  .result-arrow { color: #ef4b43; }
+  .empty-result { color: #b5b5b0; font-size: .85rem; }
+  .browse-section { padding: 5rem clamp(1.25rem, 5vw, 6rem) 6rem; }
+  .browse-heading { display: flex; justify-content: space-between; align-items: end; gap: 2rem; margin-bottom: 2.2rem; }
+  .browse-heading h2 { margin: .8rem 0 0; font-size: clamp(2.4rem, 4.4vw, 5rem); line-height: .95; letter-spacing: -.065em; text-transform: uppercase; }
+  .green-dot { color: #69b96e; }
+  .browse-heading p { color: #a5a8a2; max-width: 275px; font-size: .85rem; line-height: 1.5; margin-bottom: 0; }
+  .project-grid { display: grid; grid-template-columns: repeat(4, minmax(0,1fr)); gap: 2.5rem 1rem; }
+  .project-card { min-width: 0; display: block; }
+  .project-image { position: relative; aspect-ratio: 1 / .78; border: 1px solid #542321; overflow: hidden; background: #111; }
+  .project-image img { width: 100%; height: 100%; object-fit: cover; transition: transform .4s ease, filter .4s ease; }
+  .project-card:hover .project-image img, .project-card:focus-visible .project-image img { transform: scale(1.045); filter: brightness(1.1); }
+  .project-card:focus-visible { outline: 2px solid #69b96e; outline-offset: 4px; }
+  .card-action { position: absolute; right: .7rem; bottom: .7rem; background: #69b96e; color: #050505; width: 2.1rem; height: 2.1rem; display: grid; place-items: center; opacity: 0; transition: opacity .2s ease; }
+  .project-card:hover .card-action, .project-card:focus-visible .card-action { opacity: 1; }
+  .card-topline { display: flex; justify-content: space-between; gap: .5rem; margin: .85rem 0 .48rem; color: #69b96e; text-transform: uppercase; font-size: .62rem; font-weight: 800; letter-spacing: .13em; }
+  .project-card h3 { font-size: clamp(.95rem, 1.3vw, 1.35rem); text-transform: uppercase; line-height: 1.1; margin: 0 0 .35rem; }
+  .project-card p { font-size: .74rem; color: #a3a7a0; margin: 0; }
+  .grid-empty { color: #b5b5b0; }
+  .site-footer { display: flex; justify-content: space-between; gap: 1rem; border-top: 1px solid #722322; padding: 1.5rem clamp(1.25rem, 5vw, 6rem); font-size: .63rem; font-weight: 800; letter-spacing: .12em; text-transform: uppercase; }
+  .footer-green { color: #69b96e; }
+  @media (max-width: 1020px) {
+    .experience { grid-template-columns: 1fr; }
+    .globe-side { border-right: 0; border-bottom: 1px solid #722322; }
+    .stage { min-height: 590px; }
+    .discover-panel { padding-bottom: 2rem; }
+    .result-list { max-height: 270px; }
+    .project-grid { grid-template-columns: repeat(3, minmax(0,1fr)); }
   }
-
-  .archive-header {
-    position: absolute;
-    left: 0;
-    top: 0;
-    right: 0;
-    display: flex;
-    justify-content: space-between;
-    align-items: flex-start;
-    padding: 1.5rem 1.6rem;
-    z-index: 2;
-    pointer-events: none;
-    letter-spacing: 0.26em;
+  @media (max-width: 680px) {
+    .site-header { min-height: 74px; padding: 1rem; }
+    .wordmark { width: 40vw; }
+    .site-header nav { gap: .7rem; }
+    .site-header nav a { font-size: .58rem; }
+    .intro { min-height: 0; padding: 3.5rem 1rem 2.7rem; }
+    .intro-aside { display: none; }
+    h1 { font-size: clamp(3.4rem, 12vw, 5rem); }
+    .intro-description { max-width: 28rem; }
+    .section-marker span:last-child { display: none; }
+    .stage { min-height: 440px; }
+    .expand-button { top: .75rem; right: .75rem; min-height: 2.4rem; padding: 0 .55rem; font-size: .54rem; }
+    .globe-side.is-immersive .immersive-toolbar, .globe-side:fullscreen .immersive-toolbar { padding: 0 .65rem; }
+    .immersive-brand { font-size: .55rem; letter-spacing: .08em; }
+    .immersive-toolbar button { font-size: .55rem; padding: 0 .52rem; }
+    .globe-side.is-immersive.rail-open .immersive-rail, .globe-side:fullscreen.rail-open .immersive-rail { top: auto; bottom: 0; left: 0; width: 100%; height: min(63dvh, 560px); border-left: 0; border-top: 1px solid #792c28; }
+    .story-preview { left: .6rem; bottom: 4.2rem; width: calc(100% - 1.2rem); grid-template-columns: 92px minmax(0,1fr); }
+    .preview-copy { padding: .75rem 1.25rem .75rem .75rem; }
+    .preview-copy h3 { font-size: .9rem; }
+    .preview-copy p { font-size: .65rem; }
+    .caption { left: 1rem; bottom: 1rem; max-width: 57%; }
+    .caption-title { font-size: 1rem; }
+    .caption-meta { font-size: .65rem; }
+    .globe-controls { right: .7rem; bottom: .8rem; }
+    .globe-controls button { min-width: 2.25rem; height: 2.25rem; }
+    .globe-controls .reset-control { font-size: .55rem; }
+    .stage-footer { font-size: .55rem; }
+    .browse-section { padding: 3.6rem 1rem 4rem; }
+    .browse-heading { display: block; }
+    .browse-heading p { margin-top: 1rem; }
+    .project-grid { grid-template-columns: repeat(2, minmax(0,1fr)); gap: 2rem .7rem; }
+    .project-card h3 { font-size: .9rem; }
+    .card-topline { font-size: .54rem; }
+    .site-footer { flex-direction: column; }
   }
-
-  .search-panel {
-    position: absolute;
-    top: 6.2rem;
-    left: 1.6rem;
-    z-index: 4;
-    width: min(23rem, calc(100vw - 3.2rem));
-  }
-
-  .search-label {
-    display: block;
-    margin-bottom: 0.55rem;
-    color: var(--muted);
-    font-size: 0.68rem;
-    font-weight: 700;
-    letter-spacing: 0.22em;
-    text-transform: uppercase;
-  }
-
-  .search-field {
-    display: grid;
-    grid-template-columns: auto 1fr auto;
-    gap: 0.65rem;
-    align-items: center;
-    min-height: 3rem;
-    padding: 0 0.85rem;
-    border: 1px solid rgba(255, 255, 255, 0.22);
-    background: rgba(5, 5, 5, 0.84);
-    backdrop-filter: blur(16px);
-    transition: border-color 160ms ease, background 160ms ease;
-  }
-
-  .search-field:focus-within {
-    border-color: var(--line);
-    background: rgba(5, 5, 5, 0.96);
-  }
-
-  .search-field span {
-    color: #ff3535;
-    font-size: 1.3rem;
-    line-height: 1;
-  }
-
-  .search-field input {
-    min-width: 0;
-    border: 0;
-    outline: 0;
-    background: transparent;
-    color: var(--text);
-    font: inherit;
-    font-size: 0.9rem;
-  }
-
-  .search-field input::placeholder {
-    color: rgba(244, 241, 236, 0.48);
-  }
-
-  .search-field kbd {
-    border: 1px solid rgba(255, 255, 255, 0.2);
-    color: var(--muted);
-    padding: 0.1rem 0.35rem;
-    font: inherit;
-    font-size: 0.7rem;
-  }
-
-  .search-results {
-    margin-top: 0.45rem;
-    padding: 0.75rem;
-    border: 1px solid rgba(255, 53, 53, 0.32);
-    background: rgba(5, 5, 5, 0.94);
-    backdrop-filter: blur(18px);
-    box-shadow: 0 18px 60px rgba(0, 0, 0, 0.42);
-  }
-
-  .result-count {
-    margin: 0 0 0.55rem;
-    color: var(--muted);
-    font-size: 0.65rem;
-    letter-spacing: 0.16em;
-    text-transform: uppercase;
-  }
-
-  .result-list {
-    display: grid;
-    max-height: min(48vh, 25rem);
-    overflow-y: auto;
-  }
-
-  .result-list :global(a) {
-    display: grid;
-    grid-template-columns: 2.2rem minmax(0, 1fr);
-    gap: 0.6rem;
-    padding: 0.72rem 0.35rem;
-    border-top: 1px solid rgba(255, 255, 255, 0.1);
-  }
-
-  .result-list :global(a:hover),
-  .result-list :global(a:focus-visible) {
-    background: rgba(255, 53, 53, 0.1);
-    outline: none;
-  }
-
-  .result-list :global(.result-number) {
-    color: #ff3535;
-    font-size: 0.7rem;
-    letter-spacing: 0.1em;
-  }
-
-  .result-list :global(strong),
-  .result-list :global(small) {
-    display: block;
-  }
-
-  .result-list :global(strong) {
-    font-size: 0.82rem;
-    letter-spacing: 0.08em;
-    text-transform: uppercase;
-  }
-
-  .result-list :global(small) {
-    margin-top: 0.28rem;
-    color: var(--muted);
-    font-size: 0.7rem;
-    line-height: 1.35;
-  }
-
-  .result-list :global(.empty-result) {
-    margin: 0;
-    padding: 0.85rem 0.35rem;
-    color: var(--muted);
-    font-size: 0.8rem;
-  }
-
-  .globe-controls {
-    position: absolute;
-    right: 1.6rem;
-    bottom: 1.6rem;
-    z-index: 4;
-    display: flex;
-    gap: 0.4rem;
-  }
-
-  .globe-controls button {
-    min-width: 2.75rem;
-    height: 2.75rem;
-    border: 1px solid rgba(255, 255, 255, 0.22);
-    background: rgba(5, 5, 5, 0.82);
-    color: var(--text);
-    font: inherit;
-    font-size: 1.15rem;
-    cursor: pointer;
-    backdrop-filter: blur(14px);
-  }
-
-  .globe-controls button:hover,
-  .globe-controls button:focus-visible {
-    border-color: var(--line);
-    outline: none;
-  }
-
-  .globe-controls .reset-control {
-    width: auto;
-    padding: 0 0.85rem;
-    color: var(--muted);
-    font-size: 0.66rem;
-    font-weight: 700;
-    letter-spacing: 0.14em;
-    text-transform: uppercase;
-  }
-
-  .brand,
-  .brand-sub,
-  .header-note,
-  .caption-title,
-  .caption-meta {
-    margin: 0;
-    text-transform: uppercase;
-  }
-
-  .brand {
-    font-size: 0.93rem;
-    font-weight: 700;
-  }
-
-  .brand-sub {
-    margin-top: 0.22rem;
-    font-size: 0.72rem;
-    color: var(--muted);
-  }
-
-  .header-note {
-    margin-top: 0.16rem;
-    font-size: 0.72rem;
-    color: var(--muted);
-  }
-
-  .stage {
-    position: relative;
-    width: 100%;
-    height: 100svh;
-  }
-
-  #globe-canvas {
-    width: 100%;
-    height: 100%;
-    display: block;
-    touch-action: none;
-  }
-
-  .caption {
-    position: absolute;
-    left: 50%;
-    bottom: 2.1rem;
-    transform: translateX(-50%);
-    z-index: 2;
-    text-align: center;
-    pointer-events: none;
-    width: min(92vw, 38rem);
-    text-shadow: 0 1px 14px rgba(0, 0, 0, 0.8);
-  }
-
-  .caption-title {
-    font-size: clamp(1rem, 1.6vw, 1.45rem);
-    font-weight: 700;
-    letter-spacing: 0.3em;
-  }
-
-  .caption-meta {
-    margin-top: 0.45rem;
-    font-size: 0.84rem;
-    color: var(--muted);
-    letter-spacing: 0.24em;
-  }
-
-  @media (max-width: 760px) {
-    .archive-header {
-      padding: 1rem 1rem;
-    }
-
-    .search-panel {
-      top: 4.7rem;
-      left: 1rem;
-      width: calc(100vw - 2rem);
-    }
-
-    .search-label,
-    .search-field kbd {
-      display: none;
-    }
-
-    .search-results {
-      max-height: 43svh;
-    }
-
-    .globe-controls {
-      right: 1rem;
-      bottom: 1rem;
-      flex-direction: column;
-    }
-
-    .globe-controls .reset-control {
-      width: 2.75rem;
-      padding: 0;
-      overflow: hidden;
-      color: transparent;
-      font-size: 0;
-    }
-
-    .globe-controls .reset-control::after {
-      content: '↺';
-      color: var(--text);
-      font-size: 1rem;
-    }
-
-    .header-note {
-      display: none;
-    }
-
-    .caption {
-      bottom: 1.4rem;
-      width: calc(100vw - 8.5rem);
-      left: 1rem;
-      transform: none;
-      text-align: left;
-    }
-
-    .caption-title {
-      font-size: 0.95rem;
-      letter-spacing: 0.22em;
-    }
-
-    .caption-meta {
-      font-size: 0.73rem;
-    }
-  }
-
-  @media (prefers-reduced-motion: reduce) {
-    #globe-canvas {
-      scroll-behavior: auto;
-    }
-  }
+  @media (max-width: 390px) { .project-grid { grid-template-columns: 1fr; } }
+  @media (prefers-reduced-motion: reduce) { .project-image img, .card-action, .story-transition, .story-transition > img, .transition-copy { transition: none; } }
 </style>

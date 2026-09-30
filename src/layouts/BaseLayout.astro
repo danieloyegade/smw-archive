@@ -1,7 +1,7 @@
 ---
 const {
   title = 'See My World Archive',
-  description = 'Interactive archive globe for See My World.',
+  description = 'Explore real stories from See My World: Pan-African art, culture and connection across Manchester, Lagos and beyond.',
 } = Astro.props;
 const base = import.meta.env.BASE_URL;
 const publicBase = base.endsWith('/') ? base : `${base}/`;
@@ -30,6 +30,10 @@ const publicBase = base.endsWith('/') ? base : `${base}/`;
 
       * {
         box-sizing: border-box;
+      }
+
+      [hidden] {
+        display: none !important;
       }
 
       html,

@@ -1,9 +1,10 @@
 ---
 import BaseLayout from '../../layouts/BaseLayout.astro';
-import { projectBySlug, projects } from '../../data/projects';
+import { projects, type ArchiveProject } from '../../data/projects';
+
 const base = import.meta.env.BASE_URL;
-const publicBase = base.endsWith('/') ? base : `${base}/`;
-const asset = (path: string) => `${publicBase}${path.replace(/^\//, '')}`;
+const publicBase = base.endsWith('/') ? base : base + '/';
+const asset = (path: string) => publicBase + path.replace(/^\//, '');
 
 export function getStaticPaths() {
   return projects.map((project) => ({
@@ -12,163 +13,202 @@ export function getStaticPaths() {
   }));
 }
 
-const { project } = Astro.props;
-const fallback = projectBySlug.get(project.slug) ?? project;
+const { project } = Astro.props as { project: ArchiveProject };
+const index = projects.findIndex((item) => item.slug === project.slug);
+const next = projects[(index + 1) % projects.length];
+const photos = [project.image, ...project.gallery.filter((photo) => photo !== project.image)].map(asset);
 ---
 
-<BaseLayout title={`${fallback.title} | See My World Archive`} description={fallback.description}>
-  <main class="archive-page">
-    <a class="return" href={publicBase}>Return to archive</a>
-    <section class="hero">
-      <div class="hero-copy">
-        <p class="eyebrow">SEE MY WORLD ARCHIVE</p>
-        <h1>{fallback.title}</h1>
-        <p class="meta">
-          {fallback.category} / {fallback.year}
-          {fallback.places.length > 0 && <> / {fallback.places.join(' / ')}</>}
-        </p>
-        <p class="description">{fallback.description}</p>
-      </div>
-      <figure class="image-frame">
-        {fallback.imageAvailable ? (
-          <img src={asset(fallback.image)} alt={fallback.alt} loading="eager" />
-        ) : (
-          <div class="image-placeholder" role="img" aria-label={`${fallback.title} archive placeholder`}>
-            <span>{String(fallback.id).padStart(2, '0')}</span>
-            <strong>{fallback.title}</strong>
-            <small>{fallback.category}</small>
+<BaseLayout title={project.title + ' | See My World Archive'} description={project.description}>
+  <div class="page">
+    <header class="site-header">
+      <a class="wordmark" href={publicBase} aria-label="See My World archive home"><img src={asset('/images/events/see-my-world-logo.webp')} alt="See My World" /></a>
+      <nav aria-label="Main navigation"><a href={publicBase + '#world'}><span aria-hidden="true">←</span> Back to globe</a><a href={publicBase + 'about/'}>About</a></nav>
+    </header>
+    <main>
+      <section class="hero" aria-labelledby="project-title">
+        <img class="hero-photo" src={photos[0] ?? asset(project.image)} alt={project.alt} loading="eager" />
+        <div class="hero-shade" aria-hidden="true"></div>
+        <div class="hero-content">
+          <div class="hero-index"><span>THE ARCHIVE / {project.year}</span><span>{String(project.id).padStart(2, '0')} OF {String(projects.length).padStart(2, '0')}</span></div>
+          <div class="hero-main">
+            <p class="eyebrow">{project.category} / {project.venue}</p>
+            <h1 id="project-title">{project.title}</h1>
+            <p class="hero-description">{project.description}</p>
+            <a class="scroll-link" href="#story">Explore the story <span aria-hidden="true">↓</span></a>
           </div>
-        )}
-      </figure>
-    </section>
-  </main>
+          <div class="hero-bottom"><span>{project.date}</span><button type="button" data-photo-index="0">View image full screen <span aria-hidden="true">↗</span></button></div>
+        </div>
+      </section>
 
+      <section class="story" id="story" aria-labelledby="story-title">
+        <div class="story-label"><span>01 / The story</span><span>{project.year} · {project.category}</span></div>
+        <div class="story-content">
+          <h2 id="story-title">The moment<span>.</span></h2>
+          <div class="story-prose">
+            {project.story.map((paragraph, paragraphIndex) => <p class:list={{ lead: paragraphIndex === 0 }}>{paragraph}</p>)}
+          </div>
+        </div>
+      </section>
+
+      <section class="gallery-section" aria-labelledby="gallery-title">
+        <div class="gallery-header"><span>02 / Through the lens</span><h2 id="gallery-title">Inside the story<span>.</span></h2><p>Select an image to explore it more closely.</p></div>
+        <div class="gallery-grid">
+          {photos.map((photo, photoIndex) => (
+            <button class="gallery-tile" type="button" data-photo-index={photoIndex} aria-label={'View ' + project.title + ' photograph ' + (photoIndex + 1) + ' full screen'}>
+              <img src={photo} alt={project.title + ', photograph ' + (photoIndex + 1)} loading="lazy" />
+              <span class="gallery-number">{String(photoIndex + 1).padStart(2, '0')} / {String(photos.length).padStart(2, '0')}</span>
+              <span class="gallery-open" aria-hidden="true">↗</span>
+            </button>
+          ))}
+        </div>
+      </section>
+
+      {project.programme && (
+        <section class="programme" aria-labelledby="programme-title">
+          <div class="programme-heading"><span>03 / The programme</span><h2 id="programme-title">Across the days<span>.</span></h2><p>Highlights from the festival programme.</p></div>
+          <div class="programme-list">
+            {project.programme.map((entry, entryIndex) => (
+              <article>
+                <span class="programme-number">{String(entryIndex + 1).padStart(2, '0')}</span>
+                <div><small>{entry.day}</small><h3>{entry.title}</h3><ul>{entry.items.map((item) => <li>{item}</li>)}</ul></div>
+              </article>
+            ))}
+          </div>
+        </section>
+      )}
+
+      <section class="next-story">
+        <span>Continue exploring / {String(next.id).padStart(2, '0')}</span>
+        <a href={publicBase + 'archive/' + next.slug + '/'}><strong>{next.title}</strong><span aria-hidden="true">↗</span></a>
+      </section>
+    </main>
+    <footer><span>SEE MY WORLD / AN INTERACTIVE ARCHIVE</span><div><a href={publicBase + 'about/'}>About</a><a href={publicBase + '#world'}>Back to the globe ↑</a></div></footer>
+  </div>
+  <dialog class="photo-dialog" data-photo-dialog aria-label="Event photo viewer">
+    <div class="dialog-toolbar"><span data-photo-count></span><button type="button" data-photo-close aria-label="Close photo viewer">×</button></div>
+    <div class="dialog-image"><button type="button" data-photo-prev aria-label="Previous photo">←</button><img data-photo-image src={photos[0] ?? asset(project.image)} alt="" /><button type="button" data-photo-next aria-label="Next photo">→</button></div>
+    <p data-photo-title>{project.title}</p>
+  </dialog>
+  <script define:vars={{ photos, projectTitle: project.title }}>
+    const dialog = document.querySelector('[data-photo-dialog]');
+    const photoImage = document.querySelector('[data-photo-image]');
+    const photoCount = document.querySelector('[data-photo-count]');
+    let activePhoto = 0;
+    function showPhoto(index) {
+      activePhoto = (index + photos.length) % photos.length;
+      photoImage.src = photos[activePhoto];
+      photoImage.alt = projectTitle + ', photograph ' + (activePhoto + 1);
+      photoCount.textContent = String(activePhoto + 1).padStart(2, '0') + ' / ' + String(photos.length).padStart(2, '0');
+      if (!dialog.open) dialog.showModal();
+    }
+    document.querySelectorAll('[data-photo-index]').forEach((button) => button.addEventListener('click', () => showPhoto(Number(button.dataset.photoIndex))));
+    document.querySelector('[data-photo-close]')?.addEventListener('click', () => dialog.close());
+    document.querySelector('[data-photo-prev]')?.addEventListener('click', () => showPhoto(activePhoto - 1));
+    document.querySelector('[data-photo-next]')?.addEventListener('click', () => showPhoto(activePhoto + 1));
+    dialog.addEventListener('click', (event) => { if (event.target === dialog) dialog.close(); });
+    dialog.addEventListener('keydown', (event) => {
+      if (event.key === 'ArrowLeft') { event.preventDefault(); showPhoto(activePhoto - 1); }
+      if (event.key === 'ArrowRight') { event.preventDefault(); showPhoto(activePhoto + 1); }
+    });
+  </script>
   <style>
-    .archive-page {
-      min-height: 100svh;
-      background: var(--bg);
-      color: var(--text);
-      padding: 2rem;
+    .page { min-height: 100vh; background: #050505; color: #f8f8f5; }
+    .site-header { min-height: 106px; border-bottom: 1px solid #722322; display: flex; align-items: center; justify-content: space-between; gap: 2rem; padding: 1.4rem clamp(1.25rem, 3vw, 3.5rem); }
+    .wordmark { display: block; width: min(430px, 39vw); }
+    .wordmark img { width: 100%; height: auto; }
+    nav { display: flex; gap: 2rem; }
+    nav a { text-transform: uppercase; font-size: .69rem; font-weight: 800; letter-spacing: .13em; }
+    nav a:hover, footer a:hover { color: #69b96e; }
+    nav span { color: #ef4b43; margin-right: .4rem; }
+    h1, h2, h3, p { margin-top: 0; }
+    .hero { position: relative; display: flex; min-height: min(850px, calc(100svh - 106px)); background: #100e0c; overflow: hidden; }
+    .hero-photo, .hero-shade { position: absolute; inset: 0; width: 100%; height: 100%; }
+    .hero-photo { object-fit: cover; object-position: center 42%; animation: photo-arrive 1.1s cubic-bezier(.2,.7,.1,1) both; }
+    .hero-shade { background: linear-gradient(90deg, rgba(0,0,0,.84), rgba(0,0,0,.32) 72%), linear-gradient(0deg, rgba(0,0,0,.8), transparent 65%); }
+    .hero-content { position: relative; z-index: 1; flex: 1; display: flex; flex-direction: column; justify-content: space-between; padding: 1.5rem clamp(1.25rem, 5vw, 6rem); }
+    .hero-index, .hero-bottom { display: flex; justify-content: space-between; align-items: center; gap: 2rem; color: #fff; font-size: .67rem; font-weight: 900; letter-spacing: .14em; text-transform: uppercase; }
+    .hero-index span:first-child { color: #69b96e; }
+    .hero-main { margin-top: auto; max-width: 1100px; padding: 3rem 0 2rem; animation: copy-arrive .7s .18s both; }
+    .eyebrow { color: #ef6b62; font-size: .76rem; font-weight: 900; letter-spacing: .16em; text-transform: uppercase; margin-bottom: 1.1rem; }
+    h1 { font-size: clamp(3.2rem, 7vw, 8rem); line-height: .93; letter-spacing: -.067em; text-transform: uppercase; text-wrap: balance; margin-bottom: 1.4rem; }
+    .hero-description { max-width: 650px; font-size: clamp(1rem, 1.4vw, 1.3rem); line-height: 1.5; color: #e1e3df; }
+    .scroll-link { display: inline-flex; gap: 1rem; border-bottom: 1px solid #ef4b43; padding-bottom: .45rem; margin-top: .6rem; text-transform: uppercase; font-size: .69rem; font-weight: 900; letter-spacing: .12em; }
+    .scroll-link span, .hero-bottom button span { color: #ef4b43; }
+    .scroll-link:hover, .hero-bottom button:hover { color: #69b96e; }
+    .hero-bottom { border-top: 1px solid #ffffff5a; padding-top: 1rem; }
+    .hero-bottom button { border: 0; background: none; color: #fff; font: inherit; font-size: inherit; letter-spacing: inherit; text-transform: uppercase; cursor: pointer; }
+    .story, .gallery-section, .programme { padding: 6rem clamp(1.25rem, 5vw, 6rem); border-bottom: 1px solid #722322; }
+    .story-label { display: flex; justify-content: space-between; gap: 1rem; color: #ef4b43; font-size: .67rem; font-weight: 900; letter-spacing: .15em; text-transform: uppercase; margin-bottom: 2.5rem; }
+    .story-label span:last-child { color: #a1a59d; }
+    .story-content { display: grid; grid-template-columns: minmax(220px, .75fr) minmax(0, 1.25fr); gap: clamp(2rem, 5vw, 7rem); }
+    h2 { font-size: clamp(2.9rem, 5vw, 6rem); line-height: .94; letter-spacing: -.068em; text-transform: uppercase; margin: 0; }
+    h2 span { color: #69b96e; }
+    .story-prose { max-width: 760px; }
+    .story-prose p { color: #c9ccc5; font-size: clamp(1rem, 1.3vw, 1.22rem); line-height: 1.68; margin-bottom: 1.5rem; }
+    .story-prose .lead { color: #fff; font-size: clamp(1.15rem, 1.6vw, 1.55rem); line-height: 1.5; }
+    .gallery-header, .programme-heading { margin-bottom: 2.5rem; }
+    .gallery-header > span, .programme-heading > span, .next-story > span { color: #ef4b43; font-size: .67rem; font-weight: 900; letter-spacing: .15em; text-transform: uppercase; }
+    .gallery-header h2, .programme-heading h2 { margin: .85rem 0 1rem; }
+    .gallery-header p, .programme-heading p { color: #aeb3aa; font-size: .88rem; }
+    .gallery-grid { display: grid; grid-template-columns: repeat(3, minmax(0,1fr)); gap: .7rem; }
+    .gallery-tile { display: block; position: relative; min-width: 0; aspect-ratio: 1 / 1.06; border: 1px solid #5e2926; padding: 0; overflow: hidden; background: #111; color: #fff; cursor: pointer; }
+    .gallery-tile img { width: 100%; height: 100%; object-fit: cover; transition: transform .4s ease; }
+    .gallery-tile:hover img, .gallery-tile:focus-visible img { transform: scale(1.05); }
+    .gallery-tile:focus-visible { outline: 2px solid #69b96e; outline-offset: 3px; }
+    .gallery-number { position: absolute; bottom: 1rem; left: 1rem; background: #050505d9; padding: .5rem; font-size: .63rem; font-weight: 900; letter-spacing: .13em; }
+    .gallery-open { position: absolute; bottom: 1rem; right: 1rem; display: grid; place-items: center; width: 2.3rem; height: 2.3rem; background: #69b96e; color: #050505; font-size: 1.25rem; }
+    .programme-list { border-top: 1px solid #64302c; }
+    .programme-list article { display: grid; grid-template-columns: 5rem 1fr; gap: 1.5rem; padding: 1.6rem 0; border-bottom: 1px solid #3f302d; }
+    .programme-number { color: #ef4b43; font-size: 1.4rem; font-weight: 900; }
+    .programme-list small { color: #69b96e; text-transform: uppercase; font-size: .66rem; font-weight: 900; letter-spacing: .12em; }
+    .programme-list h3 { font-size: clamp(1.25rem, 2vw, 2rem); line-height: 1.1; text-transform: uppercase; margin: .3rem 0 .9rem; }
+    .programme-list ul { color: #bcc1b9; line-height: 1.55; margin: 0; padding-left: 1rem; }
+    .programme-list li { margin-bottom: .3rem; }
+    .next-story { padding: 4rem clamp(1.25rem, 5vw, 6rem) 5rem; }
+    .next-story a { display: flex; justify-content: space-between; align-items: end; gap: 1rem; margin-top: .8rem; }
+    .next-story strong { font-size: clamp(2.4rem, 5vw, 6rem); line-height: .95; letter-spacing: -.06em; text-transform: uppercase; }
+    .next-story a > span { color: #69b96e; font-size: 2.5rem; }
+    .next-story a:hover strong { color: #69b96e; }
+    footer { border-top: 1px solid #722322; padding: 1.5rem clamp(1.25rem, 5vw, 6rem); display: flex; justify-content: space-between; gap: 1rem; font-size: .63rem; font-weight: 800; letter-spacing: .12em; text-transform: uppercase; }
+    footer div { display: flex; gap: 2rem; }
+    .photo-dialog { position: fixed; inset: 0; width: 100vw; max-width: none; height: 100dvh; max-height: none; margin: 0; padding: 0; border: 0; background: #050505; color: #fff; }
+    .photo-dialog::backdrop { background: #000; }
+    .dialog-toolbar { display: flex; align-items: center; justify-content: space-between; height: 64px; padding: 0 1.5rem; border-bottom: 1px solid #722322; color: #69b96e; font-size: .72rem; font-weight: 900; letter-spacing: .15em; }
+    .dialog-toolbar button { border: 0; background: none; color: #fff; font-size: 2rem; cursor: pointer; }
+    .dialog-image { display: grid; grid-template-columns: 4rem minmax(0,1fr) 4rem; align-items: center; height: calc(100dvh - 120px); gap: 1rem; padding: 1rem; }
+    .dialog-image img { max-width: 100%; max-height: 100%; width: 100%; height: 100%; object-fit: contain; }
+    .dialog-image button { border: 1px solid #75403b; background: #0c0c0c; color: #fff; width: 3rem; height: 3rem; font: inherit; font-size: 1.2rem; cursor: pointer; }
+    .dialog-image button:hover, .dialog-image button:focus-visible { border-color: #69b96e; color: #69b96e; }
+    .photo-dialog > p { margin: 0; text-align: center; text-transform: uppercase; font-size: .7rem; font-weight: 900; letter-spacing: .12em; }
+    @keyframes photo-arrive { from { transform: scale(1.08); filter: brightness(.5); } to { transform: scale(1); filter: brightness(1); } }
+    @keyframes copy-arrive { from { opacity: 0; transform: translateY(24px); } to { opacity: 1; transform: translateY(0); } }
+    @media (max-width: 850px) {
+      .story-content { grid-template-columns: 1fr; }
+      .gallery-grid { grid-template-columns: repeat(2, minmax(0,1fr)); }
     }
-
-    .return {
-      display: inline-flex;
-      margin-bottom: 2rem;
-      color: var(--muted);
-      letter-spacing: 0.22em;
-      text-transform: uppercase;
-      font-size: 0.76rem;
+    @media (max-width: 600px) {
+      .site-header { min-height: 74px; padding: 1rem; }
+      .wordmark { width: 47vw; }
+      nav { gap: .6rem; }
+      nav a { font-size: .54rem; }
+      .hero { min-height: calc(100svh - 74px); }
+      .hero-content { padding: 1rem; }
+      .hero-index { font-size: .53rem; }
+      .hero-main { padding: 3rem 0 1.5rem; }
+      h1 { font-size: clamp(2.9rem, 11vw, 5rem); }
+      .hero-description { font-size: 1rem; }
+      .hero-bottom { font-size: .53rem; }
+      .hero-bottom button { max-width: 8rem; text-align: right; }
+      .story, .gallery-section, .programme { padding: 4rem 1rem; }
+      .gallery-grid { gap: .5rem; }
+      .gallery-tile { aspect-ratio: .8; }
+      .programme-list article { grid-template-columns: 2.5rem 1fr; gap: .7rem; }
+      .next-story { padding: 3.5rem 1rem; }
+      footer { flex-direction: column; padding: 1.5rem 1rem; }
+      .dialog-image { grid-template-columns: 2.2rem minmax(0,1fr) 2.2rem; gap: .25rem; padding: .5rem; }
+      .dialog-image button { width: 2rem; height: 2rem; }
     }
-
-    .hero {
-      min-height: calc(100svh - 6rem);
-      display: grid;
-      grid-template-columns: minmax(0, 1.1fr) minmax(320px, 0.9fr);
-      gap: 3rem;
-      align-items: center;
-    }
-
-    .eyebrow {
-      margin: 0 0 1rem;
-      color: var(--muted);
-      letter-spacing: 0.28em;
-      font-size: 0.75rem;
-    }
-
-    h1 {
-      margin: 0;
-      font-size: clamp(3rem, 7vw, 6.5rem);
-      line-height: 0.95;
-      letter-spacing: 0.04em;
-      text-transform: uppercase;
-      max-width: 10ch;
-    }
-
-    .meta {
-      margin: 1.1rem 0 0;
-      color: var(--muted);
-      letter-spacing: 0.2em;
-      text-transform: uppercase;
-      font-size: 0.82rem;
-    }
-
-    .description {
-      margin: 1.6rem 0 0;
-      max-width: 34rem;
-      color: rgba(244, 241, 236, 0.82);
-      font-size: 1.06rem;
-      line-height: 1.7;
-    }
-
-    .image-frame {
-      margin: 0;
-      border: 1px solid rgba(255, 53, 53, 0.35);
-      background: linear-gradient(180deg, rgba(255, 53, 53, 0.08), rgba(255, 53, 53, 0.02));
-      padding: 1rem;
-      box-shadow: 0 20px 60px var(--shadow);
-    }
-
-    .image-frame img,
-    .image-placeholder {
-      width: 100%;
-      aspect-ratio: 4 / 3;
-    }
-
-    .image-frame img {
-      object-fit: cover;
-      background: #111;
-    }
-
-    .image-placeholder {
-      display: flex;
-      flex-direction: column;
-      justify-content: flex-end;
-      padding: clamp(1.2rem, 4vw, 3rem);
-      border: 1px solid rgba(255, 53, 53, 0.65);
-      background:
-        linear-gradient(135deg, rgba(255, 53, 53, 0.12), transparent 42%),
-        repeating-linear-gradient(135deg, transparent 0 34px, rgba(255, 255, 255, 0.025) 35px 36px),
-        #0b0b0b;
-      text-transform: uppercase;
-    }
-
-    .image-placeholder span {
-      margin-bottom: auto;
-      color: #ff3535;
-      font-size: clamp(2rem, 6vw, 5rem);
-      font-weight: 800;
-    }
-
-    .image-placeholder strong {
-      font-size: clamp(1.4rem, 3vw, 2.8rem);
-      line-height: 1;
-      letter-spacing: 0.05em;
-    }
-
-    .image-placeholder small {
-      margin-top: 0.7rem;
-      color: var(--muted);
-      letter-spacing: 0.2em;
-    }
-
-    @media (max-width: 900px) {
-      .hero {
-        grid-template-columns: 1fr;
-      }
-
-      .image-frame {
-        order: -1;
-      }
-    }
-
-    @media (max-width: 700px) {
-      .archive-page {
-        padding: 1rem;
-      }
-
-      h1 {
-        font-size: clamp(2.7rem, 16vw, 4.2rem);
-      }
-    }
+    @media (prefers-reduced-motion: reduce) { .hero-photo, .hero-main { animation: none; } .gallery-tile img { transition: none; } }
   </style>
 </BaseLayout>

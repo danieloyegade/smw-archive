@@ -1,597 +1,469 @@
 import * as THREE from 'three';
 import type { ArchiveProject } from '../data/projects';
 
-type InitArchiveGlobeOptions = {
-  canvas: HTMLCanvasElement;
-  titleEl: HTMLElement;
-  metaEl: HTMLElement;
-  projects: ArchiveProject[];
-  zoomInButton?: HTMLButtonElement;
-  zoomOutButton?: HTMLButtonElement;
-  resetButton?: HTMLButtonElement;
-  searchInput?: HTMLInputElement;
-  searchResults?: HTMLElement;
-  resultCount?: HTMLElement;
-  resultList?: HTMLElement;
-};
+const canvas = document.querySelector<HTMLCanvasElement>('#globe-canvas');
+const dataEl = document.querySelector<HTMLScriptElement>('#archive-project-data');
+const titleEl = document.querySelector<HTMLElement>('[data-caption-title]');
+const kickerEl = document.querySelector<HTMLElement>('[data-caption-kicker]');
+const metaEl = document.querySelector<HTMLElement>('[data-caption-meta]');
+const searchInput = document.querySelector<HTMLInputElement>('[data-search-input]');
+const immersiveSearch = document.querySelector<HTMLInputElement>('[data-immersive-search]');
+const resultCount = document.querySelector<HTMLElement>('[data-result-count]');
+const emptyResult = document.querySelector<HTMLElement>('[data-empty-result]');
+const gridEmpty = document.querySelector<HTMLElement>('[data-grid-empty]');
+const yearButtons = [...document.querySelectorAll<HTMLButtonElement>('[data-year-button]')];
+const immersiveYearButtons = [...document.querySelectorAll<HTMLButtonElement>('[data-immersive-year]')];
+const resultLinks = [...document.querySelectorAll<HTMLAnchorElement>('[data-result-link]')];
+const projectCards = [...document.querySelectorAll<HTMLAnchorElement>('[data-project-card]')];
+const immersiveStories = [...document.querySelectorAll<HTMLButtonElement>('[data-immersive-story]')];
+const immersiveEmpty = document.querySelector<HTMLElement>('[data-immersive-empty]');
+const globeSide = document.querySelector<HTMLElement>('.globe-side');
+const previewCard = document.querySelector<HTMLElement>('[data-story-preview]');
+const previewImage = document.querySelector<HTMLImageElement>('[data-preview-image]');
+const previewKicker = document.querySelector<HTMLElement>('[data-preview-kicker]');
+const previewTitle = document.querySelector<HTMLElement>('[data-preview-title]');
+const previewDescription = document.querySelector<HTMLElement>('[data-preview-description]');
+const previewMeta = document.querySelector<HTMLElement>('[data-preview-meta]');
+const previewLink = document.querySelector<HTMLAnchorElement>('[data-preview-link]');
+const enterImmersiveButton = document.querySelector<HTMLButtonElement>('[data-enter-immersive]');
+const closeImmersiveButton = document.querySelector<HTMLButtonElement>('[data-close-immersive]');
+const toggleRailButton = document.querySelector<HTMLButtonElement>('[data-toggle-rail]');
+const storyTransition = document.querySelector<HTMLElement>('[data-story-transition]');
+const transitionImage = document.querySelector<HTMLImageElement>('[data-transition-image]');
+const transitionTitle = document.querySelector<HTMLElement>('[data-transition-title]');
 
-export function initArchiveGlobe({
-  canvas,
-  titleEl,
-  metaEl,
-  projects,
-  zoomInButton,
-  zoomOutButton,
-  resetButton,
-  searchInput,
-  searchResults,
-  resultCount,
-  resultList,
-}: InitArchiveGlobeOptions) {
+if (canvas && dataEl && titleEl && kickerEl && metaEl) {
+  const projects = JSON.parse(dataEl.textContent || '[]') as ArchiveProject[];
   const basePath = (document.body.dataset.base ?? '/').replace(/\/?$/, '/');
-  const renderer = new THREE.WebGLRenderer({
-    canvas,
-    antialias: true,
-    alpha: true,
-    powerPreference: 'high-performance',
-  });
-  renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
-  renderer.setClearColor(0x050505, 1);
+  let selectedYear = 'all';
+  let query = '';
+  let updateGlobeFilter: ((slugs: Set<string>) => void) | undefined;
+  let navigating = false;
 
-  const scene = new THREE.Scene();
-  const camera = new THREE.PerspectiveCamera(35, 1, 0.1, 100);
-  camera.position.set(0, 0, 9.4);
-
-  const globe = new THREE.Group();
-  scene.add(globe);
-
-  const ambient = new THREE.AmbientLight(0xffffff, 1.1);
-  const key = new THREE.DirectionalLight(0xffffff, 1.4);
-  key.position.set(4, 3, 6);
-  const rim = new THREE.DirectionalLight(0xff3b3b, 1.1);
-  rim.position.set(-4, -2, 5);
-  scene.add(ambient, key, rim);
-
-  const radius = 3.4;
-  const panelWidth = 1.12;
-  const panelHeight = 0.78;
-  const panelGeometry = new THREE.PlaneGeometry(panelWidth, panelHeight, 1, 1);
-  const wireGeometry = new THREE.SphereGeometry(radius + 0.04, 28, 20);
-  const wireframe = new THREE.LineSegments(
-    new THREE.WireframeGeometry(wireGeometry),
-    new THREE.LineBasicMaterial({
-      color: 0xff2b2b,
-      transparent: true,
-      opacity: 0.24,
-    }),
-  );
-  globe.add(wireframe);
-
-  function createFallbackTexture(project: ArchiveProject) {
-    const width = 768;
-    const height = 512;
-    const fallback = document.createElement('canvas');
-    fallback.width = width;
-    fallback.height = height;
-    const ctx = fallback.getContext('2d');
-
-    if (!ctx) {
-      throw new Error('Could not create fallback texture canvas.');
+  function navigateToStory(project: ArchiveProject) {
+    if (navigating) return;
+    navigating = true;
+    const destination = basePath + 'archive/' + project.slug + '/';
+    if (!storyTransition || !transitionImage || !transitionTitle || window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+      window.location.assign(destination);
+      return;
     }
-
-    const hue = (project.id * 37) % 360;
-    const gradient = ctx.createLinearGradient(0, 0, width, height);
-    gradient.addColorStop(0, `hsl(${hue} 45% 18%)`);
-    gradient.addColorStop(0.34, '#121212');
-    gradient.addColorStop(1, '#0b0b0b');
-    ctx.fillStyle = gradient;
-    ctx.fillRect(0, 0, width, height);
-
-    ctx.fillStyle = 'rgba(255,255,255,0.03)';
-    ctx.fillRect(40, 40, width - 80, height - 80);
-
-    ctx.strokeStyle = 'rgba(255, 53, 53, 0.82)';
-    ctx.lineWidth = 8;
-    ctx.strokeRect(20, 20, width - 40, height - 40);
-
-    ctx.strokeStyle = 'rgba(255,255,255,0.14)';
-    ctx.lineWidth = 2;
-    ctx.strokeRect(56, 56, width - 112, height - 112);
-
-    ctx.fillStyle = 'rgba(255, 241, 236, 0.96)';
-    ctx.font = '800 92px Inter, sans-serif';
-    ctx.fillText(String(project.id).padStart(2, '0'), 42, 120);
-
-    ctx.font = '700 36px Inter, sans-serif';
-    ctx.fillText(project.title.toUpperCase(), 42, height - 72);
-    ctx.font = '500 18px Inter, sans-serif';
-    ctx.fillStyle = 'rgba(255, 241, 236, 0.75)';
-    ctx.fillText(project.category.toUpperCase(), 42, height - 38);
-
-    ctx.fillStyle = 'rgba(255, 53, 53, 0.14)';
-    ctx.fillRect(0, height - 96, width, 4);
-
-    const texture = new THREE.CanvasTexture(fallback);
-    texture.colorSpace = THREE.SRGBColorSpace;
-    texture.needsUpdate = true;
-    return texture;
+    transitionImage.src = project.image;
+    transitionTitle.textContent = project.title;
+    storyTransition.hidden = false;
+    requestAnimationFrame(() => storyTransition.classList.add('is-active'));
+    window.setTimeout(() => window.location.assign(destination), 640);
   }
 
-  function upgradeTexture(project: ArchiveProject, material: THREE.MeshBasicMaterial) {
-    if (!project.imageAvailable) return;
-
-    const loader = new THREE.TextureLoader();
-    loader.crossOrigin = 'anonymous';
-    loader.load(
-      project.image,
-      (loadedTexture) => {
-        loadedTexture.colorSpace = THREE.SRGBColorSpace;
-        loadedTexture.needsUpdate = true;
-        material.map?.dispose();
-        material.map = loadedTexture;
-        material.needsUpdate = true;
-      },
-      undefined,
-      () => {
-        const fallback = createFallbackTexture(project);
-        material.map?.dispose();
-        material.map = fallback;
-        material.needsUpdate = true;
-      },
-    );
-  }
-
-  const meshMap = new Map<string, THREE.Mesh>();
-  const panels: THREE.Mesh[] = [];
-
-  const rows = 5;
-  const cols = 4;
-  projects.forEach((project, index) => {
-    const row = Math.floor(index / cols);
-    const col = index % cols;
-    const latitude = THREE.MathUtils.lerp(-0.95, 0.95, row / (rows - 1));
-    const longitude = (col / cols) * Math.PI * 2 + (row % 2 === 0 ? 0 : Math.PI / cols);
-    const ringRadius = Math.cos(latitude);
-    const position = new THREE.Vector3(
-      Math.cos(longitude) * ringRadius,
-      Math.sin(latitude),
-      Math.sin(longitude) * ringRadius,
-    ).multiplyScalar(radius);
-
-    const texture = createFallbackTexture(project);
-    texture.wrapS = THREE.ClampToEdgeWrapping;
-    texture.wrapT = THREE.ClampToEdgeWrapping;
-
-    const material = new THREE.MeshBasicMaterial({
-      map: texture,
-      transparent: false,
-      side: THREE.DoubleSide,
+  function interceptStoryLink(link: HTMLAnchorElement, slug: string) {
+    link.addEventListener('click', (event) => {
+      if (event.button !== 0 || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return;
+      const project = projects.find((item) => item.slug === slug);
+      if (!project) return;
+      event.preventDefault();
+      navigateToStory(project);
     });
-
-    const mesh = new THREE.Mesh(panelGeometry, material);
-    mesh.position.copy(position).multiplyScalar(1.08);
-    mesh.lookAt(camera.position);
-    mesh.userData = {
-      slug: project.slug,
-      project,
-      baseScale: 1,
-    };
-
-    const edge = new THREE.LineSegments(
-      new THREE.EdgesGeometry(panelGeometry),
-      new THREE.LineBasicMaterial({
-        color: 0xff3b3b,
-        transparent: true,
-        opacity: 0.85,
-      }),
-    );
-    mesh.add(edge);
-
-    meshMap.set(project.slug, mesh);
-    panels.push(mesh);
-    globe.add(mesh);
-
-    upgradeTexture(project, material);
+  }
+  for (const link of resultLinks) interceptStoryLink(link, link.dataset.resultLink ?? '');
+  for (const card of projectCards) interceptStoryLink(card, card.dataset.slug ?? '');
+  previewLink?.addEventListener('click', (event) => {
+    if (event.button !== 0 || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return;
+    const project = projects.find((item) => item.slug === previewLink.dataset.slug);
+    if (!project) return;
+    event.preventDefault();
+    navigateToStory(project);
   });
 
-  const raycaster = new THREE.Raycaster();
-  const pointer = new THREE.Vector2(99, 99);
-  const activePointers = new Map<number, { x: number; y: number }>();
-  const container = canvas.parentElement ?? canvas;
-  const state = {
-    dragging: false,
-    hoverSlug: '',
-    activeSlug: '',
-    pointerDown: { x: 0, y: 0, time: 0 },
-    lastPointer: { x: 0, y: 0 },
-    velocityX: 0,
-    velocityY: 0,
-    rotationX: -0.15,
-    rotationY: 0.45,
-    reducedMotion: window.matchMedia('(prefers-reduced-motion: reduce)').matches,
-    hoverCoolDown: 0,
-    zoom: 1,
-    fitDistance: 9.4,
-    pinchDistance: 0,
+  const matches = (project: ArchiveProject) => {
+    if (selectedYear !== 'all' && project.year !== selectedYear) return false;
+    if (!query) return true;
+    const haystack = [
+      project.title, project.category, project.year, project.date, project.venue,
+      project.description, ...project.places, ...(project.keywords ?? []),
+    ].join(' ').toLocaleLowerCase();
+    return query.split(/\s+/).every((term) => haystack.includes(term));
   };
 
-  const activeCaption = (project: ArchiveProject | null) => {
-    titleEl.textContent = project ? project.title : 'DRAG TO EXPLORE · SELECT TO OPEN';
-    metaEl.textContent = project
-      ? `${project.category} • ${project.year}${project.places.length ? ` • ${project.places[0]}` : ''}`
-      : '';
-  };
-
-  activeCaption(null);
-
-  function setCursor(value: string) {
-    container.style.cursor = value;
+  function updateFilters() {
+    const visible = projects.filter(matches);
+    const slugs = new Set(visible.map((project) => project.slug));
+    for (const link of resultLinks) link.hidden = !slugs.has(link.dataset.resultLink ?? '');
+    for (const card of projectCards) card.hidden = !slugs.has(card.dataset.slug ?? '');
+    for (const story of immersiveStories) story.hidden = !slugs.has(story.dataset.immersiveStory ?? '');
+    if (resultCount) resultCount.textContent = visible.length + (visible.length === 1 ? ' story' : ' stories');
+    if (emptyResult) emptyResult.hidden = visible.length > 0;
+    if (gridEmpty) gridEmpty.hidden = visible.length > 0;
+    if (immersiveEmpty) immersiveEmpty.hidden = visible.length > 0;
+    updateGlobeFilter?.(slugs);
   }
 
-  function resize() {
-    const rect = container.getBoundingClientRect();
-    const width = Math.max(1, rect.width);
-    const height = Math.max(1, rect.height);
-    camera.aspect = width / height;
-    const verticalFov = THREE.MathUtils.degToRad(camera.fov);
-    const horizontalFov = 2 * Math.atan(Math.tan(verticalFov / 2) * camera.aspect);
-    const limitingFov = Math.min(verticalFov, horizontalFov);
-    const visualRadius = radius * 1.22;
-    state.fitDistance = visualRadius / (Math.sin(limitingFov / 2) * 0.78);
-    camera.position.z = state.fitDistance / state.zoom;
-    camera.updateProjectionMatrix();
-    renderer.setSize(width, height, false);
+  function setQuery(value: string) {
+    query = value.trim().toLocaleLowerCase();
+    if (searchInput && searchInput.value !== value) searchInput.value = value;
+    if (immersiveSearch && immersiveSearch.value !== value) immersiveSearch.value = value;
+    updateFilters();
   }
 
-  function setZoom(nextZoom: number) {
-    state.zoom = THREE.MathUtils.clamp(nextZoom, 0.82, 1.55);
-    camera.position.z = state.fitDistance / state.zoom;
-  }
-
-  function resetView() {
-    state.rotationX = -0.15;
-    state.rotationY = 0.45;
-    state.velocityX = 0;
-    state.velocityY = 0;
-    setZoom(1);
-  }
-
-  function updateCaptionBySlug(slug: string) {
-    if (!slug) {
-      if (state.activeSlug !== '') {
-        state.activeSlug = '';
-        activeCaption(null);
-      }
-      return;
+  function setYear(year: string) {
+    selectedYear = year;
+    for (const candidate of yearButtons) {
+      const active = candidate.dataset.yearButton === year;
+      candidate.classList.toggle('is-active', active);
+      candidate.setAttribute('aria-pressed', String(active));
     }
-
-    if (state.activeSlug === slug) return;
-    const project = projects.find((item) => item.slug === slug);
-    if (project) {
-      state.activeSlug = slug;
-      activeCaption(project);
+    for (const candidate of immersiveYearButtons) {
+      const active = candidate.dataset.immersiveYear === year;
+      candidate.classList.toggle('is-active', active);
+      candidate.setAttribute('aria-pressed', String(active));
     }
+    updateFilters();
   }
 
-  function applyHoverEffects(slug: string) {
-    panels.forEach((panel) => {
-      const isHover = panel.userData.slug === slug;
-      const isDimmed = slug && !isHover;
-      panel.scale.lerp(new THREE.Vector3(isHover ? 1.1 : 1, isHover ? 1.1 : 1, 1), 0.15);
-      const material = panel.material;
-      if (material instanceof THREE.MeshBasicMaterial) {
-        material.opacity = 1;
-        material.transparent = false;
-        material.color.setScalar(isDimmed ? 0.96 : 1);
-      }
-      const edges = panel.children[0];
-      if (edges instanceof THREE.LineSegments && edges.material instanceof THREE.LineBasicMaterial) {
-        edges.material.opacity = isHover ? 1 : 0.35;
-      }
-    });
-  }
-
-  function hitTest(clientX: number, clientY: number) {
-    const rect = canvas.getBoundingClientRect();
-    pointer.x = ((clientX - rect.left) / rect.width) * 2 - 1;
-    pointer.y = -(((clientY - rect.top) / rect.height) * 2 - 1);
-    raycaster.setFromCamera(pointer, camera);
-    const hits = raycaster.intersectObjects(panels, false);
-    return hits[0]?.object ?? null;
-  }
-
-  function onPointerMove(event: PointerEvent) {
-    if (activePointers.has(event.pointerId)) {
-      activePointers.set(event.pointerId, { x: event.clientX, y: event.clientY });
-    }
-    if (activePointers.size === 2) {
-      const [first, second] = Array.from(activePointers.values());
-      const distance = Math.hypot(second.x - first.x, second.y - first.y);
-      if (state.pinchDistance) setZoom(state.zoom * (distance / state.pinchDistance));
-      state.pinchDistance = distance;
-      state.dragging = false;
-      return;
-    }
-
-    if (state.dragging) {
-      const dx = event.clientX - state.lastPointer.x;
-      const dy = event.clientY - state.lastPointer.y;
-      state.rotationY += dx * 0.006;
-      state.rotationX += dy * 0.006;
-      state.rotationX = THREE.MathUtils.clamp(state.rotationX, -0.95, 0.95);
-      state.velocityY = dx * 0.0004;
-      state.velocityX = dy * 0.0004;
-      state.lastPointer.x = event.clientX;
-      state.lastPointer.y = event.clientY;
-      canvas.style.touchAction = 'none';
-      document.body.style.userSelect = 'none';
-      document.body.style.overflow = 'hidden';
-      setCursor('grabbing');
-      return;
-    }
-
-    const hit = hitTest(event.clientX, event.clientY);
-    const slug = hit?.userData?.slug ?? '';
-    state.hoverSlug = slug;
-    state.hoverCoolDown = slug ? 0.3 : 0;
-    updateCaptionBySlug(slug);
-    applyHoverEffects(slug);
-    setCursor(slug ? 'pointer' : 'grab');
-  }
-
-  function stopDrag() {
-    state.dragging = false;
-    document.body.style.userSelect = '';
-    document.body.style.overflow = '';
-    canvas.style.touchAction = 'none';
-    setCursor(state.hoverSlug ? 'pointer' : 'grab');
-  }
-
-  function onPointerDown(event: PointerEvent) {
-    activePointers.set(event.pointerId, { x: event.clientX, y: event.clientY });
-    if (activePointers.size === 2) {
-      const [first, second] = Array.from(activePointers.values());
-      state.pinchDistance = Math.hypot(second.x - first.x, second.y - first.y);
-      state.dragging = false;
-      canvas.setPointerCapture(event.pointerId);
-      event.preventDefault();
-      return;
-    }
-    const hit = hitTest(event.clientX, event.clientY);
-    state.dragging = true;
-    state.pointerDown = { x: event.clientX, y: event.clientY, time: performance.now() };
-    state.lastPointer = { x: event.clientX, y: event.clientY };
-    state.velocityX = 0;
-    state.velocityY = 0;
-    state.activeSlug = hit?.userData?.slug ?? '';
-    setCursor('grabbing');
-    canvas.setPointerCapture(event.pointerId);
-    event.preventDefault();
-  }
-
-  function onWheel(event: WheelEvent) {
-    event.preventDefault();
-    setZoom(state.zoom * Math.exp(-event.deltaY * 0.001));
-  }
-
-  function onKeyDown(event: KeyboardEvent) {
-    const target = event.target;
-    const isTyping = target instanceof HTMLInputElement || target instanceof HTMLTextAreaElement;
-
-    if (event.key === '/' && !isTyping) {
-      event.preventDefault();
-      searchInput?.focus();
-      return;
-    }
-    if (isTyping) return;
-
-    const rotationStep = event.shiftKey ? 0.35 : 0.16;
-    if (event.key === 'ArrowLeft') state.rotationY -= rotationStep;
-    else if (event.key === 'ArrowRight') state.rotationY += rotationStep;
-    else if (event.key === 'ArrowUp') state.rotationX = Math.max(-1.05, state.rotationX - rotationStep);
-    else if (event.key === 'ArrowDown') state.rotationX = Math.min(1.05, state.rotationX + rotationStep);
-    else if (event.key === '+' || event.key === '=') setZoom(state.zoom * 1.12);
-    else if (event.key === '-' || event.key === '_') setZoom(state.zoom / 1.12);
-    else if (event.key === '0') resetView();
-    else return;
-    event.preventDefault();
-  }
-
-  function escapeHtml(value: string) {
-    return value.replace(/[&<>'"]/g, (character) => ({
-      '&': '&amp;',
-      '<': '&lt;',
-      '>': '&gt;',
-      "'": '&#39;',
-      '"': '&quot;',
-    })[character] ?? character);
-  }
-
-  function searchArchive() {
-    if (!searchInput || !searchResults || !resultCount || !resultList) return;
-    const query = searchInput.value.trim().toLocaleLowerCase();
-    searchResults.hidden = query.length === 0;
-    if (!query) {
-      resultList.replaceChildren();
-      resultCount.textContent = '';
-      return;
-    }
-
-    const terms = query.split(/\s+/).filter(Boolean);
-    const matches = projects.filter((project) => {
-      const haystack = [
-        project.title,
-        project.category,
-        project.year,
-        project.description,
-        ...project.places,
-        ...(project.keywords ?? []),
-      ].join(' ').toLocaleLowerCase();
-      return terms.every((term) => haystack.includes(term));
-    });
-
-    resultCount.textContent = `${matches.length} ${matches.length === 1 ? 'result' : 'results'}`;
-    if (matches.length === 0) {
-      resultList.innerHTML = '<p class="empty-result">No matching archive entries yet.</p>';
-      return;
-    }
-
-    resultList.innerHTML = matches.map((project) => `
-      <a href="${basePath}archive/${encodeURIComponent(project.slug)}/">
-        <span class="result-number">${String(project.id).padStart(2, '0')}</span>
-        <span>
-          <strong>${escapeHtml(project.title)}</strong>
-          <small>${escapeHtml(project.category)} · ${escapeHtml(project.year)}${project.places.length ? ` · ${escapeHtml(project.places.join(', '))}` : ''}</small>
-        </span>
-      </a>
-    `).join('');
-  }
-
-  function onPointerUp(event: PointerEvent) {
-    const wasDragging = state.dragging;
-    const movedX = Math.abs(event.clientX - state.pointerDown.x);
-    const movedY = Math.abs(event.clientY - state.pointerDown.y);
-    const moved = Math.max(movedX, movedY);
-    const wasPinching = state.pinchDistance > 0;
-    activePointers.delete(event.pointerId);
-    if (activePointers.size < 2) state.pinchDistance = 0;
-    stopDrag();
-
-    if (!wasDragging || wasPinching) return;
-    if (moved < 8) {
-      const hit = hitTest(event.clientX, event.clientY);
-      const slug = hit?.userData?.slug ?? '';
-      if (slug) {
-        window.location.href = `${basePath}archive/${slug}/`;
-      }
-    }
-  }
-
-  function onPointerCancel(event: PointerEvent) {
-    activePointers.delete(event.pointerId);
-    if (activePointers.size < 2) state.pinchDistance = 0;
-    stopDrag();
-  }
-
-  function onPointerLeave() {
-    state.hoverSlug = '';
-    state.activeSlug = '';
-    applyHoverEffects('');
-    if (!state.dragging) {
-      activeCaption(null);
-      setCursor('grab');
-    }
-  }
-
-  window.addEventListener('resize', resize);
-  canvas.addEventListener('pointermove', onPointerMove);
-  canvas.addEventListener('pointerdown', onPointerDown);
-  canvas.addEventListener('pointerup', onPointerUp);
-  canvas.addEventListener('pointercancel', onPointerCancel);
-  canvas.addEventListener('pointerleave', onPointerLeave);
-  canvas.addEventListener('wheel', onWheel, { passive: false });
-  window.addEventListener('keydown', onKeyDown);
-  zoomInButton?.addEventListener('click', () => setZoom(state.zoom * 1.15));
-  zoomOutButton?.addEventListener('click', () => setZoom(state.zoom / 1.15));
-  resetButton?.addEventListener('click', resetView);
-  searchInput?.addEventListener('input', searchArchive);
+  searchInput?.addEventListener('input', () => setQuery(searchInput.value));
+  immersiveSearch?.addEventListener('input', () => setQuery(immersiveSearch.value));
   searchInput?.addEventListener('keydown', (event) => {
     if (event.key === 'Escape') {
-      searchInput.value = '';
-      searchArchive();
+      setQuery('');
       searchInput.blur();
     }
   });
-
-  resize();
-  setCursor('grab');
-
-  const clock = new THREE.Clock();
-  (window as Window & { __archiveGlobe?: unknown }).__archiveGlobe = {
-    panelCount: panels.length,
-    samplePanel: panels[0] ? panels[0].position.clone().toArray() : null,
-    get rotationX() { return state.rotationX; },
-    get rotationY() { return state.rotationY; },
-    get zoom() { return state.zoom; },
-    get cameraZ() { return camera.position.z; },
-  };
-
-  function render() {
-    const dt = Math.min(clock.getDelta(), 0.05);
-    const hovering = Boolean(state.hoverSlug);
-    const canIdle = !state.dragging && !hovering && state.hoverCoolDown <= 0;
-
-    if (state.hoverCoolDown > 0) {
-      state.hoverCoolDown = Math.max(0, state.hoverCoolDown - dt);
+  window.addEventListener('keydown', (event) => {
+    if (event.key === '/' && !(event.target instanceof HTMLInputElement)) {
+      event.preventDefault();
+      (globeSide?.classList.contains('is-immersive') ? immersiveSearch : searchInput)?.focus();
     }
-
-    if (state.dragging) {
-      state.rotationY += state.velocityY;
-      state.rotationX += state.velocityX;
-    } else if (!state.reducedMotion && canIdle) {
-      state.rotationY += 0.08 * dt;
-    }
-
-    if (!state.reducedMotion && !state.dragging) {
-      state.velocityY *= 0.94;
-      state.velocityX *= 0.94;
-      state.rotationY += state.velocityY;
-      state.rotationX += state.velocityX;
-    } else {
-      state.velocityY = 0;
-      state.velocityX = 0;
-    }
-
-    state.rotationX = THREE.MathUtils.clamp(state.rotationX, -1.05, 1.05);
-    globe.rotation.x = state.rotationX;
-    globe.rotation.y = state.rotationY;
-
-    panels.forEach((panel) => {
-      const material = panel.material;
-      const isHover = panel.userData.slug === state.hoverSlug;
-      if (material instanceof THREE.MeshBasicMaterial) {
-        const target = isHover ? 1 : state.hoverSlug ? 0.9 : 0.98;
-        material.color.lerp(new THREE.Color(target, target, target), 0.08);
-        material.opacity = 1;
-      }
-    });
-
-    renderer.render(scene, camera);
-    requestAnimationFrame(render);
+  });
+  for (const button of yearButtons) {
+    button.addEventListener('click', () => setYear(button.dataset.yearButton ?? 'all'));
+  }
+  for (const button of immersiveYearButtons) {
+    button.addEventListener('click', () => setYear(button.dataset.immersiveYear ?? 'all'));
   }
 
-  render();
-}
+  try {
+    const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: true, powerPreference: 'high-performance' });
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 1.7));
+    renderer.setClearColor(0x050505, 0);
+    const scene = new THREE.Scene();
+    const camera = new THREE.PerspectiveCamera(39, 1, 0.1, 100);
+    const globe = new THREE.Group();
+    scene.add(globe);
 
-const canvas = document.querySelector('#globe-canvas');
-const titleEl = document.querySelector('[data-caption-title]');
-const metaEl = document.querySelector('[data-caption-meta]');
-const dataEl = document.querySelector('#archive-project-data');
-const zoomInButton = document.querySelector('[data-zoom-in]');
-const zoomOutButton = document.querySelector('[data-zoom-out]');
-const resetButton = document.querySelector('[data-reset-view]');
-const searchInput = document.querySelector('[data-search-input]');
-const searchResults = document.querySelector('[data-search-results]');
-const resultCount = document.querySelector('[data-result-count]');
-const resultList = document.querySelector('[data-result-list]');
+    const radius = 2.9;
+    const wireframe = new THREE.LineSegments(
+      new THREE.WireframeGeometry(new THREE.SphereGeometry(radius, 32, 20)),
+      new THREE.LineBasicMaterial({ color: 0xbe3833, transparent: true, opacity: 0.3 }),
+    );
+    globe.add(wireframe);
+    const innerGlow = new THREE.Mesh(
+      new THREE.SphereGeometry(radius * 0.98, 32, 24),
+      new THREE.MeshBasicMaterial({ color: 0x230b0a, transparent: true, opacity: 0.29, side: THREE.BackSide }),
+    );
+    globe.add(innerGlow);
 
-if (
-  canvas instanceof HTMLCanvasElement &&
-  titleEl instanceof HTMLElement &&
-  metaEl instanceof HTMLElement &&
-  dataEl instanceof HTMLScriptElement
-) {
-  initArchiveGlobe({
-    canvas,
-    titleEl,
-    metaEl,
-    projects: JSON.parse(dataEl.textContent || '[]'),
-    zoomInButton: zoomInButton instanceof HTMLButtonElement ? zoomInButton : undefined,
-    zoomOutButton: zoomOutButton instanceof HTMLButtonElement ? zoomOutButton : undefined,
-    resetButton: resetButton instanceof HTMLButtonElement ? resetButton : undefined,
-    searchInput: searchInput instanceof HTMLInputElement ? searchInput : undefined,
-    searchResults: searchResults instanceof HTMLElement ? searchResults : undefined,
-    resultCount: resultCount instanceof HTMLElement ? resultCount : undefined,
-    resultList: resultList instanceof HTMLElement ? resultList : undefined,
-  });
+    const geometry = new THREE.PlaneGeometry(1.46, 1.02);
+    const panels: THREE.Mesh<THREE.PlaneGeometry, THREE.MeshBasicMaterial>[] = [];
+    const meshBySlug = new Map<string, THREE.Mesh<THREE.PlaneGeometry, THREE.MeshBasicMaterial>>();
+    const loader = new THREE.TextureLoader();
+    const rows = [-0.63, 0.63];
+    projects.forEach((project, index) => {
+      const row = Math.floor(index / 4);
+      const col = index % 4;
+      const latitude = rows[row] ?? 0;
+      const longitude = (col / 4) * Math.PI * 2 + (row ? Math.PI / 4 : 0) + Math.PI / 4;
+      const horizontal = Math.sqrt(1 - (latitude / radius) ** 2);
+      const position = new THREE.Vector3(
+        Math.sin(longitude) * horizontal * radius,
+        latitude,
+        Math.cos(longitude) * horizontal * radius,
+      ).multiplyScalar(1.09);
+      const material = new THREE.MeshBasicMaterial({ color: 0xffffff, side: THREE.DoubleSide });
+      const mesh = new THREE.Mesh(geometry, material);
+      mesh.position.copy(position);
+      mesh.lookAt(position.clone().multiplyScalar(2));
+      mesh.userData.slug = project.slug;
+      mesh.userData.project = project;
+      const border = new THREE.LineSegments(
+        new THREE.EdgesGeometry(geometry),
+        new THREE.LineBasicMaterial({ color: 0xef4b43, transparent: true, opacity: 0.9 }),
+      );
+      mesh.add(border);
+      globe.add(mesh);
+      panels.push(mesh);
+      meshBySlug.set(project.slug, mesh);
+      loader.load(project.image, (texture) => {
+        texture.colorSpace = THREE.SRGBColorSpace;
+        texture.anisotropy = Math.min(renderer.capabilities.getMaxAnisotropy(), 4);
+        material.map = texture;
+        material.needsUpdate = true;
+      });
+    });
+
+    const state = {
+      rotationX: -0.12, rotationY: 0.1, velocityX: 0, velocityY: 0,
+      zoom: 1, fitDistance: 10, dragging: false, hoverSlug: '',
+      selectedSlug: '', focusRotationY: null as number | null,
+      pointerX: 0, pointerY: 0, downX: 0, downY: 0,
+      reducedMotion: window.matchMedia('(prefers-reduced-motion: reduce)').matches,
+    };
+    const pointer = new THREE.Vector2();
+    const raycaster = new THREE.Raycaster();
+
+    function resize() {
+      const rect = canvas!.getBoundingClientRect();
+      const width = Math.max(rect.width, 1);
+      const height = Math.max(rect.height, 1);
+      camera.aspect = width / height;
+      const verticalFov = THREE.MathUtils.degToRad(camera.fov);
+      const horizontalFov = 2 * Math.atan(Math.tan(verticalFov / 2) * camera.aspect);
+      const limitingFov = Math.min(verticalFov, horizontalFov);
+      state.fitDistance = radius * 1.22 / (Math.sin(limitingFov / 2) * 0.88);
+      camera.position.z = state.fitDistance / state.zoom;
+      camera.updateProjectionMatrix();
+      renderer.setSize(width, height, false);
+    }
+
+    function setZoom(next: number) {
+      state.zoom = THREE.MathUtils.clamp(next, 0.75, 1.8);
+      camera.position.z = state.fitDistance / state.zoom;
+    }
+
+    function resetView() {
+      state.rotationX = -0.12;
+      state.rotationY = 0.1;
+      state.velocityX = 0;
+      state.velocityY = 0;
+      setZoom(1);
+    }
+
+    function hitTest(x: number, y: number) {
+      const rect = canvas!.getBoundingClientRect();
+      pointer.set(((x - rect.left) / rect.width) * 2 - 1, -(((y - rect.top) / rect.height) * 2 - 1));
+      raycaster.setFromCamera(pointer, camera);
+      return raycaster.intersectObjects(panels.filter((panel) => panel.visible), false)[0]?.object as THREE.Mesh | undefined;
+    }
+
+    function setCaption(project: ArchiveProject | null) {
+      kickerEl!.textContent = project ? project.category + ' / ' + project.year : 'EXPLORE THE ARCHIVE';
+      titleEl!.textContent = project ? project.title : 'Every image holds a story.';
+      metaEl!.textContent = project ? project.venue + ' · Select to open' : 'Drag the globe or choose an event from the list.';
+    }
+
+    function hidePreview() {
+      if (previewCard) previewCard.hidden = true;
+      globeSide?.classList.remove('has-preview');
+      state.selectedSlug = '';
+      setCaption(null);
+    }
+
+    function showPreview(project: ArchiveProject) {
+      if (!previewCard || !previewImage || !previewKicker || !previewTitle || !previewDescription || !previewMeta || !previewLink) return;
+      previewImage.src = project.image;
+      previewImage.alt = project.alt;
+      previewKicker.textContent = project.category + ' / ' + project.year;
+      previewTitle.textContent = project.title;
+      previewDescription.textContent = project.description;
+      previewMeta.textContent = project.date + ' · ' + project.venue;
+      previewLink.href = basePath + 'archive/' + project.slug + '/';
+      previewLink.dataset.slug = project.slug;
+      previewCard.hidden = false;
+      globeSide?.classList.add('has-preview');
+      state.selectedSlug = project.slug;
+      setCaption(project);
+    }
+
+    function focusProject(project: ArchiveProject) {
+      const mesh = meshBySlug.get(project.slug);
+      if (!mesh) return;
+      const desired = -Math.atan2(mesh.position.x, mesh.position.z);
+      const difference = Math.atan2(Math.sin(desired - state.rotationY), Math.cos(desired - state.rotationY));
+      state.focusRotationY = state.rotationY + difference;
+      state.rotationX = 0;
+      state.velocityX = state.velocityY = 0;
+      setZoom(Math.max(state.zoom, 1.1));
+      showPreview(project);
+    }
+
+    function setRail(open: boolean) {
+      globeSide?.classList.toggle('rail-open', open);
+      toggleRailButton?.setAttribute('aria-expanded', String(open));
+    }
+
+    const background = [...document.querySelectorAll<HTMLElement>('.site-header, .intro, .discover-panel, .browse-section, .site-footer')];
+    const previousOverflow = document.body.style.overflow;
+    async function enterImmersive() {
+      if (!globeSide) return;
+      globeSide.classList.add('is-immersive');
+      globeSide.setAttribute('role', 'dialog');
+      globeSide.setAttribute('aria-modal', 'true');
+      globeSide.setAttribute('aria-label', 'Full screen archive globe');
+      document.body.style.overflow = 'hidden';
+      background.forEach((element) => { element.inert = true; });
+      hidePreview();
+      try { await globeSide.requestFullscreen?.(); } catch { /* CSS still fills the viewport. */ }
+      setRail(window.innerWidth > 760);
+      requestAnimationFrame(resize);
+      closeImmersiveButton?.focus();
+    }
+
+    function closeImmersive() {
+      if (!globeSide?.classList.contains('is-immersive')) return;
+      globeSide.classList.remove('is-immersive');
+      globeSide.removeAttribute('role');
+      globeSide.removeAttribute('aria-modal');
+      globeSide.removeAttribute('aria-label');
+      document.body.style.overflow = previousOverflow;
+      background.forEach((element) => { element.inert = false; });
+      setRail(false);
+      hidePreview();
+      if (document.fullscreenElement === globeSide) document.exitFullscreen().catch(() => {});
+      requestAnimationFrame(resize);
+      enterImmersiveButton?.focus();
+    }
+
+    enterImmersiveButton?.addEventListener('click', enterImmersive);
+    closeImmersiveButton?.addEventListener('click', closeImmersive);
+    toggleRailButton?.addEventListener('click', () => setRail(!globeSide?.classList.contains('rail-open')));
+    document.querySelector('[data-hide-rail]')?.addEventListener('click', () => setRail(false));
+    document.querySelector('[data-close-preview]')?.addEventListener('click', hidePreview);
+    document.addEventListener('fullscreenchange', () => {
+      if (!document.fullscreenElement && globeSide?.classList.contains('is-immersive')) closeImmersive();
+      requestAnimationFrame(resize);
+    });
+    window.addEventListener('keydown', (event) => {
+      if (event.key !== 'Escape' || !globeSide?.classList.contains('is-immersive')) return;
+      if (immersiveSearch && document.activeElement === immersiveSearch && immersiveSearch.value) {
+        setQuery('');
+        immersiveSearch.blur();
+      } else if (!previewCard?.hidden) {
+        hidePreview();
+      } else {
+        closeImmersive();
+      }
+      event.preventDefault();
+    });
+    for (const button of immersiveStories) {
+      button.addEventListener('click', () => {
+        const project = projects.find((item) => item.slug === button.dataset.immersiveStory);
+        if (!project) return;
+        focusProject(project);
+        if (window.innerWidth <= 760) setRail(false);
+      });
+    }
+
+    updateGlobeFilter = (slugs) => {
+      for (const panel of panels) panel.visible = slugs.has(panel.userData.slug);
+      if (state.selectedSlug && !slugs.has(state.selectedSlug)) hidePreview();
+      if (state.hoverSlug && !slugs.has(state.hoverSlug)) {
+        state.hoverSlug = '';
+        setCaption(null);
+      }
+    };
+    updateFilters();
+
+    canvas.tabIndex = 0;
+    canvas.addEventListener('pointerdown', (event) => {
+      state.dragging = true;
+      state.focusRotationY = null;
+      state.pointerX = state.downX = event.clientX;
+      state.pointerY = state.downY = event.clientY;
+      state.velocityX = state.velocityY = 0;
+      canvas.setPointerCapture(event.pointerId);
+      canvas.style.cursor = 'grabbing';
+    });
+    canvas.addEventListener('pointermove', (event) => {
+      if (state.dragging) {
+        const dx = event.clientX - state.pointerX;
+        const dy = event.clientY - state.pointerY;
+        state.rotationY += dx * 0.006;
+        state.rotationX = THREE.MathUtils.clamp(state.rotationX + dy * 0.006, -0.9, 0.9);
+        state.velocityY = dx * 0.00035;
+        state.velocityX = dy * 0.00035;
+        state.pointerX = event.clientX;
+        state.pointerY = event.clientY;
+        return;
+      }
+      const hit = hitTest(event.clientX, event.clientY);
+      const slug = hit?.userData.slug ?? '';
+      if (slug !== state.hoverSlug) {
+        state.hoverSlug = slug;
+        const captionSlug = slug || state.selectedSlug;
+        setCaption(projects.find((project) => project.slug === captionSlug) ?? null);
+      }
+      canvas.style.cursor = slug ? 'pointer' : 'grab';
+    });
+    canvas.addEventListener('pointerup', (event) => {
+      const moved = Math.hypot(event.clientX - state.downX, event.clientY - state.downY);
+      state.dragging = false;
+      canvas.style.cursor = 'grab';
+      if (moved < 8) {
+        const slug = hitTest(event.clientX, event.clientY)?.userData.slug;
+        if (slug) {
+          const project = projects.find((item) => item.slug === slug);
+          if (globeSide?.classList.contains('is-immersive') && project) showPreview(project);
+          else if (project) navigateToStory(project);
+        }
+      }
+    });
+    canvas.addEventListener('pointercancel', () => { state.dragging = false; canvas.style.cursor = 'grab'; });
+    canvas.addEventListener('pointerleave', () => {
+      if (!state.dragging) {
+        state.hoverSlug = '';
+        setCaption(projects.find((project) => project.slug === state.selectedSlug) ?? null);
+      }
+    });
+    canvas.addEventListener('wheel', (event) => {
+      event.preventDefault();
+      setZoom(state.zoom * Math.exp(-event.deltaY * 0.001));
+    }, { passive: false });
+    canvas.addEventListener('keydown', (event) => {
+      const step = event.shiftKey ? 0.32 : 0.16;
+      if (event.key === 'ArrowLeft') state.rotationY -= step;
+      else if (event.key === 'ArrowRight') state.rotationY += step;
+      else if (event.key === 'ArrowUp') state.rotationX -= step;
+      else if (event.key === 'ArrowDown') state.rotationX += step;
+      else if (event.key === '+' || event.key === '=') setZoom(state.zoom * 1.12);
+      else if (event.key === '-') setZoom(state.zoom / 1.12);
+      else if (event.key === '0') resetView();
+      else return;
+      event.preventDefault();
+    });
+    document.querySelector('[data-zoom-in]')?.addEventListener('click', () => setZoom(state.zoom * 1.15));
+    document.querySelector('[data-zoom-out]')?.addEventListener('click', () => setZoom(state.zoom / 1.15));
+    document.querySelector('[data-reset-view]')?.addEventListener('click', resetView);
+    window.addEventListener('resize', resize);
+    if (canvas.parentElement && 'ResizeObserver' in window) new ResizeObserver(resize).observe(canvas.parentElement);
+    resize();
+
+    const clock = new THREE.Clock();
+    function render() {
+      const dt = Math.min(clock.getDelta(), 0.05);
+      if (!state.dragging) {
+        if (state.focusRotationY !== null) {
+          const difference = state.focusRotationY - state.rotationY;
+          state.rotationY += difference * Math.min(1, dt * 7);
+          if (Math.abs(difference) < 0.002) state.focusRotationY = null;
+        } else if (!state.reducedMotion && !state.hoverSlug && !state.selectedSlug) state.rotationY += 0.08 * dt;
+        state.rotationY += state.velocityY;
+        state.rotationX += state.velocityX;
+        state.velocityX *= 0.93;
+        state.velocityY *= 0.93;
+      }
+      state.rotationX = THREE.MathUtils.clamp(state.rotationX, -0.9, 0.9);
+      globe.rotation.set(state.rotationX, state.rotationY, 0);
+      for (const panel of panels) {
+        const hover = panel.userData.slug === (state.hoverSlug || state.selectedSlug);
+        const target = hover ? 1.1 : 1;
+        panel.scale.lerp(new THREE.Vector3(target, target, 1), 0.12);
+      }
+      renderer.render(scene, camera);
+      requestAnimationFrame(render);
+    }
+    render();
+  } catch (error) {
+    console.warn('Interactive globe unavailable; archive links remain accessible.', error);
+    canvas.hidden = true;
+    const label = document.querySelector<HTMLElement>('.globe-center-label');
+    if (label) label.textContent = 'Explore the stories alongside the globe';
+  }
 }
