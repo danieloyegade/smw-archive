@@ -1,19 +1,21 @@
 ---
 import BaseLayout from '../../layouts/BaseLayout.astro';
-import { projects, type ArchiveProject } from '../../data/projects';
+import { projects, archiveTrails, archiveRedirects, type ArchiveProject } from '../../data/projects';
+import StoryMedia from '../../components/StoryMedia.astro';
 
 const base = import.meta.env.BASE_URL;
 const publicBase = base.endsWith('/') ? base : base + '/';
 const asset = (path: string) => publicBase + path.replace(/^\//, '');
 
 export function getStaticPaths() {
-  return projects.map((project) => ({
+  return [...projects.map((project) => ({
     params: { slug: project.slug },
     props: { project },
-  }));
+  })), ...Object.entries(archiveRedirects).map(([slug, redirectSlug]) => ({params:{slug},props:{redirectSlug}}))];
 }
 
-const { project } = Astro.props as { project: ArchiveProject };
+const { project, redirectSlug } = Astro.props as { project: ArchiveProject; redirectSlug?: string };
+if (redirectSlug) return Astro.redirect(publicBase + 'archive/' + redirectSlug + '/');
 const index = projects.findIndex((item) => item.slug === project.slug);
 const next = projects[(index + 1) % projects.length];
 const photos = [project.image, ...project.gallery.filter((photo) => photo !== project.image)].map(asset);
@@ -26,20 +28,24 @@ const photos = [project.image, ...project.gallery.filter((photo) => photo !== pr
       <nav aria-label="Main navigation"><a href={publicBase + '#world'}><span aria-hidden="true">←</span> Back to globe</a><a href={publicBase + 'about/'}>About</a></nav>
     </header>
     <main>
+      <nav class="trail-progress" data-trail-progress hidden aria-label="Your selected archive trail"><div><small data-trail-name></small><span data-trail-count></span></div><div data-trail-steps></div><a href={publicBase + '#start'}>Choose another trail</a></nav>
       <section class="hero" aria-labelledby="project-title">
-        <img class="hero-photo" src={photos[0] ?? asset(project.image)} alt={project.alt} loading="eager" />
+        <img class="hero-photo" style={`object-position:50% ${project.imageFocusY ?? 50}%`} src={photos[0] ?? asset(project.image)} alt={project.alt} loading="eager" />
         <div class="hero-shade" aria-hidden="true"></div>
         <div class="hero-content">
-          <div class="hero-index"><span>THE ARCHIVE / {project.year}</span><span>{String(project.id).padStart(2, '0')} OF {String(projects.length).padStart(2, '0')}</span></div>
+          <div class="hero-index"><span>THE ARCHIVE / {project.year}</span><span>{String(index + 1).padStart(2, '0')} OF {String(projects.length).padStart(2, '0')}</span></div>
           <div class="hero-main">
             <p class="eyebrow">{project.category} / {project.venue}</p>
             <h1 id="project-title">{project.title}</h1>
             <p class="hero-description">{project.description}</p>
-            <a class="scroll-link" href="#story">Explore the story <span aria-hidden="true">↓</span></a>
+            <a class="scroll-link" href={project.media?.length ? '#player-' + project.media[0].src.split('/').pop()?.split('.')[0] : '#gallery'}>{project.media?.length ? (project.media[0].kind === 'audio' ? 'Listen for a minute' : 'Watch the film') : 'Step inside the photographs'} <span aria-hidden="true">↓</span></a>
+            {project.visitLabel && <p class="visit-label">{project.visitLabel}</p>}
           </div>
           <div class="hero-bottom"><span>{project.date}</span><button type="button" data-photo-index="0">View image full screen <span aria-hidden="true">↗</span></button></div>
         </div>
       </section>
+
+      <StoryMedia project={project} publicBase={publicBase} />
 
       <section class="story" id="story" aria-labelledby="story-title">
         <div class="story-label"><span>01 / The story</span><span>{project.year} · {project.category}</span></div>
@@ -51,18 +57,20 @@ const photos = [project.image, ...project.gallery.filter((photo) => photo !== pr
         </div>
       </section>
 
-      <section class="gallery-section" aria-labelledby="gallery-title">
+      <section class="gallery-section" id="gallery" aria-labelledby="gallery-title">
         <div class="gallery-header"><span>02 / Through the lens</span><h2 id="gallery-title">Inside the story<span>.</span></h2><p>Select an image to explore it more closely.</p></div>
         <div class="gallery-grid">
           {photos.map((photo, photoIndex) => (
             <button class="gallery-tile" type="button" data-photo-index={photoIndex} aria-label={'View ' + project.title + ' photograph ' + (photoIndex + 1) + ' full screen'}>
-              <img src={photo} alt={project.title + ', photograph ' + (photoIndex + 1)} loading="lazy" />
+              <img src={photo} alt={project.photoCaptions?.[photoIndex] ?? project.title + ', photograph ' + (photoIndex + 1)} loading="lazy" />
               <span class="gallery-number">{String(photoIndex + 1).padStart(2, '0')} / {String(photos.length).padStart(2, '0')}</span>
               <span class="gallery-open" aria-hidden="true">↗</span>
             </button>
           ))}
         </div>
       </section>
+
+      {project.invitation && <aside class="reflection"><span>A thought to take with you</span><p>{project.invitation}</p><small>Share it with someone beside you, or keep exploring.</small></aside>}
 
       {project.programme && (
         <section class="programme" aria-labelledby="programme-title">
@@ -79,8 +87,8 @@ const photos = [project.image, ...project.gallery.filter((photo) => photo !== pr
       )}
 
       <section class="next-story">
-        <span>Continue exploring / {String(next.id).padStart(2, '0')}</span>
-        <a href={publicBase + 'archive/' + next.slug + '/'}><strong>{next.title}</strong><span aria-hidden="true">↗</span></a>
+        <span data-next-label>Continue exploring</span>
+        <a data-next-story href={publicBase + 'archive/' + next.slug + '/'}><strong data-next-title>{next.title}</strong><span aria-hidden="true">↗</span></a>
       </section>
     </main>
     <footer><span>SEE MY WORLD / AN INTERACTIVE ARCHIVE</span><div><a href={publicBase + 'about/'}>About</a><a href={publicBase + '#world'}>Back to the globe ↑</a></div></footer>
@@ -90,7 +98,7 @@ const photos = [project.image, ...project.gallery.filter((photo) => photo !== pr
     <div class="dialog-image"><button type="button" data-photo-prev aria-label="Previous photo">←</button><img data-photo-image src={photos[0] ?? asset(project.image)} alt="" /><button type="button" data-photo-next aria-label="Next photo">→</button></div>
     <p data-photo-title>{project.title}</p>
   </dialog>
-  <script define:vars={{ photos, projectTitle: project.title }}>
+  <script define:vars={{ photos, projectTitle: project.title, photoCaptions: project.photoCaptions ?? [], archiveTrails, projectSlug: project.slug, publicBase, storyTitles: projects.map((item) => ({slug:item.slug,title:item.title})) }}>
     const dialog = document.querySelector('[data-photo-dialog]');
     const photoImage = document.querySelector('[data-photo-image]');
     const photoCount = document.querySelector('[data-photo-count]');
@@ -98,9 +106,10 @@ const photos = [project.image, ...project.gallery.filter((photo) => photo !== pr
     function showPhoto(index) {
       activePhoto = (index + photos.length) % photos.length;
       photoImage.src = photos[activePhoto];
-      photoImage.alt = projectTitle + ', photograph ' + (activePhoto + 1);
+      photoImage.alt = photoCaptions[activePhoto] ?? projectTitle + ', photograph ' + (activePhoto + 1);
+      document.querySelector('[data-photo-title]').textContent = photoImage.alt;
       photoCount.textContent = String(activePhoto + 1).padStart(2, '0') + ' / ' + String(photos.length).padStart(2, '0');
-      if (!dialog.open) dialog.showModal();
+      if (!dialog.open) { document.querySelectorAll('video,audio').forEach((player) => player.pause()); dialog.showModal(); }
     }
     document.querySelectorAll('[data-photo-index]').forEach((button) => button.addEventListener('click', () => showPhoto(Number(button.dataset.photoIndex))));
     document.querySelector('[data-photo-close]')?.addEventListener('click', () => dialog.close());
@@ -111,8 +120,47 @@ const photos = [project.image, ...project.gallery.filter((photo) => photo !== pr
       if (event.key === 'ArrowLeft') { event.preventDefault(); showPhoto(activePhoto - 1); }
       if (event.key === 'ArrowRight') { event.preventDefault(); showPhoto(activePhoto + 1); }
     });
+    const trailId = new URLSearchParams(location.search).get('trail');
+    const trail = archiveTrails.find((item) => item.id === trailId && item.slugs.includes(projectSlug));
+    if (trail) {
+      const step = trail.slugs.indexOf(projectSlug);
+      const nav = document.querySelector('[data-trail-progress]');
+      nav.hidden = false;
+      document.querySelector('[data-trail-name]').textContent = trail.title;
+      document.querySelector('[data-trail-count]').textContent = 'Story ' + (step + 1) + ' of ' + trail.slugs.length;
+      const steps = document.querySelector('[data-trail-steps]');
+      for (const [i, slug] of trail.slugs.entries()) {
+        const link = document.createElement('a');
+        link.href = publicBase + 'archive/' + slug + '/?trail=' + trail.id;
+        link.textContent = (i + 1) + '. ' + storyTitles.find((item) => item.slug === slug)?.title;
+        if (i === step) link.setAttribute('aria-current','step');
+        steps.append(link);
+      }
+      const nextLink = document.querySelector('[data-next-story]');
+      if (step < trail.slugs.length - 1) {
+        const nextSlug = trail.slugs[step + 1];
+        nextLink.href = publicBase + 'archive/' + nextSlug + '/?trail=' + trail.id;
+        document.querySelector('[data-next-title]').textContent = storyTitles.find((item) => item.slug === nextSlug)?.title;
+        document.querySelector('[data-next-label]').textContent = 'Your trail / next story ' + (step + 2) + ' of ' + trail.slugs.length;
+      } else {
+        nextLink.href = publicBase + '#start';
+        document.querySelector('[data-next-title]').textContent = 'Where next?';
+        document.querySelector('[data-next-label]').textContent = 'Trail complete / choose another or explore the globe';
+      }
+    }
   </script>
   <style>
+    .visit-label { color: #69b96e; margin: .8rem 0 0; font-size: .75rem; }
+    .trail-progress { display: grid; gap: .8rem; padding: 1.2rem clamp(1.25rem,5vw,6rem); background: #10180f; border-bottom: 1px solid #40543b; }
+    .trail-progress > div:first-child { display: flex; justify-content: space-between; gap: 1rem; color: #69b96e; text-transform: uppercase; font-weight: 900; font-size: .65rem; letter-spacing: .08em; }
+    .trail-progress > div:nth-child(2) { display: flex; flex-wrap: wrap; gap: .6rem 1.2rem; }
+    .trail-progress a { font-size: .7rem; line-height: 1.4; letter-spacing: 0; text-transform: none; min-height: 34px; display: inline-flex; align-items: center; }
+    .trail-progress a[aria-current] { color: #69b96e; text-decoration: underline; text-underline-offset: 4px; }
+    .trail-progress > a { color: #b3b8ae; }
+    .reflection { padding: 3.5rem clamp(1.25rem,5vw,6rem); background: #121b11; border-bottom: 1px solid #40543b; }
+    .reflection > span { color: #69b96e; text-transform: uppercase; font-size: .65rem; letter-spacing: .12em; font-weight: 900; }
+    .reflection p { font-size: clamp(1.8rem,3.8vw,3.8rem); line-height: 1.15; max-width: 1000px; letter-spacing: -.035em; margin: 1rem 0; }
+    .reflection small { color: #b3b8ae; }
     .page { min-height: 100vh; background: #050505; color: #f8f8f5; }
     .site-header { min-height: 106px; border-bottom: 1px solid #722322; display: flex; align-items: center; justify-content: space-between; gap: 2rem; padding: 1.4rem clamp(1.25rem, 3vw, 3.5rem); }
     .wordmark { display: block; width: min(430px, 39vw); }

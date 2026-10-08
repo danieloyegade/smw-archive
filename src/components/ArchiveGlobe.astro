@@ -1,9 +1,10 @@
 ---
-import { projects } from '../data/projects';
+import { projects, archiveTrails, experienceType } from '../data/projects';
 const base = import.meta.env.BASE_URL;
 const publicBase = base.endsWith('/') ? base : base + '/';
 const asset = (path: string) => publicBase + path.replace(/^\//, '');
-const years = [...new Set(projects.map((project) => project.year))];
+const years = [...new Set(projects.map((project) => project.year))].sort().reverse();
+const formats = ['all', ...['watch', 'listen', 'look'].filter((format) => projects.some((project) => experienceType(project) === format))];
 const serializedProjects = projects.map((project) => ({ ...project, image: asset(project.image) }));
 ---
 
@@ -24,10 +25,10 @@ const serializedProjects = projects.map((project) => ({ ...project, image: asset
         <p class="eyebrow"><span class="pulse" aria-hidden="true"></span> A festival of Pan-African experiences</p>
         <h1 id="page-title">A world of <em>stories.</em></h1>
         <p class="intro-description">
-          Explore the people, places and moments behind See My World, a living programme of
-          Pan-African art, culture and connection.
+          Watch a moment. Hear a new perspective. Find a familiar face. Explore the films,
+          photographs and artist voices of See My World, from Manchester to Lagos and beyond.
         </p>
-        <a class="intro-link" href="#world">Enter the archive <span aria-hidden="true">↓</span></a>
+        <a class="intro-link" href="#start">Find your first story <span aria-hidden="true">↓</span></a>
       </div>
       <div class="intro-aside" aria-hidden="true">
         <span>Manchester</span>
@@ -36,6 +37,20 @@ const serializedProjects = projects.map((project) => ({ ...project, image: asset
         <span class="intro-line"></span>
         <span>Beyond</span>
       </div>
+    </section>
+
+    <section class="start-section" id="start" aria-labelledby="start-title">
+      <div class="start-heading"><div><span class="section-number">Start anywhere. Stay a while.</span><h2 id="start-title">A little time.<br />A whole world.</h2></div><p>Choose a short trail, or follow your curiosity around the globe. Sound is always your choice; headphones help in a busy room.</p></div>
+      <div class="trail-grid">
+        {archiveTrails.map((trail, index) => {
+          const first = projects.find((project) => project.slug === trail.slugs[0])!;
+          return <a class="trail-card" href={publicBase + 'archive/' + first.slug + '/?trail=' + trail.id}>
+            <img style={`object-position:50% ${first.imageFocusY ?? 50}%`} src={asset(first.image)} alt={first.alt} loading="lazy" />
+            <div class="trail-copy"><small>{String(index + 1).padStart(2, '0')} / {trail.time}</small><h3>{trail.title}</h3><p>{trail.description}</p><span>Begin 3-story trail <span aria-hidden="true">↗</span></span></div>
+          </a>;
+        })}
+      </div>
+      <div class="start-bottom"><span>{projects.length} selected projects · Artists, dance, film & live moments</span><button type="button" data-surprise>Surprise me <span aria-hidden="true">↗</span></button><a href="#world">Explore the globe ↓</a></div>
     </section>
 
     <section class="experience" id="world" aria-label="Interactive archive">
@@ -82,10 +97,13 @@ const serializedProjects = projects.map((project) => ({ ...project, image: asset
             <button type="button" class="is-active" data-immersive-year="all" aria-pressed="true">All</button>
             {years.map((year) => <button type="button" data-immersive-year={year} aria-pressed="false">{year}</button>)}
           </div>
+          <div class="format-filters" role="group" aria-label="Filter globe by experience">
+            {formats.map((format) => <button type="button" data-format-button={format} aria-pressed={format === 'all'} class:list={{'is-active': format === 'all'}}>{format === 'all' ? 'Everything' : format === 'watch' ? 'Watch' : format === 'listen' ? 'Listen' : 'Look'}</button>)}
+          </div>
           <div class="immersive-stories">
             {projects.map((project) => (
               <button type="button" data-immersive-story={project.slug}>
-                <img src={asset(project.image)} alt="" loading="lazy" />
+                <img style={`object-position:50% ${project.imageFocusY ?? 50}%`} src={asset(project.image)} alt="" loading="lazy" />
                 <span><small>{project.category} · {project.year}</small><strong>{project.title}</strong></span>
                 <span aria-hidden="true">↗</span>
               </button>
@@ -98,14 +116,14 @@ const serializedProjects = projects.map((project) => ({ ...project, image: asset
           <div class="transition-shade"></div>
           <div class="transition-copy"><span>Entering the story</span><strong data-transition-title></strong><small>SEE MY WORLD / THE ARCHIVE</small></div>
         </div>
-        <div class="stage-footer"><span>Archive / 2020 to 2024</span><span>Manchester ↔ Lagos</span></div>
+        <div class="stage-footer"><span>Archive / 2020 to 2025</span><span>Manchester ↔ Lagos</span></div>
       </div>
 
       <aside class="discover-panel" aria-labelledby="discover-title">
         <div class="discover-heading">
           <span class="section-number">02 / Discover</span>
           <h2 id="discover-title">Find your way in.</h2>
-          <p>Search by event, place, year or theme. The globe and event list respond together.</p>
+          <p>Follow an artist, a film or a photograph. Search by place, year or theme; the globe and collection respond together.</p>
         </div>
         <label class="search-label" for="archive-search">Search the archive</label>
         <div class="search-field">
@@ -118,13 +136,17 @@ const serializedProjects = projects.map((project) => ({ ...project, image: asset
           <button type="button" class="is-active" data-year-button="all" aria-pressed="true">All years</button>
           {years.map((year) => <button type="button" data-year-button={year} aria-pressed="false">{year}</button>)}
         </div>
+        <div class="format-filters" role="group" aria-label="Filter by experience">
+          {formats.map((format) => <button type="button" data-format-button={format} aria-pressed={format === 'all'} class:list={{'is-active': format === 'all'}}>{format === 'all' ? 'Everything' : format === 'watch' ? 'Watch' : format === 'listen' ? 'Listen' : 'Look'}</button>)}
+        </div>
         <div class="result-list" data-result-list>
           {projects.map((project) => (
             <a href={publicBase + 'archive/' + project.slug + '/'} data-result-link={project.slug} data-year={project.year}>
-              <img src={asset(project.image)} alt="" loading="lazy" />
+              <img style={`object-position:50% ${project.imageFocusY ?? 50}%`} src={asset(project.image)} alt="" loading="lazy" />
               <span class="result-copy">
-                <small>{project.category} <span aria-hidden="true">·</span> {project.year}</small>
+                <small>{experienceType(project)} <span aria-hidden="true">·</span> {project.year}</small>
                 <strong>{project.title}</strong>
+                <span class="result-duration">{project.visitLabel ?? project.category}</span>
               </span>
               <span class="result-arrow" aria-hidden="true">↗</span>
             </a>
@@ -137,15 +159,15 @@ const serializedProjects = projects.map((project) => ({ ...project, image: asset
     <section class="browse-section" id="browse" aria-labelledby="browse-title">
       <div class="browse-heading">
         <div><span class="section-number">03 / The collection</span><h2 id="browse-title">Explore every story<span class="green-dot">.</span></h2></div>
-        <p>Real moments from the See My World archive, from its first festival to an exchange across cities.</p>
+        <p>Stay for thirty seconds or follow a whole thread. Meet the artists, feel the movement and look closer at the people behind each moment.</p>
       </div>
       <div class="project-grid" data-project-grid>
         {projects.map((project) => (
           <a class="project-card" href={publicBase + 'archive/' + project.slug + '/'} data-project-card data-year={project.year} data-slug={project.slug}>
-            <div class="project-image"><img src={asset(project.image)} alt={project.alt} loading="lazy" /><span class="card-action" aria-hidden="true">↗</span></div>
-            <div class="card-topline"><span>{String(project.id).padStart(2, '0')} / {project.category}</span><span>{project.year}</span></div>
+            <div class="project-image"><img style={`object-position:50% ${project.imageFocusY ?? 50}%`} src={asset(project.image)} alt={project.alt} loading="lazy" /><span class="format-badge">{experienceType(project)}</span><span class="card-action" aria-hidden="true">↗</span></div>
+            <div class="card-topline"><span>{project.category}</span><span>{project.year}</span></div>
             <h3>{project.title}</h3>
-            <p>{project.venue}</p>
+            <p>{project.visitLabel ?? project.venue}</p>
           </a>
         ))}
       </div>
@@ -163,6 +185,32 @@ const serializedProjects = projects.map((project) => ({ ...project, image: asset
 <script>import '../scripts/archive-globe';</script>
 
 <style>
+  .start-section { padding: 3.5rem clamp(1.25rem,5vw,6rem); border-bottom: 1px solid #722322; }
+  .start-heading { display: flex; align-items: end; justify-content: space-between; gap: 2rem; margin-bottom: 1.8rem; }
+  .start-heading h2 { font-size: clamp(2.4rem,4.3vw,4.8rem); line-height: .98; letter-spacing: -.06em; text-transform: uppercase; margin: .9rem 0 0; }
+  .start-heading > p { max-width: 330px; color: #b3b8ae; font-size: .9rem; line-height: 1.6; }
+  .trail-grid { display: grid; grid-template-columns: repeat(3,minmax(0,1fr)); gap: 1rem; }
+  .trail-card { position: relative; background: #0e120e; border: 1px solid #59332c; overflow: hidden; }
+  .trail-card > img { width: 100%; height: 210px; object-fit: cover; transition: transform .25s; }
+  .trail-card:hover > img { transform: scale(1.025); }
+  .trail-card:focus-visible { outline: 2px solid #69b96e; outline-offset: 4px; }
+  .trail-copy { padding: 1.25rem; }
+  .trail-copy small { color: #69b96e; font-size: .63rem; letter-spacing: .1em; text-transform: uppercase; }
+  .trail-copy h3 { text-transform: uppercase; font-size: clamp(1.2rem,1.8vw,1.9rem); line-height: 1.05; margin: .65rem 0; }
+  .trail-copy p { color: #b3b8ae; font-size: .85rem; line-height: 1.5; min-height: 2.6em; }
+  .trail-copy > span { font-size: .65rem; font-weight: 800; text-transform: uppercase; letter-spacing: .08em; }
+  .trail-copy > span span { color: #69b96e; margin-left: .8rem; }
+  .start-bottom { display: flex; flex-wrap: wrap; align-items: center; gap: 1.2rem; margin-top: 1.5rem; font-size: .7rem; }
+  .start-bottom > span { color: #aeb4ac; margin-right: auto; }
+  .start-bottom button { font: inherit; color: #050505; background: #69b96e; border: 1px solid #69b96e; min-height: 44px; padding: .8rem 1rem; font-weight: 800; cursor: pointer; }
+  .start-bottom a { display: inline-flex; align-items: center; min-height: 44px; }
+  .format-filters { display: flex; gap: .35rem; flex-wrap: wrap; margin: -.6rem 0 1.2rem; }
+  .format-filters button { min-height: 44px; background: #111; border: 1px solid #51534c; color: #d2d7cc; font: inherit; font-size: .68rem; font-weight: 800; padding: .55rem .65rem; cursor: pointer; }
+  .format-filters button.is-active { color: #050505; background: #69b96e; border-color: #69b96e; }
+  .format-filters button:focus-visible { outline: 2px solid #fff; outline-offset: 2px; }
+  .result-duration { color: #aeb4ac; font-size: .65rem; line-height: 1.3; }
+  .format-badge { position: absolute; top: .7rem; left: .7rem; background: #050505dc; color: #fff; border: 1px solid #ffffff50; padding: .4rem .6rem; font-size: .6rem; font-weight: 900; letter-spacing: .1em; text-transform: uppercase; }
+  @media(max-width:680px) { .start-heading { display: block; } .start-heading > p { max-width: 100%; } .trail-grid { grid-template-columns: 1fr; } .trail-card { display: grid; grid-template-columns: 35% 1fr; } .trail-card > img { height: 100%; min-height: 190px; } .trail-copy { padding: 1rem; } .start-bottom > span { width: 100%; } }
   .archive-shell { min-height: 100vh; background: #050505; color: #f8f8f5; }
   .site-header { min-height: 106px; border-bottom: 1px solid #722322; display: flex; align-items: center; justify-content: space-between; gap: 2rem; padding: 1.4rem clamp(1.25rem, 3vw, 3.5rem); }
   .wordmark { display: block; width: min(430px, 39vw); }
@@ -192,7 +240,9 @@ const serializedProjects = projects.map((project) => ({ ...project, image: asset
   .section-marker { padding: 1.2rem 1.7rem; border-bottom: 1px solid rgba(165,48,46,.45); }
   .section-marker span:first-child { color: #ef4b43; }
   .stage-footer { padding: 1rem 1.7rem; border-top: 1px solid rgba(165,48,46,.45); }
-  .stage { flex: 1; min-height: 510px; position: relative; background: radial-gradient(circle at 50% 50%, rgba(118,22,20,.18), transparent 42%); overflow: hidden; }
+  .stage { flex: 1; min-height: 580px; position: relative; background: #050303; overflow: hidden; isolation: isolate; }
+  .stage::before { content: ''; position: absolute; z-index: -1; inset: 0; background: radial-gradient(ellipse 70% 64% at 52% 48%, rgba(151,31,25,.48), rgba(35,4,5,.62) 42%, #030303 77%); pointer-events: none; }
+  .stage::after { content: ''; position: absolute; z-index: 0; inset: 0; background: linear-gradient(90deg, #05050588, transparent 23%, transparent 76%, #05050588), linear-gradient(0deg, #050505bd, transparent 25%, transparent 75%, #0505059c); pointer-events: none; }
   #globe-canvas { display: block; width: 100%; height: 100%; touch-action: none; }
   #globe-canvas:focus-visible { outline: 2px solid #69b96e; outline-offset: -5px; }
   .expand-button { position: absolute; z-index: 6; top: 1.1rem; right: 1.2rem; display: flex; align-items: center; gap: .65rem; min-height: 2.8rem; padding: 0 .9rem; border: 1px solid #a03b36; background: #080808ec; color: #fff; text-transform: uppercase; letter-spacing: .12em; font: inherit; font-size: .66rem; font-weight: 900; cursor: pointer; }
@@ -253,10 +303,10 @@ const serializedProjects = projects.map((project) => ({ ...project, image: asset
   .immersive-stories strong { font-size: .7rem; line-height: 1.15; text-transform: uppercase; }
   .immersive-stories button > span:last-child { color: #ef4b43; }
   .immersive-empty { color: #c6cbc4; font-size: .8rem; }
-  .globe-center-label { position: absolute; top: 50%; left: 50%; transform: translate(-50%,-50%); pointer-events: none; display: flex; flex-direction: column; text-align: center; font-size: clamp(.75rem, 1.1vw, 1.1rem); line-height: 1; letter-spacing: .35em; font-weight: 900; color: rgba(255,255,255,.48); text-shadow: 0 0 12px #000; }
-  .caption { position: absolute; left: 1.7rem; bottom: 1.5rem; max-width: min(60%, 350px); display: flex; flex-direction: column; gap: .3rem; pointer-events: none; text-shadow: 0 2px 10px #000; }
+  .globe-center-label { position: absolute; z-index: 2; top: 50%; left: 50%; transform: translate(-50%,-50%); pointer-events: none; display: flex; flex-direction: column; text-align: center; font-size: clamp(.68rem, 1vw, 1rem); line-height: 1; letter-spacing: .38em; font-weight: 900; color: rgba(255,255,255,.46); text-shadow: 0 0 16px #000; mix-blend-mode: screen; }
+  .caption { position: absolute; z-index: 4; left: 1.7rem; bottom: 1.8rem; max-width: min(60%, 370px); display: flex; flex-direction: column; gap: .3rem; pointer-events: none; text-shadow: 0 2px 12px #000; }
   .caption-kicker { color: #69b96e; font-size: .64rem; font-weight: 900; letter-spacing: .17em; }
-  .caption-title { font-size: clamp(1rem, 1.6vw, 1.55rem); line-height: 1.08; text-transform: uppercase; }
+  .caption-title { font-size: clamp(1.1rem, 1.9vw, 1.8rem); line-height: 1.05; text-transform: uppercase; letter-spacing: -.035em; }
   .caption-meta { color: #c2c4bd; font-size: .73rem; line-height: 1.4; }
   .globe-controls { position: absolute; right: 1.2rem; bottom: 1.2rem; display: flex; gap: .3rem; }
   .globe-controls button { min-width: 2.5rem; height: 2.5rem; border: 1px solid #74403d; background: #080808df; color: #fff; font: inherit; font-weight: 700; cursor: pointer; }

@@ -36,6 +36,7 @@ if (canvas && dataEl && titleEl && kickerEl && metaEl) {
   const projects = JSON.parse(dataEl.textContent || '[]') as ArchiveProject[];
   const basePath = (document.body.dataset.base ?? '/').replace(/\/?$/, '/');
   let selectedYear = 'all';
+  let selectedFormat = 'all';
   let query = '';
   let updateGlobeFilter: ((slugs: Set<string>) => void) | undefined;
   let navigating = false;
@@ -49,6 +50,7 @@ if (canvas && dataEl && titleEl && kickerEl && metaEl) {
       return;
     }
     transitionImage.src = project.image;
+    transitionImage.style.objectPosition = `50% ${project.imageFocusY ?? 50}%`;
     transitionTitle.textContent = project.title;
     storyTransition.hidden = false;
     requestAnimationFrame(() => storyTransition.classList.add('is-active'));
@@ -76,6 +78,8 @@ if (canvas && dataEl && titleEl && kickerEl && metaEl) {
 
   const matches = (project: ArchiveProject) => {
     if (selectedYear !== 'all' && project.year !== selectedYear) return false;
+    const format = project.media?.some((item) => item.kind === 'audio') ? 'listen' : project.media?.some((item) => item.kind === 'video') ? 'watch' : 'look';
+    if (selectedFormat !== 'all' && selectedFormat !== format) return false;
     if (!query) return true;
     const haystack = [
       project.title, project.category, project.year, project.date, project.venue,
@@ -94,6 +98,8 @@ if (canvas && dataEl && titleEl && kickerEl && metaEl) {
     if (emptyResult) emptyResult.hidden = visible.length > 0;
     if (gridEmpty) gridEmpty.hidden = visible.length > 0;
     if (immersiveEmpty) immersiveEmpty.hidden = visible.length > 0;
+    const surprise = document.querySelector<HTMLButtonElement>('[data-surprise]');
+    if (surprise) surprise.disabled = visible.length === 0;
     updateGlobeFilter?.(slugs);
   }
 
@@ -139,6 +145,22 @@ if (canvas && dataEl && titleEl && kickerEl && metaEl) {
   for (const button of immersiveYearButtons) {
     button.addEventListener('click', () => setYear(button.dataset.immersiveYear ?? 'all'));
   }
+  for (const button of document.querySelectorAll<HTMLButtonElement>('[data-format-button]')) {
+    button.addEventListener('click', () => {
+      selectedFormat = button.dataset.formatButton ?? 'all';
+      document.querySelectorAll<HTMLButtonElement>('[data-format-button]').forEach((item) => {
+        const active = item.dataset.formatButton === selectedFormat;
+        item.classList.toggle('is-active', active);
+        item.setAttribute('aria-pressed', String(active));
+      });
+      updateFilters();
+    });
+  }
+  document.querySelector('[data-surprise]')?.addEventListener('click', () => {
+    const candidates = projects.filter(matches);
+    if (!candidates.length) { setYear('all'); setQuery(''); return; }
+    navigateToStory(candidates[Math.floor(Math.random() * candidates.length)]);
+  });
 
   try {
     const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: true, powerPreference: 'high-performance' });
@@ -149,43 +171,108 @@ if (canvas && dataEl && titleEl && kickerEl && metaEl) {
     const globe = new THREE.Group();
     scene.add(globe);
 
-    const radius = 2.9;
+    const radius = 3.1;
+    const atmosphere = new THREE.Group();
+    scene.add(atmosphere);
+    const core = new THREE.Mesh(
+      new THREE.SphereGeometry(radius * .96, 48, 32),
+      new THREE.MeshBasicMaterial({ color: 0x150304, transparent: true, opacity: .72, side: THREE.BackSide }),
+    );
     const wireframe = new THREE.LineSegments(
-      new THREE.WireframeGeometry(new THREE.SphereGeometry(radius, 32, 20)),
-      new THREE.LineBasicMaterial({ color: 0xbe3833, transparent: true, opacity: 0.3 }),
+      new THREE.WireframeGeometry(new THREE.SphereGeometry(radius, 38, 28)),
+      new THREE.LineBasicMaterial({ color: 0xea433a, transparent: true, opacity: .28 }),
     );
-    globe.add(wireframe);
-    const innerGlow = new THREE.Mesh(
-      new THREE.SphereGeometry(radius * 0.98, 32, 24),
-      new THREE.MeshBasicMaterial({ color: 0x230b0a, transparent: true, opacity: 0.29, side: THREE.BackSide }),
+    const latitude = new THREE.LineSegments(
+      new THREE.WireframeGeometry(new THREE.SphereGeometry(radius * 1.015, 17, 10)),
+      new THREE.LineBasicMaterial({ color: 0xb8322b, transparent: true, opacity: .24 }),
     );
-    globe.add(innerGlow);
+    globe.add(core, wireframe, latitude);
 
-    const geometry = new THREE.PlaneGeometry(1.46, 1.02);
+    const glowShell = new THREE.Mesh(
+      new THREE.SphereGeometry(radius * 1.11, 32, 24),
+      new THREE.MeshBasicMaterial({ color: 0x7b1716, transparent: true, opacity: .06, side: THREE.BackSide }),
+    );
+    atmosphere.add(glowShell);
+
+    const dustGeometry = new THREE.BufferGeometry();
+    const dustPositions: number[] = [];
+    for (let index = 0; index < 680; index += 1) {
+      const spread = 6 + Math.random() * 8;
+      const theta = Math.random() * Math.PI * 2;
+      const phi = Math.acos(2 * Math.random() - 1);
+      dustPositions.push(
+        Math.sin(phi) * Math.cos(theta) * spread,
+        Math.cos(phi) * spread * .66,
+        Math.sin(phi) * Math.sin(theta) * spread,
+      );
+    }
+    dustGeometry.setAttribute('position', new THREE.Float32BufferAttribute(dustPositions, 3));
+    const dust = new THREE.Points(dustGeometry, new THREE.PointsMaterial({ color: 0xff5b50, size: .032, transparent: true, opacity: .76, depthWrite: false }));
+    scene.add(dust);
+
+    const orbitGroup = new THREE.Group();
+    for (let index = 0; index < 4; index += 1) {
+      const points: THREE.Vector3[] = [];
+      const tilt = (index - 1.5) * .3;
+      for (let step = 0; step <= 90; step += 1) {
+        const angle = (step / 90) * Math.PI * 2;
+        points.push(new THREE.Vector3(Math.cos(angle) * (radius + .5 + index * .12), Math.sin(angle) * (radius * .18 + index * .08), 0));
+      }
+      const orbit = new THREE.Line(new THREE.BufferGeometry().setFromPoints(points), new THREE.LineBasicMaterial({ color: index === 1 ? 0xef4b43 : 0x79211f, transparent: true, opacity: index === 1 ? .48 : .25 }));
+      orbit.rotation.set(tilt, .45 + index * .72, .16 * index);
+      orbitGroup.add(orbit);
+    }
+    scene.add(orbitGroup);
+
+    const networkPositions: number[] = [];
+    const networkNodePositions: THREE.Vector3[] = [];
+    for (let index = 0; index < 56; index += 1) {
+      const phi = Math.acos(1 - 2 * (index + .5) / 56);
+      const theta = Math.PI * (1 + Math.sqrt(5)) * index;
+      networkNodePositions.push(new THREE.Vector3(
+        radius * 1.025 * Math.cos(theta) * Math.sin(phi),
+        radius * 1.025 * Math.sin(theta) * Math.sin(phi),
+        radius * 1.025 * Math.cos(phi),
+      ));
+    }
+    networkNodePositions.forEach((node, index) => {
+      const next = networkNodePositions[(index + 1) % networkNodePositions.length];
+      const jump = networkNodePositions[(index + 9) % networkNodePositions.length];
+      networkPositions.push(node.x, node.y, node.z, next.x, next.y, next.z, node.x, node.y, node.z, jump.x, jump.y, jump.z);
+    });
+    const networkGeometry = new THREE.BufferGeometry();
+    networkGeometry.setAttribute('position', new THREE.Float32BufferAttribute(networkPositions, 3));
+    globe.add(new THREE.LineSegments(networkGeometry, new THREE.LineBasicMaterial({ color: 0xef4b43, transparent: true, opacity: .23 })));
+    const nodesGeometry = new THREE.BufferGeometry().setFromPoints(networkNodePositions);
+    globe.add(new THREE.Points(nodesGeometry, new THREE.PointsMaterial({ color: 0xff665b, size: .046, transparent: true, opacity: .88, depthWrite: false })));
+
+    const geometry = new THREE.PlaneGeometry(1.55, 1.04, 1, 1);
     const panels: THREE.Mesh<THREE.PlaneGeometry, THREE.MeshBasicMaterial>[] = [];
     const meshBySlug = new Map<string, THREE.Mesh<THREE.PlaneGeometry, THREE.MeshBasicMaterial>>();
     const loader = new THREE.TextureLoader();
-    const rows = [-0.63, 0.63];
     projects.forEach((project, index) => {
-      const row = Math.floor(index / 4);
-      const col = index % 4;
-      const latitude = rows[row] ?? 0;
-      const longitude = (col / 4) * Math.PI * 2 + (row ? Math.PI / 4 : 0) + Math.PI / 4;
-      const horizontal = Math.sqrt(1 - (latitude / radius) ** 2);
+      const phi = index === 0 ? Math.PI / 2 : Math.acos(1 - 2 * (index + .5) / projects.length);
+      const longitude = index === 0 ? 0 : Math.PI * (1 + Math.sqrt(5)) * index + .42;
+      const horizontal = Math.sin(phi);
       const position = new THREE.Vector3(
         Math.sin(longitude) * horizontal * radius,
-        latitude,
+        Math.cos(phi) * radius,
         Math.cos(longitude) * horizontal * radius,
-      ).multiplyScalar(1.09);
-      const material = new THREE.MeshBasicMaterial({ color: 0xffffff, side: THREE.DoubleSide });
+      ).multiplyScalar(1.15);
+      const material = new THREE.MeshBasicMaterial({ color: 0xebe2d7, side: THREE.DoubleSide, transparent: true, opacity: .96 });
       const mesh = new THREE.Mesh(geometry, material);
       mesh.position.copy(position);
       mesh.lookAt(position.clone().multiplyScalar(2));
       mesh.userData.slug = project.slug;
       mesh.userData.project = project;
+      mesh.userData.baseScale = index === 0 ? 1.35 : 1.02 + (index % 4) * .085;
+      mesh.scale.setScalar(mesh.userData.baseScale);
+      const halo = new THREE.Mesh(new THREE.PlaneGeometry(1.72, 1.21), new THREE.MeshBasicMaterial({ color: 0xaa2a25, transparent: true, opacity: .13, side: THREE.DoubleSide, depthWrite: false }));
+      halo.position.z = -.015;
+      mesh.add(halo);
       const border = new THREE.LineSegments(
         new THREE.EdgesGeometry(geometry),
-        new THREE.LineBasicMaterial({ color: 0xef4b43, transparent: true, opacity: 0.9 }),
+        new THREE.LineBasicMaterial({ color: 0xef4b43, transparent: true, opacity: .76 }),
       );
       mesh.add(border);
       globe.add(mesh);
@@ -194,6 +281,16 @@ if (canvas && dataEl && titleEl && kickerEl && metaEl) {
       loader.load(project.image, (texture) => {
         texture.colorSpace = THREE.SRGBColorSpace;
         texture.anisotropy = Math.min(renderer.capabilities.getMaxAnisotropy(), 4);
+        const image = texture.image as { width: number; height: number };
+        const imageAspect = image.width / image.height;
+        const panelAspect = 1.46 / 1.02;
+        if (imageAspect > panelAspect) {
+          texture.repeat.x = panelAspect / imageAspect;
+          texture.offset.x = (1 - texture.repeat.x) / 2;
+        } else {
+          texture.repeat.y = imageAspect / panelAspect;
+          texture.offset.y = (1 - texture.repeat.y) * (1 - (project.imageFocusY ?? 50) / 100);
+        }
         material.map = texture;
         material.needsUpdate = true;
       });
@@ -217,7 +314,7 @@ if (canvas && dataEl && titleEl && kickerEl && metaEl) {
       const verticalFov = THREE.MathUtils.degToRad(camera.fov);
       const horizontalFov = 2 * Math.atan(Math.tan(verticalFov / 2) * camera.aspect);
       const limitingFov = Math.min(verticalFov, horizontalFov);
-      state.fitDistance = radius * 1.22 / (Math.sin(limitingFov / 2) * 0.88);
+      state.fitDistance = radius * 1.12 / (Math.sin(limitingFov / 2) * 0.88);
       camera.position.z = state.fitDistance / state.zoom;
       camera.updateProjectionMatrix();
       renderer.setSize(width, height, false);
@@ -259,6 +356,7 @@ if (canvas && dataEl && titleEl && kickerEl && metaEl) {
     function showPreview(project: ArchiveProject) {
       if (!previewCard || !previewImage || !previewKicker || !previewTitle || !previewDescription || !previewMeta || !previewLink) return;
       previewImage.src = project.image;
+      previewImage.style.objectPosition = `50% ${project.imageFocusY ?? 50}%`;
       previewImage.alt = project.alt;
       previewKicker.textContent = project.category + ' / ' + project.year;
       previewTitle.textContent = project.title;
@@ -289,7 +387,7 @@ if (canvas && dataEl && titleEl && kickerEl && metaEl) {
       toggleRailButton?.setAttribute('aria-expanded', String(open));
     }
 
-    const background = [...document.querySelectorAll<HTMLElement>('.site-header, .intro, .discover-panel, .browse-section, .site-footer')];
+    const background = [...document.querySelectorAll<HTMLElement>('.site-header, .intro, .start-section, .discover-panel, .browse-section, .site-footer')];
     const previousOverflow = document.body.style.overflow;
     async function enterImmersive() {
       if (!globeSide) return;
@@ -352,7 +450,10 @@ if (canvas && dataEl && titleEl && kickerEl && metaEl) {
     }
 
     updateGlobeFilter = (slugs) => {
-      for (const panel of panels) panel.visible = slugs.has(panel.userData.slug);
+      for (const panel of panels) {
+        panel.visible = slugs.has(panel.userData.slug);
+        panel.material.opacity = panel.visible ? .96 : 0;
+      }
       if (state.selectedSlug && !slugs.has(state.selectedSlug)) hidePreview();
       if (state.hoverSlug && !slugs.has(state.hoverSlug)) {
         state.hoverSlug = '';
@@ -451,10 +552,19 @@ if (canvas && dataEl && titleEl && kickerEl && metaEl) {
       }
       state.rotationX = THREE.MathUtils.clamp(state.rotationX, -0.9, 0.9);
       globe.rotation.set(state.rotationX, state.rotationY, 0);
+      orbitGroup.rotation.y += state.reducedMotion ? 0 : dt * .035;
+      orbitGroup.rotation.z = Math.sin(clock.elapsedTime * .12) * .035;
+      atmosphere.rotation.y -= state.reducedMotion ? 0 : dt * .02;
+      dust.rotation.y -= state.reducedMotion ? 0 : dt * .012;
+      wireframe.rotation.y -= state.reducedMotion ? 0 : dt * .024;
+      latitude.rotation.y += state.reducedMotion ? 0 : dt * .014;
+      glowShell.material.opacity = .045 + Math.sin(clock.elapsedTime * 1.1) * .018;
       for (const panel of panels) {
         const hover = panel.userData.slug === (state.hoverSlug || state.selectedSlug);
-        const target = hover ? 1.1 : 1;
-        panel.scale.lerp(new THREE.Vector3(target, target, 1), 0.12);
+        const target = panel.userData.baseScale * (hover ? 1.28 : 1);
+        panel.scale.lerp(new THREE.Vector3(target, target, 1), .12);
+        const border = panel.children.find((child) => child instanceof THREE.LineSegments) as THREE.LineSegments | undefined;
+        if (border) (border.material as THREE.LineBasicMaterial).opacity = hover ? 1 : .76;
       }
       renderer.render(scene, camera);
       requestAnimationFrame(render);
