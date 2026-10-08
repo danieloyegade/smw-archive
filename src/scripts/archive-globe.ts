@@ -246,7 +246,9 @@ if (canvas && dataEl && titleEl && kickerEl && metaEl) {
     const nodesGeometry = new THREE.BufferGeometry().setFromPoints(networkNodePositions);
     globe.add(new THREE.Points(nodesGeometry, new THREE.PointsMaterial({ color: 0xff665b, size: .046, transparent: true, opacity: .88, depthWrite: false })));
 
-    const geometry = new THREE.PlaneGeometry(1.55, 1.04, 1, 1);
+    // Keep the archive legible as a constellation. The previous card size meant
+    // that a front-facing card could sit directly on top of the feature story.
+    const geometry = new THREE.PlaneGeometry(1.4, .94, 1, 1);
     const panels: THREE.Mesh<THREE.PlaneGeometry, THREE.MeshBasicMaterial>[] = [];
     const meshBySlug = new Map<string, THREE.Mesh<THREE.PlaneGeometry, THREE.MeshBasicMaterial>>();
     const loader = new THREE.TextureLoader();
@@ -265,9 +267,11 @@ if (canvas && dataEl && titleEl && kickerEl && metaEl) {
       mesh.lookAt(position.clone().multiplyScalar(2));
       mesh.userData.slug = project.slug;
       mesh.userData.project = project;
-      mesh.userData.baseScale = index === 0 ? 1.35 : 1.02 + (index % 4) * .085;
+      mesh.userData.layoutIndex = index;
+      mesh.userData.matchesFilter = true;
+      mesh.userData.baseScale = index === 0 ? 1.1 : .68 + (index % 3) * .045;
       mesh.scale.setScalar(mesh.userData.baseScale);
-      const halo = new THREE.Mesh(new THREE.PlaneGeometry(1.72, 1.21), new THREE.MeshBasicMaterial({ color: 0xaa2a25, transparent: true, opacity: .13, side: THREE.DoubleSide, depthWrite: false }));
+      const halo = new THREE.Mesh(new THREE.PlaneGeometry(1.55, 1.09), new THREE.MeshBasicMaterial({ color: 0xaa2a25, transparent: true, opacity: .13, side: THREE.DoubleSide, depthWrite: false }));
       halo.position.z = -.015;
       mesh.add(halo);
       const border = new THREE.LineSegments(
@@ -451,8 +455,8 @@ if (canvas && dataEl && titleEl && kickerEl && metaEl) {
 
     updateGlobeFilter = (slugs) => {
       for (const panel of panels) {
-        panel.visible = slugs.has(panel.userData.slug);
-        panel.material.opacity = panel.visible ? .96 : 0;
+        panel.userData.matchesFilter = slugs.has(panel.userData.slug);
+        panel.material.opacity = panel.userData.matchesFilter ? .96 : 0;
       }
       if (state.selectedSlug && !slugs.has(state.selectedSlug)) hidePreview();
       if (state.hoverSlug && !slugs.has(state.hoverSlug)) {
@@ -537,6 +541,42 @@ if (canvas && dataEl && titleEl && kickerEl && metaEl) {
     resize();
 
     const clock = new THREE.Clock();
+    const panelWorldPosition = new THREE.Vector3();
+    const panelScreenPosition = new THREE.Vector3();
+    const cameraDirection = new THREE.Vector3();
+    type PanelBounds = { x: number; y: number; width: number; height: number };
+    const visiblePanelBounds: PanelBounds[] = [];
+
+    function updatePanelLayout() {
+      globe.updateMatrixWorld(true);
+      cameraDirection.copy(camera.position).normalize();
+      visiblePanelBounds.length = 0;
+      const ordered = [...panels]
+        .filter((panel) => panel.userData.matchesFilter)
+        .sort((a, b) => a.userData.layoutIndex - b.userData.layoutIndex);
+
+      for (const panel of ordered) {
+        panel.getWorldPosition(panelWorldPosition);
+        const frontness = panelWorldPosition.normalize().dot(cameraDirection);
+        panelScreenPosition.copy(panel.position).applyMatrix4(globe.matrixWorld).project(camera);
+        const feature = panel.userData.layoutIndex === 0;
+        const bounds: PanelBounds = {
+          x: panelScreenPosition.x,
+          y: panelScreenPosition.y,
+          width: feature ? .46 : .19,
+          height: feature ? .32 : .135,
+        };
+        const overlaps = visiblePanelBounds.some((placed) =>
+          Math.abs(bounds.x - placed.x) < (bounds.width + placed.width) / 2 + .025 &&
+          Math.abs(bounds.y - placed.y) < (bounds.height + placed.height) / 2 + .025,
+        );
+        // Cards on the far side of the globe add visual noise without being
+        // selectable. Hide those, plus any projected collision, until rotation
+        // brings them into a clear position.
+        panel.visible = frontness > .08 && !overlaps;
+        if (panel.visible) visiblePanelBounds.push(bounds);
+      }
+    }
     function render() {
       const dt = Math.min(clock.getDelta(), 0.05);
       if (!state.dragging) {
@@ -566,6 +606,7 @@ if (canvas && dataEl && titleEl && kickerEl && metaEl) {
         const border = panel.children.find((child) => child instanceof THREE.LineSegments) as THREE.LineSegments | undefined;
         if (border) (border.material as THREE.LineBasicMaterial).opacity = hover ? 1 : .76;
       }
+      updatePanelLayout();
       renderer.render(scene, camera);
       requestAnimationFrame(render);
     }
