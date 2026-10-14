@@ -1,0 +1,776 @@
+[
+  {
+    "file": "we-out-here-poster.webp",
+    "source": "/Volumes/T7 Shield/SEE MY WORLD ARCHIVE/we out here 2024/See My World X We Out Here/Vids/Main Edit.mp4",
+    "origin": "Samsung T7 Shield",
+    "frame_seconds": 36.4,
+    "original_dimensions": [
+      900,
+      1600
+    ],
+    "dimensions": [
+      900,
+      1600
+    ],
+    "bytes": 140180
+  },
+  {
+    "file": "we-out-here-still-1.webp",
+    "source": "/Volumes/T7 Shield/SEE MY WORLD ARCHIVE/we out here 2024/See My World X We Out Here/Vids/Main Edit.mp4",
+    "origin": "Samsung T7 Shield",
+    "frame_seconds": 6.6,
+    "original_dimensions": [
+      900,
+      1600
+    ],
+    "dimensions": [
+      900,
+      1600
+    ],
+    "bytes": 162772
+  },
+  {
+    "file": "sampha-poster.webp",
+    "source": "/Volumes/T7 Shield/SEE MY WORLD ARCHIVE/we out here 2024/See My World X We Out Here/Vids/Sampha.mp4",
+    "origin": "Samsung T7 Shield",
+    "frame_seconds": 45.7,
+    "original_dimensions": [
+      900,
+      1600
+    ],
+    "dimensions": [
+      900,
+      1600
+    ],
+    "bytes": 150224
+  },
+  {
+    "file": "we-out-here-still-2.webp",
+    "source": "/Volumes/T7 Shield/SEE MY WORLD ARCHIVE/we out here 2024/See My World X We Out Here/Vids/Main Edit.mp4",
+    "origin": "Samsung T7 Shield",
+    "frame_seconds": 96.5,
+    "original_dimensions": [
+      900,
+      1600
+    ],
+    "dimensions": [
+      900,
+      1600
+    ],
+    "bytes": 113668
+  },
+  {
+    "file": "we-out-here.mp4",
+    "source": "/Volumes/T7 Shield/SEE MY WORLD ARCHIVE/we out here 2024/See My World X We Out Here/Vids/Main Edit.mp4",
+    "origin": "Samsung T7 Shield",
+    "duration": 109.63,
+    "streams": [
+      {
+        "codec_name": "h264",
+        "codec_type": "video",
+        "width": 540,
+        "height": 960
+      },
+      {
+        "codec_name": "aac",
+        "codec_type": "audio"
+      }
+    ],
+    "bytes": 18532759
+  },
+  {
+    "file": "sampha-still-1.webp",
+    "source": "/Volumes/T7 Shield/SEE MY WORLD ARCHIVE/we out here 2024/See My World X We Out Here/Vids/Sampha.mp4",
+    "origin": "Samsung T7 Shield",
+    "frame_seconds": 65.3,
+    "original_dimensions": [
+      900,
+      1600
+    ],
+    "dimensions": [
+      900,
+      1600
+    ],
+    "bytes": 63044
+  },
+  {
+    "file": "sampha-still-2.webp",
+    "source": "/Volumes/T7 Shield/SEE MY WORLD ARCHIVE/we out here 2024/See My World X We Out Here/Vids/Sampha.mp4",
+    "origin": "Samsung T7 Shield",
+    "frame_seconds": 91.4,
+    "original_dimensions": [
+      900,
+      1600
+    ],
+    "dimensions": [
+      900,
+      1600
+    ],
+    "bytes": 101596
+  },
+  {
+    "file": "sampha.mp4",
+    "source": "/Volumes/T7 Shield/SEE MY WORLD ARCHIVE/we out here 2024/See My World X We Out Here/Vids/Sampha.mp4",
+    "origin": "Samsung T7 Shield",
+    "duration": 130.516,
+    "streams": [
+      {
+        "codec_name": "h264",
+        "codec_type": "video",
+        "width": 540,
+        "height": 960
+      },
+      {
+        "codec_name": "aac",
+        "codec_type": "audio"
+      }
+    ],
+    "bytes": 20322740
+  },
+  {
+    "file": "corinne-bailey-rae-poster.webp",
+    "source": "/Volumes/T7 Shield/SEE MY WORLD ARCHIVE/we out here 2024/See My World X We Out Here/Vids/Corrine Bailey Rae.mp4",
+    "origin": "Samsung T7 Shield",
+    "frame_seconds": 33.9,
+    "original_dimensions": [
+      900,
+      1600
+    ],
+    "dimensions": [
+      900,
+      1600
+    ],
+    "bytes": 198012
+  },
+  {
+    "file": "corinne-bailey-rae-still-1.webp",
+    "source": "/Volumes/T7 Shield/SEE MY WORLD ARCHIVE/we out here 2024/See My World X We Out Here/Vids/Corrine Bailey Rae.mp4",
+    "origin": "Samsung T7 Shield",
+    "frame_seconds": 17.4,
+    "original_dimensions": [
+      900,
+      1600
+    ],
+    "dimensions": [
+      900,
+      1600
+    ],
+    "bytes": 177076
+  },
+  {
+    "file": "corinne-bailey-rae-still-2.webp",
+    "source": "/Volumes/T7 Shield/SEE MY WORLD ARCHIVE/we out here 2024/See My World X We Out Here/Vids/Corrine Bailey Rae.mp4",
+    "origin": "Samsung T7 Shield",
+    "frame_seconds": 67.8,
+    "original_dimensions": [
+      900,
+      1600
+    ],
+    "dimensions": [
+      900,
+      1600
+    ],
+    "bytes": 106130
+  },
+  {
+    "file": "corinne-bailey-rae.mp4",
+    "source": "/Volumes/T7 Shield/SEE MY WORLD ARCHIVE/we out here 2024/See My World X We Out Here/Vids/Corrine Bailey Rae.mp4",
+    "origin": "Samsung T7 Shield",
+    "duration": 96.873,
+    "streams": [
+      {
+        "codec_name": "h264",
+        "codec_type": "video",
+        "width": 540,
+        "height": 960
+      },
+      {
+        "codec_name": "aac",
+        "codec_type": "audio"
+      }
+    ],
+    "bytes": 15330299
+  },
+  {
+    "file": "yaya-bey-poster.webp",
+    "source": "/Volumes/T7 Shield/SEE MY WORLD ARCHIVE/we out here 2024/See My World X We Out Here/Vids/Yaya Bey.mp4",
+    "origin": "Samsung T7 Shield",
+    "frame_seconds": 8.3,
+    "original_dimensions": [
+      900,
+      1600
+    ],
+    "dimensions": [
+      900,
+      1600
+    ],
+    "bytes": 99856
+  },
+  {
+    "file": "yaya-bey-still-1.webp",
+    "source": "/Volumes/T7 Shield/SEE MY WORLD ARCHIVE/we out here 2024/See My World X We Out Here/Vids/Yaya Bey.mp4",
+    "origin": "Samsung T7 Shield",
+    "frame_seconds": 48.1,
+    "original_dimensions": [
+      900,
+      1600
+    ],
+    "dimensions": [
+      900,
+      1600
+    ],
+    "bytes": 103132
+  },
+  {
+    "file": "yaya-bey-still-2.webp",
+    "source": "/Volumes/T7 Shield/SEE MY WORLD ARCHIVE/we out here 2024/See My World X We Out Here/Vids/Yaya Bey.mp4",
+    "origin": "Samsung T7 Shield",
+    "frame_seconds": 121,
+    "original_dimensions": [
+      900,
+      1600
+    ],
+    "dimensions": [
+      900,
+      1600
+    ],
+    "bytes": 148460
+  },
+  {
+    "file": "yaya-bey.mp4",
+    "source": "/Volumes/T7 Shield/SEE MY WORLD ARCHIVE/we out here 2024/See My World X We Out Here/Vids/Yaya Bey.mp4",
+    "origin": "Samsung T7 Shield",
+    "duration": 137.47,
+    "streams": [
+      {
+        "codec_name": "h264",
+        "codec_type": "video",
+        "width": 540,
+        "height": 960
+      },
+      {
+        "codec_name": "aac",
+        "codec_type": "audio"
+      }
+    ],
+    "bytes": 20084723
+  },
+  {
+    "file": "haus-x-poster.webp",
+    "source": "/Volumes/T7 Shield/SEE MY WORLD ARCHIVE/Haus x - workshopo/Dance Workshop .mp4",
+    "origin": "Samsung T7 Shield",
+    "frame_seconds": 6.2,
+    "original_dimensions": [
+      1600,
+      900
+    ],
+    "dimensions": [
+      1600,
+      900
+    ],
+    "bytes": 58638
+  },
+  {
+    "file": "haus-x-still-1.webp",
+    "source": "/Volumes/T7 Shield/SEE MY WORLD ARCHIVE/Haus x - workshopo/Dance Workshop .mp4",
+    "origin": "Samsung T7 Shield",
+    "frame_seconds": 24.3,
+    "original_dimensions": [
+      1600,
+      900
+    ],
+    "dimensions": [
+      1600,
+      900
+    ],
+    "bytes": 50060
+  },
+  {
+    "file": "haus-x-still-2.webp",
+    "source": "/Volumes/T7 Shield/SEE MY WORLD ARCHIVE/Haus x - workshopo/Dance Workshop .mp4",
+    "origin": "Samsung T7 Shield",
+    "frame_seconds": 30.5,
+    "original_dimensions": [
+      1600,
+      900
+    ],
+    "dimensions": [
+      1600,
+      900
+    ],
+    "bytes": 60516
+  },
+  {
+    "file": "haus-x.mp4",
+    "source": "/Volumes/T7 Shield/SEE MY WORLD ARCHIVE/Haus x - workshopo/Dance Workshop .mp4",
+    "origin": "Samsung T7 Shield",
+    "duration": 34.688,
+    "streams": [
+      {
+        "codec_name": "h264",
+        "codec_type": "video",
+        "width": 1280,
+        "height": 720
+      },
+      {
+        "codec_name": "aac",
+        "codec_type": "audio"
+      }
+    ],
+    "bytes": 5996186
+  },
+  {
+    "file": "sainte-poster.webp",
+    "source": "/Volumes/T7 Shield/SEE MY WORLD ARCHIVE/we out here 2024/See My World X We Out Here/Vids/Saint.mp4",
+    "origin": "Samsung T7 Shield",
+    "frame_seconds": 17.3,
+    "original_dimensions": [
+      900,
+      1600
+    ],
+    "dimensions": [
+      900,
+      1600
+    ],
+    "bytes": 167318
+  },
+  {
+    "file": "sainte-still-1.webp",
+    "source": "/Volumes/T7 Shield/SEE MY WORLD ARCHIVE/we out here 2024/See My World X We Out Here/Vids/Saint.mp4",
+    "origin": "Samsung T7 Shield",
+    "frame_seconds": 67.2,
+    "original_dimensions": [
+      900,
+      1600
+    ],
+    "dimensions": [
+      900,
+      1600
+    ],
+    "bytes": 82772
+  },
+  {
+    "file": "sainte-still-2.webp",
+    "source": "/Volumes/T7 Shield/SEE MY WORLD ARCHIVE/we out here 2024/See My World X We Out Here/Vids/Saint.mp4",
+    "origin": "Samsung T7 Shield",
+    "frame_seconds": 48,
+    "original_dimensions": [
+      900,
+      1600
+    ],
+    "dimensions": [
+      900,
+      1600
+    ],
+    "bytes": 81106
+  },
+  {
+    "file": "sainte.mp4",
+    "source": "/Volumes/T7 Shield/SEE MY WORLD ARCHIVE/we out here 2024/See My World X We Out Here/Vids/Saint.mp4",
+    "origin": "Samsung T7 Shield",
+    "duration": 95.913,
+    "streams": [
+      {
+        "codec_name": "h264",
+        "codec_type": "video",
+        "width": 540,
+        "height": 960
+      },
+      {
+        "codec_name": "aac",
+        "codec_type": "audio"
+      }
+    ],
+    "bytes": 18537909
+  },
+  {
+    "file": "closer-to-my-dreams-poster.webp",
+    "source": "/Volumes/T7 Shield/SEE MY WORLD ARCHIVE/Chad Taylor - closer to my dreams/closer to my dreams intro cred fix.mp4",
+    "origin": "Samsung T7 Shield",
+    "frame_seconds": 21.7,
+    "original_dimensions": [
+      1600,
+      900
+    ],
+    "dimensions": [
+      1600,
+      900
+    ],
+    "bytes": 229116
+  },
+  {
+    "file": "closer-to-my-dreams-still-1.webp",
+    "source": "/Volumes/T7 Shield/SEE MY WORLD ARCHIVE/Chad Taylor - closer to my dreams/closer to my dreams intro cred fix.mp4",
+    "origin": "Samsung T7 Shield",
+    "frame_seconds": 180.7,
+    "original_dimensions": [
+      1600,
+      900
+    ],
+    "dimensions": [
+      1600,
+      900
+    ],
+    "bytes": 152424
+  },
+  {
+    "file": "closer-to-my-dreams-still-2.webp",
+    "source": "/Volumes/T7 Shield/SEE MY WORLD ARCHIVE/Chad Taylor - closer to my dreams/closer to my dreams intro cred fix.mp4",
+    "origin": "Samsung T7 Shield",
+    "frame_seconds": 280,
+    "original_dimensions": [
+      1600,
+      900
+    ],
+    "dimensions": [
+      1600,
+      900
+    ],
+    "bytes": 81632
+  },
+  {
+    "file": "closer-to-my-dreams.mp4",
+    "source": "/Volumes/T7 Shield/SEE MY WORLD ARCHIVE/Chad Taylor - closer to my dreams/closer to my dreams intro cred fix.mp4",
+    "origin": "Samsung T7 Shield",
+    "duration": 361.45,
+    "streams": [
+      {
+        "codec_name": "h264",
+        "codec_type": "video",
+        "width": 1280,
+        "height": 720
+      },
+      {
+        "codec_name": "aac",
+        "codec_type": "audio"
+      }
+    ],
+    "bytes": 57908740
+  },
+  {
+    "file": "liberation-1.webp",
+    "source": "/Volumes/T7 Shield/SEE MY WORLD ARCHIVE/SEE MY WORLD 2025/LIBERATION @ Royal Exchange Theatre - 15th July 2025/Liberation photography by Daniel Oyegade - 15th july 2025/DSC_2526.jpg",
+    "origin": "Samsung T7 Shield",
+    "frame_seconds": null,
+    "original_dimensions": [
+      6048,
+      4024
+    ],
+    "dimensions": [
+      2200,
+      1464
+    ],
+    "bytes": 248614
+  },
+  {
+    "file": "liberation-2.webp",
+    "source": "/Volumes/T7 Shield/SEE MY WORLD ARCHIVE/SEE MY WORLD 2025/LIBERATION @ Royal Exchange Theatre - 15th July 2025/Liberation photography by Daniel Oyegade - 15th july 2025/DSC_2283.jpg",
+    "origin": "Samsung T7 Shield",
+    "frame_seconds": null,
+    "original_dimensions": [
+      6048,
+      4024
+    ],
+    "dimensions": [
+      2200,
+      1464
+    ],
+    "bytes": 377872
+  },
+  {
+    "file": "liberation-3.webp",
+    "source": "/Volumes/T7 Shield/SEE MY WORLD ARCHIVE/SEE MY WORLD 2025/LIBERATION @ Royal Exchange Theatre - 15th July 2025/Liberation photography by Daniel Oyegade - 15th july 2025/DSC_2391.jpg",
+    "origin": "Samsung T7 Shield",
+    "frame_seconds": null,
+    "original_dimensions": [
+      6048,
+      4024
+    ],
+    "dimensions": [
+      2200,
+      1464
+    ],
+    "bytes": 397530
+  },
+  {
+    "file": "liberation-4.webp",
+    "source": "/Volumes/T7 Shield/SEE MY WORLD ARCHIVE/SEE MY WORLD 2025/LIBERATION @ Royal Exchange Theatre - 15th July 2025/Liberation photography by Daniel Oyegade - 15th july 2025/DSC_2139.jpg",
+    "origin": "Samsung T7 Shield",
+    "frame_seconds": null,
+    "original_dimensions": [
+      6048,
+      4024
+    ],
+    "dimensions": [
+      2200,
+      1464
+    ],
+    "bytes": 367872
+  },
+  {
+    "file": "liberation-5.webp",
+    "source": "/Volumes/T7 Shield/SEE MY WORLD ARCHIVE/SEE MY WORLD 2025/LIBERATION @ Royal Exchange Theatre - 15th July 2025/Liberation photography by Daniel Oyegade - 15th july 2025/DSC_2435.jpg",
+    "origin": "Samsung T7 Shield",
+    "frame_seconds": null,
+    "original_dimensions": [
+      6048,
+      4024
+    ],
+    "dimensions": [
+      2200,
+      1464
+    ],
+    "bytes": 380076
+  },
+  {
+    "file": "liberation-6.webp",
+    "source": "/Volumes/T7 Shield/SEE MY WORLD ARCHIVE/SEE MY WORLD 2025/LIBERATION @ Royal Exchange Theatre - 15th July 2025/Liberation photography by Daniel Oyegade - 15th july 2025/DSC_2561.jpg",
+    "origin": "Samsung T7 Shield",
+    "frame_seconds": null,
+    "original_dimensions": [
+      6048,
+      4024
+    ],
+    "dimensions": [
+      2200,
+      1464
+    ],
+    "bytes": 232896
+  },
+  {
+    "file": "isaiah-1.webp",
+    "source": "/Volumes/T7 Shield/SEE MY WORLD ARCHIVE/SEE MY WORLD 2025/Isaiah Hull @ SOUP - 12th July 2025/DSC_1812.jpg",
+    "origin": "Samsung T7 Shield",
+    "frame_seconds": null,
+    "original_dimensions": [
+      6048,
+      4024
+    ],
+    "dimensions": [
+      2200,
+      1464
+    ],
+    "bytes": 510074
+  },
+  {
+    "file": "isaiah-2.webp",
+    "source": "/Volumes/T7 Shield/SEE MY WORLD ARCHIVE/SEE MY WORLD 2025/Isaiah Hull @ SOUP - 12th July 2025/DSC_1821.jpg",
+    "origin": "Samsung T7 Shield",
+    "frame_seconds": null,
+    "original_dimensions": [
+      6048,
+      4024
+    ],
+    "dimensions": [
+      2200,
+      1464
+    ],
+    "bytes": 158988
+  },
+  {
+    "file": "isaiah-3.webp",
+    "source": "/Volumes/T7 Shield/SEE MY WORLD ARCHIVE/SEE MY WORLD 2025/Isaiah Hull @ SOUP - 12th July 2025/25.jpg",
+    "origin": "Samsung T7 Shield",
+    "frame_seconds": null,
+    "original_dimensions": [
+      3368,
+      2232
+    ],
+    "dimensions": [
+      2200,
+      1458
+    ],
+    "bytes": 385206
+  },
+  {
+    "file": "isaiah-4.webp",
+    "source": "/Volumes/T7 Shield/SEE MY WORLD ARCHIVE/SEE MY WORLD 2025/Isaiah Hull @ SOUP - 12th July 2025/DSC_1741.jpg",
+    "origin": "Samsung T7 Shield",
+    "frame_seconds": null,
+    "original_dimensions": [
+      6048,
+      4024
+    ],
+    "dimensions": [
+      2200,
+      1464
+    ],
+    "bytes": 137186
+  },
+  {
+    "file": "isaiah-5.webp",
+    "source": "/Volumes/T7 Shield/SEE MY WORLD ARCHIVE/SEE MY WORLD 2025/Isaiah Hull @ SOUP - 12th July 2025/DSC_1700.jpg",
+    "origin": "Samsung T7 Shield",
+    "frame_seconds": null,
+    "original_dimensions": [
+      6048,
+      4024
+    ],
+    "dimensions": [
+      2200,
+      1464
+    ],
+    "bytes": 1164556
+  },
+  {
+    "file": "isaiah-6.webp",
+    "source": "/Volumes/T7 Shield/SEE MY WORLD ARCHIVE/SEE MY WORLD 2025/Isaiah Hull @ SOUP - 12th July 2025/DSC_1851.jpg",
+    "origin": "Samsung T7 Shield",
+    "frame_seconds": null,
+    "original_dimensions": [
+      6048,
+      4024
+    ],
+    "dimensions": [
+      2200,
+      1464
+    ],
+    "bytes": 431976
+  },
+  {
+    "file": "homage-1.webp",
+    "source": "/Volumes/T7 Shield/SEE MY WORLD ARCHIVE/SEE MY WORLD 2025/HOMAGE @ CONTACT/HOMAGE PHOTOS - DANIEL/DSC_7507.jpg",
+    "origin": "Samsung T7 Shield",
+    "frame_seconds": null,
+    "original_dimensions": [
+      6048,
+      4024
+    ],
+    "dimensions": [
+      2200,
+      1464
+    ],
+    "bytes": 241732
+  },
+  {
+    "file": "homage-2.webp",
+    "source": "/Volumes/T7 Shield/SEE MY WORLD ARCHIVE/SEE MY WORLD 2025/HOMAGE @ CONTACT/HOMAGE PHOTOS - DANIEL/DSC_7522.jpg",
+    "origin": "Samsung T7 Shield",
+    "frame_seconds": null,
+    "original_dimensions": [
+      6048,
+      4024
+    ],
+    "dimensions": [
+      2200,
+      1464
+    ],
+    "bytes": 173088
+  },
+  {
+    "file": "homage-3.webp",
+    "source": "/Volumes/T7 Shield/SEE MY WORLD ARCHIVE/SEE MY WORLD 2025/HOMAGE @ CONTACT/HOMAGE PHOTOS - DANIEL/DSC_7557.jpg",
+    "origin": "Samsung T7 Shield",
+    "frame_seconds": null,
+    "original_dimensions": [
+      6048,
+      4024
+    ],
+    "dimensions": [
+      2200,
+      1464
+    ],
+    "bytes": 260648
+  },
+  {
+    "file": "homage-4.webp",
+    "source": "/Volumes/T7 Shield/SEE MY WORLD ARCHIVE/SEE MY WORLD 2025/HOMAGE @ CONTACT/HOMAGE PHOTOS - DANIEL/DSC_7586-2.jpg",
+    "origin": "Samsung T7 Shield",
+    "frame_seconds": null,
+    "original_dimensions": [
+      6048,
+      4024
+    ],
+    "dimensions": [
+      2200,
+      1464
+    ],
+    "bytes": 120644
+  },
+  {
+    "file": "homage-5.webp",
+    "source": "/Volumes/T7 Shield/SEE MY WORLD ARCHIVE/SEE MY WORLD 2025/HOMAGE @ CONTACT/HOMAGE PHOTOS - DANIEL/DSC_7604.jpg",
+    "origin": "Samsung T7 Shield",
+    "frame_seconds": null,
+    "original_dimensions": [
+      6048,
+      4024
+    ],
+    "dimensions": [
+      2200,
+      1464
+    ],
+    "bytes": 149096
+  },
+  {
+    "file": "homage-6.webp",
+    "source": "/Volumes/T7 Shield/SEE MY WORLD ARCHIVE/SEE MY WORLD 2025/HOMAGE @ CONTACT/HOMAGE PHOTOS - DANIEL/DSC_7691.jpg",
+    "origin": "Samsung T7 Shield",
+    "frame_seconds": null,
+    "original_dimensions": [
+      6048,
+      4024
+    ],
+    "dimensions": [
+      2200,
+      1464
+    ],
+    "bytes": 173624
+  },
+  {
+    "file": "homage-stage-1.webp",
+    "source": "/Volumes/T7 Shield/SEE MY WORLD ARCHIVE/SEE MY WORLD 2025/HOMAGE @ CONTACT/HOMAGE - CONTACT/03_Photography/01_Digital/DSC_4377.JPG",
+    "origin": "Samsung T7 Shield",
+    "original_dimensions": [
+      6048,
+      4024
+    ],
+    "dimensions": [
+      2200,
+      1464
+    ],
+    "bytes": 223204
+  },
+  {
+    "file": "homage-stage-2.webp",
+    "source": "/Volumes/T7 Shield/SEE MY WORLD ARCHIVE/SEE MY WORLD 2025/HOMAGE @ CONTACT/HOMAGE - CONTACT/03_Photography/01_Digital/DSC_4584.JPG",
+    "origin": "Samsung T7 Shield",
+    "original_dimensions": [
+      6048,
+      4024
+    ],
+    "dimensions": [
+      2200,
+      1464
+    ],
+    "bytes": 22080
+  },
+  {
+    "file": "homage-stage-3.webp",
+    "source": "/Volumes/T7 Shield/SEE MY WORLD ARCHIVE/SEE MY WORLD 2025/HOMAGE @ CONTACT/HOMAGE - CONTACT/03_Photography/01_Digital/DSC_4532.JPG",
+    "origin": "Samsung T7 Shield",
+    "original_dimensions": [
+      6048,
+      4024
+    ],
+    "dimensions": [
+      2200,
+      1464
+    ],
+    "bytes": 54226
+  },
+  {
+    "file": "homage-gathering.webp",
+    "source": "/private/tmp/smw-curation/more/dropbox-homage.jpg",
+    "origin": "Dropbox: SMW Media Files/October 2025 Events/Homage/Homage Photography/Daniel/Digital/Homage digital, edited/DSC_4055.jpg",
+    "original_dimensions": [
+      6048,
+      4024
+    ],
+    "dimensions": [
+      2200,
+      1464
+    ],
+    "bytes": 131464
+  }
+]

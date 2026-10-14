@@ -60,17 +60,17 @@ const asset = (name: string) => publicBase + 'images/events/' + name + '.webp';
     .wordmark img { width: 100%; height: auto; }
     nav { display: flex; gap: 2rem; }
     nav a { font-size: .69rem; font-weight: 800; letter-spacing: .13em; text-transform: uppercase; }
-    nav a[aria-current], nav a:hover, footer a:hover { color: #69b96e; }
+    nav a[aria-current], nav a:hover, footer a:hover { color: var(--green); }
     .hero { display: grid; grid-template-columns: 1fr 43%; min-height: min(760px, calc(100svh - 106px)); border-bottom: 1px solid #722322; }
     .hero-copy { display: flex; flex-direction: column; align-items: start; justify-content: end; padding: clamp(3rem, 6vw, 7rem); }
     .eyebrow, .section-label { color: #ef4b43; font-size: .7rem; font-weight: 900; letter-spacing: .17em; text-transform: uppercase; }
     h1, h2, p { margin-top: 0; }
     h1 { font-size: clamp(4rem, 7vw, 8rem); line-height: .9; letter-spacing: -.075em; text-transform: uppercase; margin: 1rem 0 2rem; }
-    h1 span, h2 span { color: #69b96e; }
+    h1 span, h2 span { color: var(--green); }
     .lead { max-width: 36rem; font-size: clamp(1.1rem, 1.6vw, 1.5rem); line-height: 1.5; color: #d0d3ce; }
     .hero-copy a, .exchange-copy a { display: inline-flex; gap: 1rem; padding-bottom: .45rem; border-bottom: 1px solid #ef4b43; margin-top: 1.2rem; text-transform: uppercase; font-size: .69rem; font-weight: 900; letter-spacing: .11em; }
     .hero-copy a span, .exchange-copy a span { color: #ef4b43; }
-    .hero-copy a:hover, .exchange-copy a:hover { color: #69b96e; }
+    .hero-copy a:hover, .exchange-copy a:hover { color: var(--green); }
     .hero-image, .practice-image, .exchange-image { overflow: hidden; background: #111; }
     .hero-image img, .practice-image img, .exchange-image img { width: 100%; height: 100%; object-fit: cover; }
     .origin { display: grid; grid-template-columns: 1fr 2fr; gap: 2rem; padding: 6rem clamp(1.25rem, 5vw, 6rem); border-bottom: 1px solid #722322; }

@@ -51,7 +51,7 @@ const asset = (path: string) => publicBase + path.replace(/^\//, '');
   .media-section { padding: 4rem clamp(1.25rem,5vw,6rem); border-bottom: 1px solid #722322; scroll-margin-top: 1rem; }
   .media-heading > span { color: #ef6b62; font-size: .67rem; text-transform: uppercase; font-weight: 900; letter-spacing: .13em; }
   .media-heading h2 { font-size: clamp(2.5rem,5vw,5.5rem); text-transform: uppercase; line-height: .97; letter-spacing: -.06em; margin: .85rem 0 1rem; }
-  .media-heading h2 span { color: #69b96e; }
+  .media-heading h2 span { color: var(--green); }
   .media-heading > p { max-width: 650px; color: #c0c6ba; line-height: 1.6; font-size: .9rem; margin-bottom: 2rem; }
   .media-list { display: grid; grid-template-columns: repeat(2,minmax(0,1fr)); gap: 1.5rem; }
   .media-list.single { grid-template-columns: minmax(0,1fr); }
@@ -71,15 +71,15 @@ const asset = (path: string) => publicBase + path.replace(/^\//, '');
   video { display: block; width: 100%; height: auto; max-height: 72svh; aspect-ratio: 16 / 10; object-fit: contain; }
   video.portrait { width: min(100%, calc(75svh * 9 / 16)); max-height: none; aspect-ratio: 9 / 16; margin-inline: auto; }
   .media-copy { padding: 1.25rem; }
-  .media-copy small { color: #69b96e; text-transform: uppercase; font-size: .65rem; letter-spacing: .12em; font-weight: 900; }
+  .media-copy small { color: var(--green); text-transform: uppercase; font-size: .65rem; letter-spacing: .12em; font-weight: 900; }
   .media-copy h3 { font-size: clamp(1.2rem,2vw,2rem); line-height: 1.15; margin: .6rem 0; }
   .media-copy p { color: #c0c6ba; max-width: 750px; line-height: 1.6; font-size: .9rem; margin: .5rem 0 0; }
-  .media-copy .media-note { color: #69b96e; font-size: .75rem; }
+  .media-copy .media-note { color: var(--green); font-size: .75rem; }
   .audio-item .media-frame > img { width: 100%; height: 400px; object-fit: cover; opacity: .75; }
   .audio-player { position: absolute; bottom: 0; left: 0; right: 0; padding: 2.5rem 1.25rem 1.25rem; background: linear-gradient(transparent,#000e); display: grid; gap: .8rem; }
   .audio-player span { font-size: .7rem; font-weight: 800; letter-spacing: .1em; text-transform: uppercase; }
   audio { width: min(100%,600px); }
-  .playback-status { color: #69b96e; font-size: .8rem; }
+  .playback-status { color: var(--green); font-size: .8rem; }
   .playback-status:empty { display: none; }
   @media(max-width:680px) { .media-list { grid-template-columns: minmax(0,1fr); } .media-section { padding: 3rem 1rem; } .audio-item .media-frame > img { height: 320px; } }
 </style>
