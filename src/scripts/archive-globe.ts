@@ -393,7 +393,7 @@ if (canvas && dataEl && titleEl && kickerEl && metaEl) {
       const desired = -Math.atan2(mesh.position.x, mesh.position.z);
       const difference = Math.atan2(Math.sin(desired - state.rotationY), Math.cos(desired - state.rotationY));
       state.focusRotationY = state.rotationY + difference;
-      state.rotationX = 0;
+      state.rotationX = Math.atan2(mesh.position.y, Math.hypot(mesh.position.x, mesh.position.z));
       state.velocityX = state.velocityY = 0;
       setZoom(Math.max(state.zoom, 1.1));
       showPreview(project);
