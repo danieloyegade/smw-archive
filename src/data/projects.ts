@@ -1,4 +1,6 @@
 import { engagingProjects } from './engaging-projects';
+import { eventProjects as eventAdditions, eventImage as accessImage, eventMedia } from './event-projects';
+export { experienceType, experienceTypes, formatDuration } from './experience';
 
 export interface ArchiveProject {
   id: number;
@@ -9,6 +11,7 @@ export interface ArchiveProject {
   date: string;
   venue: string;
   image: string;
+  globeImage?: string;
   imageFocusY?: number;
   gallery: string[];
   alt: string;
@@ -21,6 +24,10 @@ export interface ArchiveProject {
   invitation?: string;
   visitLabel?: string;
   photoCaptions?: string[];
+  experiences?: ('watch' | 'listen' | 'look')[];
+  themes?: string[];
+  relatedSlugs?: string[];
+  artworkGallery?: boolean;
 }
 
 export interface ArchiveMedia {
@@ -32,12 +39,11 @@ export interface ArchiveMedia {
   description: string;
   note?: string;
   portrait?: boolean;
+  captions?: string;
+  transcript?: { start: number; text: string }[];
+  longForm?: boolean;
 }
 export const curatedAsset = (name: string) => '/media/curated/' + name;
-export const experienceType = (project: ArchiveProject) =>
-  project.media?.some((item) => item.kind === 'audio') ? 'listen' :
-  project.media?.some((item) => item.kind === 'video') ? 'watch' : 'look';
-
 const eventImage = (name: string) => '/images/events/' + name + '.webp';
 
 // Editorial copy is based on the official See My World event pages.
@@ -300,15 +306,61 @@ for (const project of eventProjects) {
 // Keep the original event records above as source history. Discovery is a tighter
 // selection of distinct artist work, performances and visually strong collections.
 const selected = [
+  ...eventAdditions,
   ...engagingProjects,
   ...curatedProjects.filter((project) => project.slug !== 'soundtrack-sketch'),
   ...eventProjects.filter((project) => project.slug === 'connected-fragments-exhibition'),
 ];
-const editorialOrder = ['sampha-we-out-here', 'homage-manchester-moves', 'closer-to-my-dreams', 'yaya-bey-we-out-here',
-  'manchester-lagos-me', 'corinne-bailey-rae-we-out-here', 'we-out-here-2024', 'isaiah-hull-at-soup', 'sainte-we-out-here',
+const editorialOrder = ['gloria-rose-design', 'sampha-we-out-here', 'linford-everyday-people', 'homage-manchester-moves',
+  'dialled-in-voices', 'closer-to-my-dreams', 'shirley-may-belonging', 'yaya-bey-we-out-here',
+  'manchester-lagos-me', 'pie-radio-opportunities', 'corinne-bailey-rae-we-out-here', 'misha-b-live-lounge',
+  'we-out-here-2024', 'hakim-adi-history', 'isaiah-hull-at-soup', 'junior-akinola-belonging', 'sainte-we-out-here',
   'haus-x-dance-workshop', 'temne-making-together', 'liberation-speakeasy', 'portico-supper-club',
   'connected-fragments-exhibition', 'movement-across-distance'];
 export const projects: ArchiveProject[] = editorialOrder.map((slug) => selected.find((project) => project.slug === slug)!);
+const originalThemes: Record<string, string[]> = {
+  'sampha-we-out-here':['Live moments'], 'homage-manchester-moves':['Making','Live moments'],
+  'closer-to-my-dreams':['Making'], 'yaya-bey-we-out-here':['Voices','Live moments'],
+  'manchester-lagos-me':['Making','Community'], 'corinne-bailey-rae-we-out-here':['Voices','Live moments'],
+  'we-out-here-2024':['Community','Live moments'], 'isaiah-hull-at-soup':['Live moments','Voices'],
+  'sainte-we-out-here':['Voices','Live moments'], 'haus-x-dance-workshop':['Making','Community'],
+  'temne-making-together':['Making','Community'], 'liberation-speakeasy':['Community','Live moments'],
+  'portico-supper-club':['Community'], 'connected-fragments-exhibition':['Making','Community'],
+  'movement-across-distance':['Making'],
+};
+for (const project of projects) {
+  project.globeImage = '/media/event/globe-' + project.slug + '.webp';
+  project.themes ??= originalThemes[project.slug] ?? [];
+  if (['manchester-lagos-me','temne-making-together'].includes(project.slug)) project.experiences = ['watch','look'];
+  if (project.slug === 'closer-to-my-dreams') {
+    project.media = [eventMedia('chad-short','A first encounter with Closer to My Dreams','A complete short archive edit, before choosing the six-minute film.'),eventMedia('chad-voice','A voice inside the story','A second existing short edit combining voice, ambition and movement.'),...project.media!.map(item=>({...item,longForm:true}))];
+    project.visitLabel = '37 sec first film · complete six-minute film available';
+    project.relatedSlugs = ['gloria-rose-design','homage-manchester-moves','haus-x-dance-workshop'];
+  }
+  if (project.slug === 'connected-fragments-exhibition') {
+    project.title = 'Connected Fragments: inside the artwork';
+    project.image = accessImage('fragments-blue');
+    project.gallery = ['fragments-new-life','fragments-vanitas','fragments-vanitas-detail','fragments-canoe','fragments-canoe-detail'].map(accessImage);
+    project.alt = 'A painting with blue figures from the Connected Fragments archive collection';
+    project.description = 'A whole painting. A small detail. Explore colour, figures and texture through artworks held in the Connected Fragments collection.';
+    project.story[1] = 'Artists Chigozie Obi, Daniel Oyegade and Dou approached daily life through their own visual language. Together, the exhibition examined heritage, identity and connections between Nigeria and the UK.';
+    project.story[2] = 'The exhibition film preserves visitors, artworks and conversation in the library. The image gallery offers a closer look at complete works and details held in the archive.';
+    project.story.push('These scans open a different way into the exhibition: look at a complete work, then notice its marks, textures and details. The image viewer lets you zoom in and move around a larger view.');
+    project.photoCaptions = ['Get out: goodbyes — title recorded in the archive filename.','New life — title recorded in the archive filename.','Vanitas sanguinem I — complete work.','Vanitas sanguinem I — archive detail photograph.','canto 3 — complete work.','canto 3 — archive detail photograph.'];
+    project.artworkGallery = true;
+    project.experiences = ['look','watch'];
+    project.visitLabel = '6 artwork views · zoom in + 68 sec exhibition film';
+    project.invitation = 'Which detail changes the longer you look?';
+    project.relatedSlugs = ['temne-making-together','manchester-lagos-me','gloria-rose-design'];
+  }
+  if (project.slug === 'isaiah-hull-at-soup') {
+    project.media = [eventMedia('isaiah-lounge-1','A different moment: the live lounge','An earlier archive performance with a voice and string players in an unusual setting. This is a separate occasion from SOUP.'),eventMedia('isaiah-lounge-2','Stay with the live-lounge performance','Another complete short edit from the live-lounge collection; recording date unlisted.')];
+    project.story.push('A separate live-lounge performance gives another way into the artist’s work. Its archive edits were exported in February 2022; it is not footage of the July 2025 SOUP event shown in the photographs.');
+    project.experiences = ['look','watch'];
+    project.visitLabel = '6 SOUP photographs + 2 separate live-lounge clips';
+    project.relatedSlugs = ['shirley-may-belonging','misha-b-live-lounge','junior-akinola-belonging'];
+  }
+}
 export const projectBySlug = new Map(projects.map((project) => [project.slug, project]));
 export const archiveRedirects: Record<string, string> = {
   'festival-programme-2021': 'we-out-here-2024',
@@ -321,7 +373,7 @@ export const archiveRedirects: Record<string, string> = {
   'soundtrack-sketch': 'manchester-lagos-me',
 };
 export const archiveTrails = [
-  { id: 'first-look', title: 'Start with a spark', time: 'About 4 minutes', description: 'Sampha, dance in the city and a journey to Lagos.', slugs: ['sampha-we-out-here', 'homage-manchester-moves', 'manchester-lagos-me'] },
-  { id: 'artist-voices', title: 'Backstage. Centre stage.', time: 'About 6 minutes', description: 'Get closer to Yaya Bey, Corinne Bailey Rae and Sainté.', slugs: ['yaya-bey-we-out-here', 'corinne-bailey-rae-we-out-here', 'sainte-we-out-here'] },
-  { id: 'making', title: 'The body tells a story', time: 'Stay for a film', description: 'Dreams, choreography and the joy of making together.', slugs: ['closer-to-my-dreams', 'haus-x-dance-workshop', 'temne-making-together'] },
+  { id: 'first-look', title: 'An idea becomes real', time: 'Three short first encounters', description: 'Sneaker design, a dance film and a microphone that opens doors.', slugs: ['gloria-rose-design', 'closer-to-my-dreams', 'pie-radio-opportunities'] },
+  { id: 'artist-voices', title: 'Where we belong', time: 'Watch. Listen. Look.', description: 'Memories of Jamaica, musical roots and a shared table.', slugs: ['linford-everyday-people', 'dialled-in-voices', 'portico-supper-club'] },
+  { id: 'making', title: 'A voice carries', time: 'Follow a voice across stories', description: 'Shirley’s memories, Isaiah’s performance and Hakim’s missing history.', slugs: ['shirley-may-belonging', 'isaiah-hull-at-soup', 'hakim-adi-history'] },
 ];

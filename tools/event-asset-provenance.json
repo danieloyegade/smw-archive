@@ -1,0 +1,554 @@
+[
+  {
+    "name": "gloria-design",
+    "kind": "video",
+    "src": "/media/event/gloria-design.mp4",
+    "seconds": 47,
+    "duration": 46.56,
+    "source": "SEE_MY_WORLD_ARCHIVE/00_ADMIN_AND_GOVERNANCE/ROOT_FILES/social skits 1.zip::GLORIA CLIP 2.mp4",
+    "source_start": 0,
+    "source_seconds": 46.56,
+    "bytes": 2928531,
+    "images": [
+      "/media/event/gloria-design-poster.webp",
+      "/media/event/gloria-design-still.webp"
+    ],
+    "portrait": false
+  },
+  {
+    "name": "gloria-ambition",
+    "kind": "video",
+    "src": "/media/event/gloria-ambition.mp4",
+    "seconds": 67,
+    "duration": 67.44,
+    "source": "SEE_MY_WORLD_ARCHIVE/00_ADMIN_AND_GOVERNANCE/ROOT_FILES/social skits 1.zip::GLORIA CLIP 3.mp4",
+    "source_start": 0,
+    "source_seconds": 67.44,
+    "bytes": 7315887,
+    "images": [
+      "/media/event/gloria-ambition-poster.webp",
+      "/media/event/gloria-ambition-still.webp"
+    ],
+    "portrait": false
+  },
+  {
+    "name": "gloria-portrait",
+    "kind": "video",
+    "src": "/media/event/gloria-portrait.mp4",
+    "seconds": 433,
+    "duration": 432.8,
+    "source": "SEE_MY_WORLD_ARCHIVE/04_ORAL_HISTORIES_AND_PROFILES/GLORIA_X_CLINTS/GLORIA CLIP 1.mp4",
+    "source_start": 0,
+    "source_seconds": 432.8,
+    "bytes": 37211844,
+    "images": [
+      "/media/event/gloria-portrait-poster.webp",
+      "/media/event/gloria-portrait-still.webp"
+    ],
+    "portrait": false
+  },
+  {
+    "name": "linford-childhood",
+    "kind": "video",
+    "src": "/media/event/linford-childhood.mp4",
+    "seconds": 43,
+    "duration": 42.5835,
+    "source": "SEE_MY_WORLD_ARCHIVE/01_SEE_MY_WORLD_PROGRAMMES/2026/Everyday_People/Lindford full interview .mov",
+    "source_start": 121.1,
+    "source_seconds": 42.55,
+    "bytes": 1512665,
+    "images": [
+      "/media/event/linford-childhood-poster.webp",
+      "/media/event/linford-childhood-still.webp"
+    ],
+    "portrait": false
+  },
+  {
+    "name": "linford-mentors",
+    "kind": "video",
+    "src": "/media/event/linford-mentors.mp4",
+    "seconds": 41,
+    "duration": 40.5405,
+    "source": "SEE_MY_WORLD_ARCHIVE/01_SEE_MY_WORLD_PROGRAMMES/2026/Everyday_People/Lindford full interview .mov",
+    "source_start": 665.9,
+    "source_seconds": 40.5,
+    "bytes": 1799979,
+    "images": [
+      "/media/event/linford-mentors-poster.webp",
+      "/media/event/linford-mentors-still.webp"
+    ],
+    "portrait": false
+  },
+  {
+    "name": "linford-places",
+    "kind": "video",
+    "src": "/media/event/linford-places.mp4",
+    "seconds": 40,
+    "duration": 40.414667,
+    "source": "SEE_MY_WORLD_ARCHIVE/01_SEE_MY_WORLD_PROGRAMMES/2026/Everyday_People/Lindford full interview .mov",
+    "source_start": 1285.0,
+    "source_seconds": 40.4,
+    "bytes": 1634120,
+    "images": [
+      "/media/event/linford-places-poster.webp",
+      "/media/event/linford-places-still.webp"
+    ],
+    "portrait": false
+  },
+  {
+    "name": "shirley-belonging",
+    "kind": "video",
+    "src": "/media/event/shirley-belonging.mp4",
+    "seconds": 78,
+    "duration": 77.52,
+    "source": "SEE_MY_WORLD_ARCHIVE/04_ORAL_HISTORIES_AND_PROFILES/SHIRLEY_MAY/Shirley May 18.01.mp4",
+    "source_start": 830.6,
+    "source_seconds": 77.5,
+    "bytes": 3107758,
+    "images": [
+      "/media/event/shirley-belonging-poster.webp",
+      "/media/event/shirley-belonging-still.webp"
+    ],
+    "portrait": false
+  },
+  {
+    "name": "shirley-making",
+    "kind": "video",
+    "src": "/media/event/shirley-making.mp4",
+    "seconds": 41,
+    "duration": 41.2,
+    "source": "SEE_MY_WORLD_ARCHIVE/04_ORAL_HISTORIES_AND_PROFILES/SHIRLEY_MAY/Shirley May 18.01.mp4",
+    "source_start": 231.3,
+    "source_seconds": 41.2,
+    "bytes": 1644848,
+    "images": [
+      "/media/event/shirley-making-poster.webp",
+      "/media/event/shirley-making-still.webp"
+    ],
+    "portrait": false
+  },
+  {
+    "name": "shirley-mother",
+    "kind": "video",
+    "src": "/media/event/shirley-mother.mp4",
+    "seconds": 31,
+    "duration": 31.32,
+    "source": "SEE_MY_WORLD_ARCHIVE/04_ORAL_HISTORIES_AND_PROFILES/SHIRLEY_MAY/Shirley May 18.01.mp4",
+    "source_start": 726.0,
+    "source_seconds": 31.3,
+    "bytes": 1530030,
+    "images": [
+      "/media/event/shirley-mother-poster.webp",
+      "/media/event/shirley-mother-still.webp"
+    ],
+    "portrait": false
+  },
+  {
+    "name": "hakim-finding-history",
+    "kind": "video",
+    "src": "/media/event/hakim-finding-history.mp4",
+    "seconds": 85,
+    "duration": 84.68,
+    "source": "SEE_MY_WORLD_ARCHIVE/04_ORAL_HISTORIES_AND_PROFILES/HAKIM_ADI_ARCHIVE/09. Dr. Hakim Adi 18.01.mp4",
+    "source_start": 109.4,
+    "source_seconds": 84.65,
+    "bytes": 3475765,
+    "images": [
+      "/media/event/hakim-finding-history-poster.webp",
+      "/media/event/hakim-finding-history-still.webp"
+    ],
+    "portrait": false
+  },
+  {
+    "name": "hakim-manchester",
+    "kind": "video",
+    "src": "/media/event/hakim-manchester.mp4",
+    "seconds": 89,
+    "duration": 88.52,
+    "source": "SEE_MY_WORLD_ARCHIVE/04_ORAL_HISTORIES_AND_PROFILES/HAKIM_ADI_ARCHIVE/09. Dr. Hakim Adi 18.01.mp4",
+    "source_start": 310.0,
+    "source_seconds": 88.5,
+    "bytes": 3554478,
+    "images": [
+      "/media/event/hakim-manchester-poster.webp",
+      "/media/event/hakim-manchester-still.webp"
+    ],
+    "portrait": false
+  },
+  {
+    "name": "hakim-portrait",
+    "kind": "video",
+    "src": "/media/event/hakim-portrait.mp4",
+    "seconds": 559,
+    "duration": 558.72,
+    "source": "SEE_MY_WORLD_ARCHIVE/04_ORAL_HISTORIES_AND_PROFILES/HAKIM_ADI_ARCHIVE/09. Dr. Hakim Adi 18.01.mp4",
+    "source_start": 0,
+    "source_seconds": 558.72,
+    "bytes": 22455008,
+    "images": [
+      "/media/event/hakim-portrait-poster.webp",
+      "/media/event/hakim-portrait-still.webp"
+    ],
+    "portrait": false
+  },
+  {
+    "name": "pie-opportunities",
+    "kind": "video",
+    "src": "/media/event/pie-opportunities.mp4",
+    "seconds": 60,
+    "duration": 59.72,
+    "source": "SEE_MY_WORLD_ARCHIVE/00_ADMIN_AND_GOVERNANCE/ROOT_FILES/social skits 1.zip::PIE RADIO CLIP.mp4",
+    "source_start": 0,
+    "source_seconds": 59.72,
+    "bytes": 2158068,
+    "images": [
+      "/media/event/pie-opportunities-poster.webp",
+      "/media/event/pie-opportunities-still.webp"
+    ],
+    "portrait": false
+  },
+  {
+    "name": "pie-school",
+    "kind": "video",
+    "src": "/media/event/pie-school.mp4",
+    "seconds": 28,
+    "duration": 28.08,
+    "source": "SEE_MY_WORLD_ARCHIVE/00_ADMIN_AND_GOVERNANCE/ROOT_FILES/social skits 1.zip::PIE RADIO CLIP 3.mp4",
+    "source_start": 0,
+    "source_seconds": 28.08,
+    "bytes": 2834422,
+    "images": [
+      "/media/event/pie-school-poster.webp",
+      "/media/event/pie-school-still.webp"
+    ],
+    "portrait": false
+  },
+  {
+    "name": "pie-community",
+    "kind": "video",
+    "src": "/media/event/pie-community.mp4",
+    "seconds": 65,
+    "duration": 65.32,
+    "source": "SEE_MY_WORLD_ARCHIVE/00_ADMIN_AND_GOVERNANCE/ROOT_FILES/social skits 1.zip::PIE RADIO CLIP 2.mp4",
+    "source_start": 0,
+    "source_seconds": 65.32,
+    "bytes": 3973290,
+    "images": [
+      "/media/event/pie-community-poster.webp",
+      "/media/event/pie-community-still.webp"
+    ],
+    "portrait": false
+  },
+  {
+    "name": "misha-live-2",
+    "kind": "video",
+    "src": "/media/event/misha-live-2.mp4",
+    "seconds": 42,
+    "duration": 42.4,
+    "source": "SEE_MY_WORLD_ARCHIVE/00_ADMIN_AND_GOVERNANCE/ROOT_FILES/social skits 1.zip::MISHA LIVE LOUNGE CLIP 2.mp4",
+    "source_start": 0,
+    "source_seconds": 42.4,
+    "bytes": 5394359,
+    "images": [
+      "/media/event/misha-live-2-poster.webp",
+      "/media/event/misha-live-2-still.webp"
+    ],
+    "portrait": false
+  },
+  {
+    "name": "misha-live-3",
+    "kind": "video",
+    "src": "/media/event/misha-live-3.mp4",
+    "seconds": 33,
+    "duration": 33.16,
+    "source": "SEE_MY_WORLD_ARCHIVE/00_ADMIN_AND_GOVERNANCE/ROOT_FILES/social skits 1.zip::MISHA LIVE LOUNGE CLIP 3.mp4",
+    "source_start": 0,
+    "source_seconds": 33.16,
+    "bytes": 2654970,
+    "images": [
+      "/media/event/misha-live-3-poster.webp",
+      "/media/event/misha-live-3-still.webp"
+    ],
+    "portrait": false
+  },
+  {
+    "name": "misha-live-1",
+    "kind": "video",
+    "src": "/media/event/misha-live-1.mp4",
+    "seconds": 57,
+    "duration": 57.4,
+    "source": "SEE_MY_WORLD_ARCHIVE/00_ADMIN_AND_GOVERNANCE/ROOT_FILES/social skits 1.zip::MISHA LIVE LOUNGE CLIP 1.mp4",
+    "source_start": 0,
+    "source_seconds": 57.4,
+    "bytes": 7263261,
+    "images": [
+      "/media/event/misha-live-1-poster.webp",
+      "/media/event/misha-live-1-still.webp"
+    ],
+    "portrait": false
+  },
+  {
+    "name": "junior-dialogue",
+    "kind": "video",
+    "src": "/media/event/junior-dialogue.mp4",
+    "seconds": 24,
+    "duration": 24.2,
+    "source": "SEE_MY_WORLD_ARCHIVE/04_ORAL_HISTORIES_AND_PROFILES/JUNIOR_AKINOLA/REELS/JUNIOR REEL 3.mp4",
+    "source_start": 0,
+    "source_seconds": 24.2,
+    "bytes": 689536,
+    "images": [
+      "/media/event/junior-dialogue-poster.webp",
+      "/media/event/junior-dialogue-still.webp"
+    ],
+    "portrait": true
+  },
+  {
+    "name": "junior-identity",
+    "kind": "video",
+    "src": "/media/event/junior-identity.mp4",
+    "seconds": 28,
+    "duration": 28.08,
+    "source": "SEE_MY_WORLD_ARCHIVE/04_ORAL_HISTORIES_AND_PROFILES/JUNIOR_AKINOLA/REELS/JUNIOR REEL 1.mp4",
+    "source_start": 0,
+    "source_seconds": 28.08,
+    "bytes": 783106,
+    "images": [
+      "/media/event/junior-identity-poster.webp",
+      "/media/event/junior-identity-still.webp"
+    ],
+    "portrait": true
+  },
+  {
+    "name": "junior-between-places",
+    "kind": "video",
+    "src": "/media/event/junior-between-places.mp4",
+    "seconds": 45,
+    "duration": 44.52,
+    "source": "SEE_MY_WORLD_ARCHIVE/04_ORAL_HISTORIES_AND_PROFILES/JUNIOR_AKINOLA/REELS/JUNIOR REEL 2.mp4",
+    "source_start": 0,
+    "source_seconds": 44.52,
+    "bytes": 1194364,
+    "images": [
+      "/media/event/junior-between-places-poster.webp",
+      "/media/event/junior-between-places-still.webp"
+    ],
+    "portrait": true
+  },
+  {
+    "name": "naina-roots",
+    "kind": "audio",
+    "src": "/media/event/naina-roots.mp3",
+    "seconds": 38,
+    "duration": 38.1,
+    "source": "SEE_MY_WORLD_ARCHIVE/02_PARTNER_AND_COMMUNITY_PROJECTS/BPM/DIALLED_INDUSTRY x BPM/SOUND /Nainas interview.m4a",
+    "source_start": 82.0,
+    "source_seconds": 38.1,
+    "bytes": 610604,
+    "images": [],
+    "portrait": false
+  },
+  {
+    "name": "g33-community",
+    "kind": "audio",
+    "src": "/media/event/g33-community.mp3",
+    "seconds": 81,
+    "duration": 80.7,
+    "source": "SEE_MY_WORLD_ARCHIVE/02_PARTNER_AND_COMMUNITY_PROJECTS/BPM/DIALLED_INDUSTRY x BPM/SOUND /G33 interview.m4a",
+    "source_start": 227.0,
+    "source_seconds": 80.7,
+    "bytes": 1292204,
+    "images": [],
+    "portrait": false
+  },
+  {
+    "name": "ahsan-identity",
+    "kind": "audio",
+    "src": "/media/event/ahsan-identity.mp3",
+    "seconds": 28,
+    "duration": 28.3,
+    "source": "SEE_MY_WORLD_ARCHIVE/02_PARTNER_AND_COMMUNITY_PROJECTS/BPM/DIALLED_INDUSTRY x BPM/SOUND /Ahsan interview.m4a",
+    "source_start": 57.8,
+    "source_seconds": 28.3,
+    "bytes": 453932,
+    "images": [],
+    "portrait": false
+  },
+  {
+    "name": "dhruva-open",
+    "kind": "audio",
+    "src": "/media/event/dhruva-open.mp3",
+    "seconds": 26,
+    "duration": 26.3,
+    "source": "SEE_MY_WORLD_ARCHIVE/02_PARTNER_AND_COMMUNITY_PROJECTS/BPM/DIALLED_INDUSTRY x BPM/SOUND /DHRUVA - interview.m4a",
+    "source_start": 212.0,
+    "source_seconds": 26.3,
+    "bytes": 421676,
+    "images": [],
+    "portrait": false
+  },
+  {
+    "name": "mya-access",
+    "kind": "audio",
+    "src": "/media/event/mya-access.mp3",
+    "seconds": 35,
+    "duration": 34.6,
+    "source": "SEE_MY_WORLD_ARCHIVE/02_PARTNER_AND_COMMUNITY_PROJECTS/BPM/DIALLED_INDUSTRY x BPM/SOUND /Myas interview (pxssy palace).m4a",
+    "source_start": 237.8,
+    "source_seconds": 34.6,
+    "bytes": 554540,
+    "images": [],
+    "portrait": false
+  },
+  {
+    "name": "balraj-learning",
+    "kind": "audio",
+    "src": "/media/event/balraj-learning.mp3",
+    "seconds": 26,
+    "duration": 26.5,
+    "source": "SEE_MY_WORLD_ARCHIVE/02_PARTNER_AND_COMMUNITY_PROJECTS/BPM/DIALLED_INDUSTRY x BPM/SOUND /Balraj interview.m4a",
+    "source_start": 519.7,
+    "source_seconds": 26.5,
+    "bytes": 425132,
+    "images": [],
+    "portrait": false
+  },
+  {
+    "name": "chad-short",
+    "kind": "video",
+    "src": "/media/event/chad-short.mp4",
+    "seconds": 37,
+    "duration": 37.4,
+    "source": "SEE_MY_WORLD_ARCHIVE/00_ADMIN_AND_GOVERNANCE/ROOT_FILES/social skits 1.zip::CHAD TAYLOR CLIP 2.mp4",
+    "source_start": 0,
+    "source_seconds": 37.4,
+    "bytes": 4727879,
+    "images": [
+      "/media/event/chad-short-poster.webp",
+      "/media/event/chad-short-still.webp"
+    ],
+    "portrait": false
+  },
+  {
+    "name": "chad-voice",
+    "kind": "video",
+    "src": "/media/event/chad-voice.mp4",
+    "seconds": 48,
+    "duration": 47.68,
+    "source": "SEE_MY_WORLD_ARCHIVE/00_ADMIN_AND_GOVERNANCE/ROOT_FILES/social skits 1.zip::CHAD TAYLOR CLIP.mp4",
+    "source_start": 0,
+    "source_seconds": 47.68,
+    "bytes": 4379544,
+    "images": [
+      "/media/event/chad-voice-poster.webp",
+      "/media/event/chad-voice-still.webp"
+    ],
+    "portrait": false
+  },
+  {
+    "name": "isaiah-lounge-1",
+    "kind": "video",
+    "src": "/media/event/isaiah-lounge-1.mp4",
+    "seconds": 29,
+    "duration": 28.88,
+    "source": "SEE_MY_WORLD_ARCHIVE/00_ADMIN_AND_GOVERNANCE/ROOT_FILES/social skits 1.zip::ISAIAH LIVE LOUNGE CLIP 1.mp4",
+    "source_start": 0,
+    "source_seconds": 28.88,
+    "bytes": 3589353,
+    "images": [
+      "/media/event/isaiah-lounge-1-poster.webp",
+      "/media/event/isaiah-lounge-1-still.webp"
+    ],
+    "portrait": false
+  },
+  {
+    "name": "isaiah-lounge-2",
+    "kind": "video",
+    "src": "/media/event/isaiah-lounge-2.mp4",
+    "seconds": 66,
+    "duration": 66.16,
+    "source": "SEE_MY_WORLD_ARCHIVE/00_ADMIN_AND_GOVERNANCE/ROOT_FILES/social skits 1.zip::ISIAIH LIVE LOUNGE CLIP 2.mp4",
+    "source_start": 0,
+    "source_seconds": 66.16,
+    "bytes": 7590894,
+    "images": [
+      "/media/event/isaiah-lounge-2-poster.webp",
+      "/media/event/isaiah-lounge-2-still.webp"
+    ],
+    "portrait": false
+  },
+  {
+    "name": "fragments-blue",
+    "kind": "image",
+    "src": "/media/event/fragments-blue.webp",
+    "source": "SEE_MY_WORLD_ARCHIVE/01_SEE_MY_WORLD_PROGRAMMES/2024/See my World - allistair - connected fragments /denzel painting/Scans/Get out: goodbyes #scan.JPG",
+    "dimensions": [
+      1950,
+      2600
+    ],
+    "bytes": 1987770
+  },
+  {
+    "name": "fragments-new-life",
+    "kind": "image",
+    "src": "/media/event/fragments-new-life.webp",
+    "source": "SEE_MY_WORLD_ARCHIVE/01_SEE_MY_WORLD_PROGRAMMES/2024/See my World - allistair - connected fragments /denzel painting/Scans/New life #scan.jpg",
+    "dimensions": [
+      2070,
+      2600
+    ],
+    "bytes": 1472568
+  },
+  {
+    "name": "fragments-vanitas",
+    "kind": "image",
+    "src": "/media/event/fragments-vanitas.webp",
+    "source": "SEE_MY_WORLD_ARCHIVE/01_SEE_MY_WORLD_PROGRAMMES/2024/See my World - allistair - connected fragments /denzel painting/Scans/Vanitas sanguinem I #scan.jpg",
+    "dimensions": [
+      2041,
+      2600
+    ],
+    "bytes": 1849004
+  },
+  {
+    "name": "fragments-canoe",
+    "kind": "image",
+    "src": "/media/event/fragments-canoe.webp",
+    "source": "SEE_MY_WORLD_ARCHIVE/01_SEE_MY_WORLD_PROGRAMMES/2024/See my World - allistair - connected fragments /denzel painting/Scans/canto 3 #scan.jpg",
+    "dimensions": [
+      2600,
+      1454
+    ],
+    "bytes": 1103540
+  },
+  {
+    "name": "fragments-vanitas-detail",
+    "kind": "image",
+    "src": "/media/event/fragments-vanitas-detail.webp",
+    "source": "SEE_MY_WORLD_ARCHIVE/01_SEE_MY_WORLD_PROGRAMMES/2024/See my World - allistair - connected fragments /denzel painting/detail/Vanitas sanguinem I #detail.JPG",
+    "dimensions": [
+      1950,
+      2600
+    ],
+    "bytes": 2083626
+  },
+  {
+    "name": "fragments-canoe-detail",
+    "kind": "image",
+    "src": "/media/event/fragments-canoe-detail.webp",
+    "source": "SEE_MY_WORLD_ARCHIVE/01_SEE_MY_WORLD_PROGRAMMES/2024/See my World - allistair - connected fragments /denzel painting/detail/canto 3 #detail.jpg",
+    "dimensions": [
+      2600,
+      1950
+    ],
+    "bytes": 1549522
+  },
+  {
+    "name": "dialled-room-1",
+    "kind": "image",
+    "src": "/media/event/dialled-room-1.webp",
+    "source": "SEE_MY_WORLD_ARCHIVE/02_PARTNER_AND_COMMUNITY_PROJECTS/BPM/DIALLED_INDUSTRY x BPM/HARRY CAM/C0007.MP4",
+    "frame_seconds": 8.232,
+    "bytes": 48716
+  }
+]

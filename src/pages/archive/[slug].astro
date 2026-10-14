@@ -19,6 +19,7 @@ if (redirectSlug) return Astro.redirect(publicBase + 'archive/' + redirectSlug +
 const index = projects.findIndex((item) => item.slug === project.slug);
 const next = projects[(index + 1) % projects.length];
 const photos = [project.image, ...project.gallery.filter((photo) => photo !== project.image)].map(asset);
+const related = project.relatedSlugs?.map(slug=>projects.find(item=>item.slug===slug)).filter((item): item is ArchiveProject => Boolean(item)) ?? [];
 ---
 
 <BaseLayout title={project.title + ' | See My World Archive'} description={project.description}>
@@ -38,7 +39,7 @@ const photos = [project.image, ...project.gallery.filter((photo) => photo !== pr
             <p class="eyebrow">{project.category} / {project.venue}</p>
             <h1 id="project-title">{project.title}</h1>
             <p class="hero-description">{project.description}</p>
-            <a class="scroll-link" href={project.media?.length ? '#player-' + project.media[0].src.split('/').pop()?.split('.')[0] : '#gallery'}>{project.media?.length ? (project.media[0].kind === 'audio' ? 'Listen for a minute' : 'Watch the film') : 'Step inside the photographs'} <span aria-hidden="true">↓</span></a>
+            <a class="scroll-link" href={project.artworkGallery ? '#gallery' : project.media?.length ? '#player-' + project.media[0].src.split('/').pop()?.split('.')[0] : '#gallery'}>{project.artworkGallery ? 'Look inside the artwork' : project.media?.length ? (project.media[0].kind === 'audio' ? 'Choose a voice to hear' : 'Watch the first film') : 'Step inside the photographs'} <span aria-hidden="true">↓</span></a>
             {project.visitLabel && <p class="visit-label">{project.visitLabel}</p>}
           </div>
           <div class="hero-bottom"><span>{project.date}</span><button type="button" data-photo-index="0">View image full screen <span aria-hidden="true">↗</span></button></div>
@@ -61,8 +62,8 @@ const photos = [project.image, ...project.gallery.filter((photo) => photo !== pr
         <div class="gallery-header"><span>02 / Through the lens</span><h2 id="gallery-title">Inside the story<span>.</span></h2><p>Select an image to explore it more closely.</p></div>
         <div class="gallery-grid">
           {photos.map((photo, photoIndex) => (
-            <button class="gallery-tile" type="button" data-photo-index={photoIndex} aria-label={'View ' + project.title + ' photograph ' + (photoIndex + 1) + ' full screen'}>
-              <img src={photo} alt={project.photoCaptions?.[photoIndex] ?? project.title + ', photograph ' + (photoIndex + 1)} loading="lazy" />
+            <button class="gallery-tile" type="button" data-photo-index={photoIndex} aria-label={'View ' + project.title + ' image ' + (photoIndex + 1) + ' full screen'}>
+              <img src={photo} alt={project.photoCaptions?.[photoIndex] ?? project.title + ', image ' + (photoIndex + 1)} loading="lazy" />
               <span class="gallery-number">{String(photoIndex + 1).padStart(2, '0')} / {String(photos.length).padStart(2, '0')}</span>
               <span class="gallery-open" aria-hidden="true">↗</span>
             </button>
@@ -71,6 +72,7 @@ const photos = [project.image, ...project.gallery.filter((photo) => photo !== pr
       </section>
 
       {project.invitation && <aside class="reflection"><span>A thought to take with you</span><p>{project.invitation}</p><small>Share it with someone beside you, or keep exploring.</small></aside>}
+      {related.length>0 && <section class="related-stories" aria-labelledby="related-heading"><span>Follow a connection</span><h2 id="related-heading">Another way in<span>.</span></h2><div>{related.map(item=><a href={publicBase+'archive/'+item.slug+'/'}><img src={asset(item.globeImage ?? item.image)} alt="" loading="lazy"/><strong>{item.title}</strong><span aria-hidden="true">↗</span></a>)}</div></section>}
 
       {project.programme && (
         <section class="programme" aria-labelledby="programme-title">
@@ -93,9 +95,9 @@ const photos = [project.image, ...project.gallery.filter((photo) => photo !== pr
     </main>
     <footer><span>SEE MY WORLD / AN INTERACTIVE ARCHIVE</span><div><a href={publicBase + 'about/'}>About</a><a href={publicBase + '#world'}>Back to the globe ↑</a></div></footer>
   </div>
-  <dialog class="photo-dialog" data-photo-dialog aria-label="Event photo viewer">
-    <div class="dialog-toolbar"><span data-photo-count></span><button type="button" data-photo-close aria-label="Close photo viewer">×</button></div>
-    <div class="dialog-image"><button type="button" data-photo-prev aria-label="Previous photo">←</button><img data-photo-image src={photos[0] ?? asset(project.image)} alt="" /><button type="button" data-photo-next aria-label="Next photo">→</button></div>
+  <dialog class="photo-dialog" data-photo-dialog aria-label="Archive image viewer">
+    <div class="dialog-toolbar"><span data-photo-count></span><div class="image-zoom-controls"><button type="button" data-photo-zoom-out aria-label="Zoom out of image">−</button><span data-photo-zoom aria-live="polite">100%</span><button type="button" data-photo-zoom-in aria-label="Zoom into image">+</button><button type="button" data-photo-fit>Fit image</button></div><button type="button" data-photo-close aria-label="Close image viewer">×</button></div>
+    <div class="dialog-image"><button type="button" data-photo-prev aria-label="Previous image">←</button><div class="image-pan" data-image-pan tabindex="0" aria-label="Image area. Zoom in, then drag or scroll to look around."><div class="image-scale" data-image-scale><img data-photo-image src={photos[0] ?? asset(project.image)} alt="" draggable="false" /></div></div><button type="button" data-photo-next aria-label="Next image">→</button></div>
     <p data-photo-title>{project.title}</p>
   </dialog>
   <script define:vars={{ photos, projectTitle: project.title, photoCaptions: project.photoCaptions ?? [], archiveTrails, projectSlug: project.slug, publicBase, storyTitles: projects.map((item) => ({slug:item.slug,title:item.title})) }}>
@@ -103,10 +105,43 @@ const photos = [project.image, ...project.gallery.filter((photo) => photo !== pr
     const photoImage = document.querySelector('[data-photo-image]');
     const photoCount = document.querySelector('[data-photo-count]');
     let activePhoto = 0;
+    let imageZoom = 1;
+    const imagePan = document.querySelector('[data-image-pan]');
+    const imageScale = document.querySelector('[data-image-scale]');
+    function setImageZoom(value) {
+      const centreX = (imagePan.scrollLeft + imagePan.clientWidth/2)/imageZoom;
+      const centreY = (imagePan.scrollTop + imagePan.clientHeight/2)/imageZoom;
+      imageZoom = Math.max(1,Math.min(4,value));
+      imageScale.style.width = imageZoom*100+'%';
+      imageScale.style.height = imageZoom*100+'%';
+      imagePan.classList.toggle('is-zoomed',imageZoom>1);
+      document.querySelector('[data-photo-zoom]').textContent = Math.round(imageZoom*100)+'%';
+      document.querySelector('[data-photo-zoom-out]').disabled = imageZoom===1;
+      document.querySelector('[data-photo-zoom-in]').disabled = imageZoom===4;
+      if (imageZoom===1) { imagePan.scrollLeft=0;imagePan.scrollTop=0; }
+      else { imagePan.scrollLeft=centreX*imageZoom-imagePan.clientWidth/2;imagePan.scrollTop=centreY*imageZoom-imagePan.clientHeight/2; }
+    }
+    document.querySelector('[data-photo-zoom-in]').addEventListener('click',()=>setImageZoom(imageZoom+.5));
+    document.querySelector('[data-photo-zoom-out]').addEventListener('click',()=>setImageZoom(imageZoom-.5));
+    document.querySelector('[data-photo-fit]').addEventListener('click',()=>setImageZoom(1));
+    let panOrigin=null;
+    imagePan.addEventListener('pointerdown',event=>{
+      if(imageZoom<=1||event.pointerType!=='mouse'||event.button!==0)return;
+      panOrigin={x:event.clientX,y:event.clientY,left:imagePan.scrollLeft,top:imagePan.scrollTop};
+      imagePan.setPointerCapture(event.pointerId);event.preventDefault();
+    });
+    imagePan.addEventListener('pointermove',event=>{
+      if(!panOrigin)return;
+      imagePan.scrollLeft=panOrigin.left+panOrigin.x-event.clientX;
+      imagePan.scrollTop=panOrigin.top+panOrigin.y-event.clientY;
+    });
+    imagePan.addEventListener('pointerup',()=>{panOrigin=null;});
+    imagePan.addEventListener('pointercancel',()=>{panOrigin=null;});
     function showPhoto(index) {
       activePhoto = (index + photos.length) % photos.length;
+      setImageZoom(1);
       photoImage.src = photos[activePhoto];
-      photoImage.alt = photoCaptions[activePhoto] ?? projectTitle + ', photograph ' + (activePhoto + 1);
+      photoImage.alt = photoCaptions[activePhoto] ?? projectTitle + ', image ' + (activePhoto + 1);
       document.querySelector('[data-photo-title]').textContent = photoImage.alt;
       photoCount.textContent = String(activePhoto + 1).padStart(2, '0') + ' / ' + String(photos.length).padStart(2, '0');
       if (!dialog.open) { document.querySelectorAll('video,audio').forEach((player) => player.pause()); dialog.showModal(); }
@@ -117,6 +152,10 @@ const photos = [project.image, ...project.gallery.filter((photo) => photo !== pr
     document.querySelector('[data-photo-next]')?.addEventListener('click', () => showPhoto(activePhoto + 1));
     dialog.addEventListener('click', (event) => { if (event.target === dialog) dialog.close(); });
     dialog.addEventListener('keydown', (event) => {
+      if(event.key==='+'||event.key==='='){event.preventDefault();setImageZoom(imageZoom+.5);return;}
+      if(event.key==='-'){event.preventDefault();setImageZoom(imageZoom-.5);return;}
+      if(event.key==='0'){event.preventDefault();setImageZoom(1);return;}
+      if(event.target.closest('[data-image-pan]')&&imageZoom>1)return;
       if (event.key === 'ArrowLeft') { event.preventDefault(); showPhoto(activePhoto - 1); }
       if (event.key === 'ArrowRight') { event.preventDefault(); showPhoto(activePhoto + 1); }
     });
@@ -150,6 +189,24 @@ const photos = [project.image, ...project.gallery.filter((photo) => photo !== pr
     }
   </script>
   <style>
+    .related-stories { padding:3rem clamp(1.25rem,5vw,6rem); border-bottom:1px solid #722322; }
+    .related-stories > span { color:#69b96e; text-transform:uppercase; font-size:.65rem; font-weight:900; letter-spacing:.1em; }
+    .related-stories h2 { font-size:clamp(2rem,4vw,4rem); margin:1rem 0; }
+    .related-stories h2 span { color:#69b96e; }
+    .related-stories > div { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:1rem; }
+    .related-stories a { display:grid; grid-template-columns:65px 1fr 20px; align-items:center; gap:.8rem; border:1px solid #40543b; padding:1rem; }
+    .related-stories a:hover,.related-stories a:focus-visible { border-color:#69b96e; }
+    .related-stories img { width:65px;height:65px;object-fit:cover; }
+    .related-stories strong { font-size:.9rem;line-height:1.2; }
+    .image-zoom-controls { display:flex;align-items:center;gap:.5rem; }
+    .image-zoom-controls [data-photo-zoom] { min-width:3rem;text-align:center;font-size:.75rem; }
+    .image-zoom-controls button { min-width:44px;min-height:44px;font-size:.85rem!important; }
+    .image-pan { min-width:0;height:100%;overflow:auto;overscroll-behavior:contain;touch-action:pan-x pan-y; }
+    .image-pan.is-zoomed { cursor:grab; }
+    .image-pan.is-zoomed:active { cursor:grabbing; }
+    .image-scale { width:100%;height:100%; }
+    .image-pan:focus-visible { outline:2px solid #69b96e;outline-offset:2px; }
+    @media(max-width:680px){.related-stories>div{grid-template-columns:1fr;}.image-zoom-controls{gap:.15rem;}.image-zoom-controls button{min-width:36px;}}
     .visit-label { color: #69b96e; margin: .8rem 0 0; font-size: .75rem; }
     .trail-progress { display: grid; gap: .8rem; padding: 1.2rem clamp(1.25rem,5vw,6rem); background: #10180f; border-bottom: 1px solid #40543b; }
     .trail-progress > div:first-child { display: flex; justify-content: space-between; gap: 1rem; color: #69b96e; text-transform: uppercase; font-weight: 900; font-size: .65rem; letter-spacing: .08em; }
@@ -224,7 +281,7 @@ const photos = [project.image, ...project.gallery.filter((photo) => photo !== pr
     .photo-dialog::backdrop { background: #000; }
     .dialog-toolbar { display: flex; align-items: center; justify-content: space-between; height: 64px; padding: 0 1.5rem; border-bottom: 1px solid #722322; color: #69b96e; font-size: .72rem; font-weight: 900; letter-spacing: .15em; }
     .dialog-toolbar button { border: 0; background: none; color: #fff; font-size: 2rem; cursor: pointer; }
-    .dialog-image { display: grid; grid-template-columns: 4rem minmax(0,1fr) 4rem; align-items: center; height: calc(100dvh - 120px); gap: 1rem; padding: 1rem; }
+    .dialog-image { display: grid; grid-template-columns: 4rem minmax(0,1fr) 4rem; align-items: center; height: calc(100dvh - 150px); gap: 1rem; padding: 1rem; }
     .dialog-image img { max-width: 100%; max-height: 100%; width: 100%; height: 100%; object-fit: contain; }
     .dialog-image button { border: 1px solid #75403b; background: #0c0c0c; color: #fff; width: 3rem; height: 3rem; font: inherit; font-size: 1.2rem; cursor: pointer; }
     .dialog-image button:hover, .dialog-image button:focus-visible { border-color: #69b96e; color: #69b96e; }

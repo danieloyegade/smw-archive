@@ -1,5 +1,6 @@
 import * as THREE from 'three';
 import type { ArchiveProject } from '../data/projects';
+import { experienceTypes } from '../data/experience';
 
 const canvas = document.querySelector<HTMLCanvasElement>('#globe-canvas');
 const dataEl = document.querySelector<HTMLScriptElement>('#archive-project-data');
@@ -37,6 +38,7 @@ if (canvas && dataEl && titleEl && kickerEl && metaEl) {
   const basePath = (document.body.dataset.base ?? '/').replace(/\/?$/, '/');
   let selectedYear = 'all';
   let selectedFormat = 'all';
+  let selectedTheme = 'all';
   let query = '';
   let updateGlobeFilter: ((slugs: Set<string>) => void) | undefined;
   let navigating = false;
@@ -78,12 +80,12 @@ if (canvas && dataEl && titleEl && kickerEl && metaEl) {
 
   const matches = (project: ArchiveProject) => {
     if (selectedYear !== 'all' && project.year !== selectedYear) return false;
-    const format = project.media?.some((item) => item.kind === 'audio') ? 'listen' : project.media?.some((item) => item.kind === 'video') ? 'watch' : 'look';
-    if (selectedFormat !== 'all' && selectedFormat !== format) return false;
+    if (selectedFormat !== 'all' && !experienceTypes(project).some(format=>format===selectedFormat)) return false;
+    if (selectedTheme !== 'all' && !project.themes?.includes(selectedTheme)) return false;
     if (!query) return true;
     const haystack = [
       project.title, project.category, project.year, project.date, project.venue,
-      project.description, ...project.places, ...(project.keywords ?? []),
+      project.description, ...project.places, ...(project.keywords ?? []), ...(project.themes ?? []),
     ].join(' ').toLocaleLowerCase();
     return query.split(/\s+/).every((term) => haystack.includes(term));
   };
@@ -161,6 +163,17 @@ if (canvas && dataEl && titleEl && kickerEl && metaEl) {
     if (!candidates.length) { setYear('all'); setQuery(''); return; }
     navigateToStory(candidates[Math.floor(Math.random() * candidates.length)]);
   });
+  for (const button of document.querySelectorAll<HTMLButtonElement>('[data-theme-button]')) {
+    button.addEventListener('click', () => {
+      selectedTheme = button.dataset.themeButton ?? 'all';
+      document.querySelectorAll<HTMLButtonElement>('[data-theme-button]').forEach(item=>{
+        const active = item.dataset.themeButton === selectedTheme;
+        item.classList.toggle('is-active',active);
+        item.setAttribute('aria-pressed',String(active));
+      });
+      updateFilters();
+    });
+  }
 
   try {
     const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: true, powerPreference: 'high-performance' });
@@ -282,7 +295,7 @@ if (canvas && dataEl && titleEl && kickerEl && metaEl) {
       globe.add(mesh);
       panels.push(mesh);
       meshBySlug.set(project.slug, mesh);
-      loader.load(project.image, (texture) => {
+      loader.load(project.globeImage ?? project.image, (texture) => {
         texture.colorSpace = THREE.SRGBColorSpace;
         texture.anisotropy = Math.min(renderer.capabilities.getMaxAnisotropy(), 4);
         const image = texture.image as { width: number; height: number };
@@ -341,7 +354,7 @@ if (canvas && dataEl && titleEl && kickerEl && metaEl) {
       const rect = canvas!.getBoundingClientRect();
       pointer.set(((x - rect.left) / rect.width) * 2 - 1, -(((y - rect.top) / rect.height) * 2 - 1));
       raycaster.setFromCamera(pointer, camera);
-      return raycaster.intersectObjects(panels.filter((panel) => panel.visible), false)[0]?.object as THREE.Mesh | undefined;
+      return raycaster.intersectObjects(panels.filter((panel) => panel.visible && panel.userData.matchesFilter), false)[0]?.object as THREE.Mesh | undefined;
     }
 
     function setCaption(project: ArchiveProject | null) {

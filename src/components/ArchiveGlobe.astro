@@ -1,11 +1,13 @@
 ---
-import { projects, archiveTrails, experienceType } from '../data/projects';
+import { projects, archiveTrails, experienceType, experienceTypes } from '../data/projects';
 const base = import.meta.env.BASE_URL;
 const publicBase = base.endsWith('/') ? base : base + '/';
 const asset = (path: string) => publicBase + path.replace(/^\//, '');
-const years = [...new Set(projects.map((project) => project.year))].sort().reverse();
-const formats = ['all', ...['watch', 'listen', 'look'].filter((format) => projects.some((project) => experienceType(project) === format))];
-const serializedProjects = projects.map((project) => ({ ...project, image: asset(project.image) }));
+const datedYears = [...new Set(projects.map((project) => project.year))].filter(year=>/^\d{4}$/.test(year)).sort().reverse();
+const years = [...datedYears, ...(projects.some(project=>project.year==='Undated') ? ['Undated'] : [])];
+const formats = ['all', ...['watch', 'listen', 'look'].filter((format) => projects.some((project) => experienceTypes(project).includes(format as 'watch'|'listen'|'look')))];
+const themes = ['Voices','Making','Live moments','Community'];
+const serializedProjects = projects.map((project) => ({ ...project, image: asset(project.image), globeImage: asset(project.globeImage ?? project.image) }));
 ---
 
 <div class="archive-shell">
@@ -50,7 +52,7 @@ const serializedProjects = projects.map((project) => ({ ...project, image: asset
           </a>;
         })}
       </div>
-      <div class="start-bottom"><span>{projects.length} selected projects · Artists, dance, film & live moments</span><button type="button" data-surprise>Surprise me <span aria-hidden="true">↗</span></button><a href="#world">Explore the globe ↓</a></div>
+      <div class="start-bottom"><span>{projects.length} selected projects · Films, photographs, voices & shared histories</span><button type="button" data-surprise>Surprise me <span aria-hidden="true">↗</span></button><a href="#world">Explore the globe ↓</a></div>
     </section>
 
     <section class="experience" id="world" aria-label="Interactive archive">
@@ -100,6 +102,10 @@ const serializedProjects = projects.map((project) => ({ ...project, image: asset
           <div class="format-filters" role="group" aria-label="Filter globe by experience">
             {formats.map((format) => <button type="button" data-format-button={format} aria-pressed={format === 'all'} class:list={{'is-active': format === 'all'}}>{format === 'all' ? 'Everything' : format === 'watch' ? 'Watch' : format === 'listen' ? 'Listen' : 'Look'}</button>)}
           </div>
+          <div class="theme-filters" role="group" aria-label="Filter globe by theme">
+            <button type="button" data-theme-button="all" aria-pressed="true" class="is-active">All themes</button>
+            {themes.map(theme=><button type="button" data-theme-button={theme} aria-pressed="false">{theme}</button>)}
+          </div>
           <div class="immersive-stories">
             {projects.map((project) => (
               <button type="button" data-immersive-story={project.slug}>
@@ -116,14 +122,14 @@ const serializedProjects = projects.map((project) => ({ ...project, image: asset
           <div class="transition-shade"></div>
           <div class="transition-copy"><span>Entering the story</span><strong data-transition-title></strong><small>SEE MY WORLD / THE ARCHIVE</small></div>
         </div>
-        <div class="stage-footer"><span>Archive / 2020 to 2025</span><span>Manchester ↔ Lagos</span></div>
+        <div class="stage-footer"><span>Archive / {datedYears.at(-1)} to {datedYears[0]}</span><span>Manchester ↔ Lagos ↔ Beyond</span></div>
       </div>
 
       <aside class="discover-panel" aria-labelledby="discover-title">
         <div class="discover-heading">
           <span class="section-number">02 / Discover</span>
           <h2 id="discover-title">Find your way in.</h2>
-          <p>Follow an artist, a film or a photograph. Search by place, year or theme; the globe and collection respond together.</p>
+          <p>Follow a voice, a film or a photograph. Search people and places, or choose an experience or theme; the globe and collection respond together.</p>
         </div>
         <label class="search-label" for="archive-search">Search the archive</label>
         <div class="search-field">
@@ -138,6 +144,10 @@ const serializedProjects = projects.map((project) => ({ ...project, image: asset
         </div>
         <div class="format-filters" role="group" aria-label="Filter by experience">
           {formats.map((format) => <button type="button" data-format-button={format} aria-pressed={format === 'all'} class:list={{'is-active': format === 'all'}}>{format === 'all' ? 'Everything' : format === 'watch' ? 'Watch' : format === 'listen' ? 'Listen' : 'Look'}</button>)}
+        </div>
+        <div class="theme-filters" role="group" aria-label="Filter by theme">
+          <button type="button" data-theme-button="all" aria-pressed="true" class="is-active">All themes</button>
+          {themes.map(theme=><button type="button" data-theme-button={theme} aria-pressed="false">{theme}</button>)}
         </div>
         <div class="result-list" data-result-list>
           {projects.map((project) => (
@@ -185,6 +195,10 @@ const serializedProjects = projects.map((project) => ({ ...project, image: asset
 <script>import '../scripts/archive-globe';</script>
 
 <style>
+  .theme-filters { display:flex; flex-wrap:wrap; gap:.35rem; margin:0 0 1rem; }
+  .theme-filters button { min-height:44px; border:1px solid #414c40; background:#0c120c; color:#d2d7cc; padding:.5rem .7rem; font:inherit; font-size:.65rem; cursor:pointer; }
+  .theme-filters button.is-active { background:#233b23; color:#a8e5aa; border-color:#69b96e; }
+  .theme-filters button:focus-visible { outline:2px solid #fff; outline-offset:2px; }
   .start-section { padding: 3.5rem clamp(1.25rem,5vw,6rem); border-bottom: 1px solid #722322; }
   .start-heading { display: flex; align-items: end; justify-content: space-between; gap: 2rem; margin-bottom: 1.8rem; }
   .start-heading h2 { font-size: clamp(2.4rem,4.3vw,4.8rem); line-height: .98; letter-spacing: -.06em; text-transform: uppercase; margin: .9rem 0 0; }

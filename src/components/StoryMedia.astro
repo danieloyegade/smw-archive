@@ -1,20 +1,27 @@
 ---
 import type { ArchiveProject } from '../data/projects';
+import { formatDuration } from '../data/experience';
 const { project, publicBase } = Astro.props as { project: ArchiveProject; publicBase: string };
 const asset = (path: string) => publicBase + path.replace(/^\//, '');
 ---
 {project.media?.length && <section class="media-section" id="experience" aria-labelledby="media-heading">
   <div class="media-heading"><span>Watch. Listen. Be here.</span><h2 id="media-heading">Inside the moment<span>.</span></h2><p>Press play when you’re ready. Use headphones for sound, or explore the photographs and story in your own time.</p></div>
   <div class:list={['media-list', {'single': project.media.length === 1}]}>
-    {project.media.map((item) => <article id={'player-' + item.src.split('/').pop()?.split('.')[0]} class:list={['media-item', {'audio-item': item.kind === 'audio'}]}>
+    {project.media.map((item) => {
+      const Tag = item.longForm ? 'details' : 'article';
+      return <Tag id={'player-' + item.src.split('/').pop()?.split('.')[0]} class:list={['media-item', {'audio-item': item.kind === 'audio','long-form':item.longForm}]}>
+      {item.longForm && <summary>Stay for the complete film <span>{formatDuration(item.seconds)}</span></summary>}
       <div class="media-frame">
         {item.kind === 'video' ? <video class:list={{portrait:item.portrait}} controls playsinline preload="none" poster={asset(item.poster ?? project.image)} aria-label={item.title} aria-describedby={'summary-' + item.src.split('/').pop()?.split('.')[0]}>
           <source src={asset(item.src)} type="video/mp4" />
+          {item.captions && <track kind="captions" src={asset(item.captions)} srclang="en" label="English (automatic)" default />}
           Your browser cannot play this film. <a href={asset(item.src)}>Open the film</a>.
-        </video> : <><img src={asset(project.image)} alt={project.alt} loading="lazy" /><div class="audio-player"><span>Listen with headphones · 1 minute</span><audio controls preload="none" aria-label={item.title}><source src={asset(item.src)} type="audio/mpeg" />Your browser cannot play this audio. <a href={asset(item.src)}>Open the audio</a>.</audio></div></>}
+        </video> : <><img src={asset(item.poster ?? project.image)} alt={project.alt} loading="lazy" /><div class="audio-player"><span>Listen with headphones · {formatDuration(item.seconds)}</span><audio controls preload="none" aria-label={item.title} aria-describedby={'summary-' + item.src.split('/').pop()?.split('.')[0]}><source src={asset(item.src)} type="audio/mpeg" />Your browser cannot play this audio. <a href={asset(item.src)}>Open the audio</a>.</audio></div></>}
       </div>
-      <div class="media-copy"><small>{item.kind === 'video' ? 'Film' : 'Audio'} / {Math.floor(item.seconds / 60)}:{String(item.seconds % 60).padStart(2,'0')}</small><h3>{item.title}</h3><p id={'summary-' + item.src.split('/').pop()?.split('.')[0]}>{item.description}</p>{item.note && <p class="media-note">{item.note}</p>}</div>
-    </article>)}
+      <div class="media-copy"><small>{item.kind === 'video' ? 'Film' : 'Audio'} / {formatDuration(item.seconds)}</small><h3>{item.title}</h3><p id={'summary-' + item.src.split('/').pop()?.split('.')[0]}>{item.description}</p>{item.note && <p class="media-note">{item.note}</p>}
+        {item.transcript?.length && <details class="transcript"><summary>Read the transcript <span>(automatic)</span></summary><p class="transcript-note">Transcribed from the recording. Some wording may contain errors.</p><div>{item.transcript.map(line=><p><button type="button" data-transcript-time={line.start} aria-label={'Play from '+formatDuration(line.start)}>{formatDuration(line.start)}</button><span>{line.text}</span></p>)}</div></details>}
+      </div>
+    </Tag>})}
   </div>
   <p class="playback-status" data-playback-status role="status"></p>
 </section>}
@@ -29,6 +36,16 @@ const asset = (path: string) => publicBase + path.replace(/^\//, '');
   }
   window.addEventListener('pagehide', () => players.forEach((player) => player.pause()));
   document.addEventListener('visibilitychange', () => { if (document.hidden) players.forEach((player) => player.pause()); });
+  document.querySelectorAll<HTMLButtonElement>('[data-transcript-time]').forEach(button=>button.addEventListener('click',()=>{
+    const player = button.closest('.media-item')?.querySelector<HTMLMediaElement>('video,audio');
+    if(!player)return;
+    const start = Number(button.dataset.transcriptTime);
+    const seek = () => { player.currentTime=start;player.play().catch(()=>{
+      const status=document.querySelector<HTMLElement>('[data-playback-status]');
+      if(status)status.textContent='Use the player’s play button to listen from this point.';
+    }); };
+    if(player.readyState===0){player.addEventListener('loadedmetadata',seek,{once:true});player.load();}else seek();
+  }));
 </script>
 <style>
   .media-section { padding: 4rem clamp(1.25rem,5vw,6rem); border-bottom: 1px solid #722322; scroll-margin-top: 1rem; }
@@ -38,6 +55,17 @@ const asset = (path: string) => publicBase + path.replace(/^\//, '');
   .media-heading > p { max-width: 650px; color: #c0c6ba; line-height: 1.6; font-size: .9rem; margin-bottom: 2rem; }
   .media-list { display: grid; grid-template-columns: repeat(2,minmax(0,1fr)); gap: 1.5rem; }
   .media-list.single { grid-template-columns: minmax(0,1fr); }
+  .long-form { grid-column:1/-1; }
+  .long-form > summary { padding:1.25rem;cursor:pointer;color:#a6dda9;font-weight:800;min-height:60px; }
+  .long-form > summary span { margin-left:1rem;color:#c0c6ba;font-weight:400; }
+  .transcript { margin-top:1.25rem;border-top:1px solid #40543b;padding-top:1rem; }
+  .transcript > summary { min-height:44px;cursor:pointer;font-size:.85rem;color:#a6dda9; }
+  .transcript > summary span { color:#aeb4ac; font-weight:400; }
+  .transcript .transcript-note { font-size:.72rem;color:#aeb4ac; }
+  .transcript > div { max-height:350px;overflow:auto;overscroll-behavior:contain; }
+  .transcript > div > p { display:grid;grid-template-columns:50px 1fr;gap:.75rem;align-items:start;margin:.8rem 0; }
+  .transcript button { font:inherit;font-size:.75rem;min-height:44px;border:1px solid #40543b;background:#142113;color:#a6dda9;cursor:pointer; }
+  .transcript button:focus-visible { outline:2px solid #fff;outline-offset:2px; }
   .media-item { min-width: 0; background: #0c100c; border: 1px solid #57443a; scroll-margin-top: 1rem; }
   .media-frame { position: relative; background: #000; }
   video { display: block; width: 100%; height: auto; max-height: 72svh; aspect-ratio: 16 / 10; object-fit: contain; }

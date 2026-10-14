@@ -54,3 +54,67 @@ The 2024 We Out Here label comes from the source collection. Haus X and Closer t
 - [We Out Here’s 2024 programme announcement](https://weoutherefestival.com/2024/02/our-2024-lineup-announce/) provides festival context.
 
 Portrait films now retain a tall viewing area suited to their original format and to phone use. Film galleries contain extracted frames; photo stories contain original photographs. No new dialogue transcription is invented, and original film captions remain intact where present.
+
+
+## Event globe edition (14 October 2026)
+
+The current selection contains **23 projects**. The existing 15 remain, with eight additional stories: Gloria Rose, Linford (Everyday People), Shirley May, Hakim Adi, PIE Radio, Misha B, Junior Akinola and DIALLED IN. The selection balances complete short archive edits, spoken interview chapters, six audio encounters and detailed artwork images. Chad Taylor and Isaiah Hull also gain existing short performance edits.
+
+The read-only R2 review inventoried 3,023 objects (460.75 GB). Selection evidence, frame sheets, source transcripts and the ranked editorial review are stored on T7 under `outputs/globe-content-review-2026-10-13/` outside this website checkout. Nothing in R2 was changed. Matching originals on T7 supply the access copies; the audit records their corresponding R2 object keys.
+
+`src/data/event-assets.json` and `tools/event-asset-provenance.json` record each source, excerpt start, duration and derivative size. `tools/prepare_event_assets.py` creates H.264/AAC MP4, MP3 and WebP access copies without changing originals. Complete short archive edits remain intact. Newly selected interview excerpts begin and end at complete statements. Two longer portraits remain optional behind expandable complete-film controls. Recording dates that cannot be established are indexed as **Undated**, with export dates described separately. Linford belongs to the 2026 Everyday People source collection.
+
+The artwork titles follow source filenames; no unverified artist attribution is added to individual scans. The SOUP photographs and earlier Isaiah live-lounge footage are identified as separate occasions. Junior's answer and another participant's answers are labelled separately. The DIALLED IN image shows the gathering and is not used as an individual portrait.
+
+`tools/prepare_event_captions.py` uses the locally cached Whisper base.en model on T7. The 24 spoken access copies have explicitly labelled **automatic** transcripts; 18 spoken videos also have automatic English WebVTT captions. These are machine drafts, may contain wording errors and require a final human wording review for event use. Performance/music clips do not receive invented lyric transcripts. Media checksums invalidate caption caches when cuts change. All players load on demand; playback is user initiated and one player plays at a time.
+
+The globe retains its existing Three.js constellation, with small WebP textures (maximum 600 × 600) and full-size images on story pages. This is a story constellation, not a map of verified recording locations. Visitors can search people and places, filter Watch/Listen/Look, select themes, follow three trails and zoom into artwork.
+
+Supporting public context:
+
+- [Big People Community's 2026 heritage trail](https://www.eventbrite.co.uk/e/see-my-world-pan-african-legacies-heritage-trail-tickets-1989827475544?aff=ebdssbpointsofinterest) identifies Linford Sweeney in Manchester community history work. The archive story uses the recorded first name, Linford.
+- [Oxford Road Corridor's heritage trail listing](https://oxfordroadcorridor.com/events/see-my-world-pan-african-legacies-heritage-trail/) provides organiser and project context.
+- [Manchester Library's Connected Fragments listing](https://librarylive.co.uk/event/see-my-world-connected-fragments/) confirms the exhibition dates and artists.
+
+### Event access-copy source windows
+
+| Access copy | Kind | Original start (seconds) | Selected length (seconds) | R2 source or ZIP member |
+| --- | --- | ---: | ---: | --- |
+| gloria-design | video | 0 | 46.56 | `SEE_MY_WORLD_ARCHIVE/00_ADMIN_AND_GOVERNANCE/ROOT_FILES/social skits 1.zip::GLORIA CLIP 2.mp4` |
+| gloria-ambition | video | 0 | 67.44 | `SEE_MY_WORLD_ARCHIVE/00_ADMIN_AND_GOVERNANCE/ROOT_FILES/social skits 1.zip::GLORIA CLIP 3.mp4` |
+| gloria-portrait | video | 0 | 432.8 | `SEE_MY_WORLD_ARCHIVE/04_ORAL_HISTORIES_AND_PROFILES/GLORIA_X_CLINTS/GLORIA CLIP 1.mp4` |
+| linford-childhood | video | 121.1 | 42.55 | `SEE_MY_WORLD_ARCHIVE/01_SEE_MY_WORLD_PROGRAMMES/2026/Everyday_People/Lindford full interview .mov` |
+| linford-mentors | video | 665.9 | 40.5 | `SEE_MY_WORLD_ARCHIVE/01_SEE_MY_WORLD_PROGRAMMES/2026/Everyday_People/Lindford full interview .mov` |
+| linford-places | video | 1285.0 | 40.4 | `SEE_MY_WORLD_ARCHIVE/01_SEE_MY_WORLD_PROGRAMMES/2026/Everyday_People/Lindford full interview .mov` |
+| shirley-belonging | video | 830.6 | 77.5 | `SEE_MY_WORLD_ARCHIVE/04_ORAL_HISTORIES_AND_PROFILES/SHIRLEY_MAY/Shirley May 18.01.mp4` |
+| shirley-making | video | 231.3 | 41.2 | `SEE_MY_WORLD_ARCHIVE/04_ORAL_HISTORIES_AND_PROFILES/SHIRLEY_MAY/Shirley May 18.01.mp4` |
+| shirley-mother | video | 726.0 | 31.3 | `SEE_MY_WORLD_ARCHIVE/04_ORAL_HISTORIES_AND_PROFILES/SHIRLEY_MAY/Shirley May 18.01.mp4` |
+| hakim-finding-history | video | 109.4 | 84.65 | `SEE_MY_WORLD_ARCHIVE/04_ORAL_HISTORIES_AND_PROFILES/HAKIM_ADI_ARCHIVE/09. Dr. Hakim Adi 18.01.mp4` |
+| hakim-manchester | video | 310.0 | 88.5 | `SEE_MY_WORLD_ARCHIVE/04_ORAL_HISTORIES_AND_PROFILES/HAKIM_ADI_ARCHIVE/09. Dr. Hakim Adi 18.01.mp4` |
+| hakim-portrait | video | 0 | 558.72 | `SEE_MY_WORLD_ARCHIVE/04_ORAL_HISTORIES_AND_PROFILES/HAKIM_ADI_ARCHIVE/09. Dr. Hakim Adi 18.01.mp4` |
+| pie-opportunities | video | 0 | 59.72 | `SEE_MY_WORLD_ARCHIVE/00_ADMIN_AND_GOVERNANCE/ROOT_FILES/social skits 1.zip::PIE RADIO CLIP.mp4` |
+| pie-school | video | 0 | 28.08 | `SEE_MY_WORLD_ARCHIVE/00_ADMIN_AND_GOVERNANCE/ROOT_FILES/social skits 1.zip::PIE RADIO CLIP 3.mp4` |
+| pie-community | video | 0 | 65.32 | `SEE_MY_WORLD_ARCHIVE/00_ADMIN_AND_GOVERNANCE/ROOT_FILES/social skits 1.zip::PIE RADIO CLIP 2.mp4` |
+| misha-live-2 | video | 0 | 42.4 | `SEE_MY_WORLD_ARCHIVE/00_ADMIN_AND_GOVERNANCE/ROOT_FILES/social skits 1.zip::MISHA LIVE LOUNGE CLIP 2.mp4` |
+| misha-live-3 | video | 0 | 33.16 | `SEE_MY_WORLD_ARCHIVE/00_ADMIN_AND_GOVERNANCE/ROOT_FILES/social skits 1.zip::MISHA LIVE LOUNGE CLIP 3.mp4` |
+| misha-live-1 | video | 0 | 57.4 | `SEE_MY_WORLD_ARCHIVE/00_ADMIN_AND_GOVERNANCE/ROOT_FILES/social skits 1.zip::MISHA LIVE LOUNGE CLIP 1.mp4` |
+| junior-dialogue | video | 0 | 24.2 | `SEE_MY_WORLD_ARCHIVE/04_ORAL_HISTORIES_AND_PROFILES/JUNIOR_AKINOLA/REELS/JUNIOR REEL 3.mp4` |
+| junior-identity | video | 0 | 28.08 | `SEE_MY_WORLD_ARCHIVE/04_ORAL_HISTORIES_AND_PROFILES/JUNIOR_AKINOLA/REELS/JUNIOR REEL 1.mp4` |
+| junior-between-places | video | 0 | 44.52 | `SEE_MY_WORLD_ARCHIVE/04_ORAL_HISTORIES_AND_PROFILES/JUNIOR_AKINOLA/REELS/JUNIOR REEL 2.mp4` |
+| naina-roots | audio | 82.0 | 38.1 | `SEE_MY_WORLD_ARCHIVE/02_PARTNER_AND_COMMUNITY_PROJECTS/BPM/DIALLED_INDUSTRY x BPM/SOUND /Nainas interview.m4a` |
+| g33-community | audio | 227.0 | 80.7 | `SEE_MY_WORLD_ARCHIVE/02_PARTNER_AND_COMMUNITY_PROJECTS/BPM/DIALLED_INDUSTRY x BPM/SOUND /G33 interview.m4a` |
+| ahsan-identity | audio | 57.8 | 28.3 | `SEE_MY_WORLD_ARCHIVE/02_PARTNER_AND_COMMUNITY_PROJECTS/BPM/DIALLED_INDUSTRY x BPM/SOUND /Ahsan interview.m4a` |
+| dhruva-open | audio | 212.0 | 26.3 | `SEE_MY_WORLD_ARCHIVE/02_PARTNER_AND_COMMUNITY_PROJECTS/BPM/DIALLED_INDUSTRY x BPM/SOUND /DHRUVA - interview.m4a` |
+| mya-access | audio | 237.8 | 34.6 | `SEE_MY_WORLD_ARCHIVE/02_PARTNER_AND_COMMUNITY_PROJECTS/BPM/DIALLED_INDUSTRY x BPM/SOUND /Myas interview (pxssy palace).m4a` |
+| balraj-learning | audio | 519.7 | 26.5 | `SEE_MY_WORLD_ARCHIVE/02_PARTNER_AND_COMMUNITY_PROJECTS/BPM/DIALLED_INDUSTRY x BPM/SOUND /Balraj interview.m4a` |
+| chad-short | video | 0 | 37.4 | `SEE_MY_WORLD_ARCHIVE/00_ADMIN_AND_GOVERNANCE/ROOT_FILES/social skits 1.zip::CHAD TAYLOR CLIP 2.mp4` |
+| chad-voice | video | 0 | 47.68 | `SEE_MY_WORLD_ARCHIVE/00_ADMIN_AND_GOVERNANCE/ROOT_FILES/social skits 1.zip::CHAD TAYLOR CLIP.mp4` |
+| isaiah-lounge-1 | video | 0 | 28.88 | `SEE_MY_WORLD_ARCHIVE/00_ADMIN_AND_GOVERNANCE/ROOT_FILES/social skits 1.zip::ISAIAH LIVE LOUNGE CLIP 1.mp4` |
+| isaiah-lounge-2 | video | 0 | 66.16 | `SEE_MY_WORLD_ARCHIVE/00_ADMIN_AND_GOVERNANCE/ROOT_FILES/social skits 1.zip::ISIAIH LIVE LOUNGE CLIP 2.mp4` |
+| fragments-blue | image | — | — | `SEE_MY_WORLD_ARCHIVE/01_SEE_MY_WORLD_PROGRAMMES/2024/See my World - allistair - connected fragments /denzel painting/Scans/Get out: goodbyes #scan.JPG` |
+| fragments-new-life | image | — | — | `SEE_MY_WORLD_ARCHIVE/01_SEE_MY_WORLD_PROGRAMMES/2024/See my World - allistair - connected fragments /denzel painting/Scans/New life #scan.jpg` |
+| fragments-vanitas | image | — | — | `SEE_MY_WORLD_ARCHIVE/01_SEE_MY_WORLD_PROGRAMMES/2024/See my World - allistair - connected fragments /denzel painting/Scans/Vanitas sanguinem I #scan.jpg` |
+| fragments-canoe | image | — | — | `SEE_MY_WORLD_ARCHIVE/01_SEE_MY_WORLD_PROGRAMMES/2024/See my World - allistair - connected fragments /denzel painting/Scans/canto 3 #scan.jpg` |
+| fragments-vanitas-detail | image | — | — | `SEE_MY_WORLD_ARCHIVE/01_SEE_MY_WORLD_PROGRAMMES/2024/See my World - allistair - connected fragments /denzel painting/detail/Vanitas sanguinem I #detail.JPG` |
+| fragments-canoe-detail | image | — | — | `SEE_MY_WORLD_ARCHIVE/01_SEE_MY_WORLD_PROGRAMMES/2024/See my World - allistair - connected fragments /denzel painting/detail/canto 3 #detail.jpg` |
+| dialled-room-1 | image | 8.232 | — | `SEE_MY_WORLD_ARCHIVE/02_PARTNER_AND_COMMUNITY_PROJECTS/BPM/DIALLED_INDUSTRY x BPM/HARRY CAM/C0007.MP4` |
