@@ -1,7 +1,7 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
 import { Euler, Quaternion, Vector3 } from 'three';
-import { orientationForProject, rotateInView } from '../src/scripts/globe-motion.ts';
+import { orientationForProject, rotateInView, uprightPanelQuaternion } from '../src/scripts/globe-motion.ts';
 
 test('both drag axes pass a half turn and complete a full orbit', () => {
   for (const axis of ['pitch', 'yaw']) {
@@ -35,5 +35,22 @@ test('story selection brings panels at any latitude or longitude to the front', 
     for (let i = 0; i < 100; i++) orientation.slerp(target, .2);
     const result = position.clone().normalize().applyQuaternion(orientation);
     assert.ok(result.distanceTo(new Vector3(0, 0, 1)) < 1e-6);
+  }
+});
+
+test('panels face outward with their top toward the top of the screen at any orientation', () => {
+  const orientation = new Quaternion();
+  const panel = new Quaternion();
+  for (let step = 0; step < 400; step++) {
+    rotateInView(orientation, 0.37, 0.53);
+    for (const position of [new Vector3(1, .3, 2), new Vector3(-2, -1, .5), new Vector3(.4, 1.2, -1.5)]) {
+      uprightPanelQuaternion(position, orientation, panel);
+      const world = orientation.clone().multiply(panel);
+      const top = new Vector3(0, 1, 0).applyQuaternion(world);
+      const facing = new Vector3(0, 0, 1).applyQuaternion(world);
+      assert.ok(facing.distanceTo(position.clone().normalize().applyQuaternion(orientation)) < 1e-6);
+      assert.ok(top.y > 0, `panel upside down at step ${step}`);
+      assert.ok(Math.abs(new Vector3(1, 0, 0).applyQuaternion(world).y) < 1e-6, 'panel rolled');
+    }
   }
 });

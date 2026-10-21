@@ -1,7 +1,7 @@
 import * as THREE from 'three';
 import type { ArchiveProject } from '../data/projects';
 import { experienceTypes } from '../data/experience';
-import { rotateInView, orientationForProject } from './globe-motion';
+import { rotateInView, orientationForProject, uprightPanelQuaternion } from './globe-motion';
 
 const canvas = document.querySelector<HTMLCanvasElement>('#globe-canvas');
 const dataEl = document.querySelector<HTMLScriptElement>('#archive-project-data');
@@ -656,6 +656,7 @@ if (canvas && dataEl && titleEl && kickerEl && metaEl) {
       for (const panel of panels) {
         const hover = panel.userData.slug === (state.hoverSlug || state.selectedSlug);
         const target = panel.userData.baseScale * (hover ? 1.28 : 1);
+        uprightPanelQuaternion(panel.position, state.orientation, panel.quaternion);
         panel.scale.lerp(new THREE.Vector3(target, target, 1), .12);
         const border = panel.children.find((child) => child instanceof THREE.LineSegments) as THREE.LineSegments | undefined;
         if (border) (border.material as THREE.LineBasicMaterial).opacity = hover ? 1 : .76;
