@@ -1,5 +1,21 @@
 # See My World image sources
 
+## UI photography review — 21 October 2026
+
+TEMNE now uses the existing original `public/media/curated/temne-20.webp`
+photograph for its cover and discovery cards. Its source and dimensions remain
+recorded in `outputs/curated-assets.json`. The small globe texture
+`public/media/event/globe-temne-making-together.webp` is a derivative of that
+same photograph, resized to fit within 600 × 600 pixels (WebP quality 82).
+The workshop film poster remains attached to its video player and in the
+gallery, with a caption identifying it as a film frame.
+
+Junior's photography selection is still pending: the connected R2 Junior folder
+contains four videos and no photographs, and a wider image-key search found no
+Junior/Akinola/Homecoming filename match. Photographs stored under camera
+filenames may still be present elsewhere. See `docs/ui-feedback-2026-10-21.md`
+for the lookup scope and editorial handoff.
+
 The assets in `public/images/events/` are WebP copies of imagery served by the official [See My World](https://seemyworld.co.uk/) website. They are kept local so the interactive archive does not depend on third-party image loading. Story content is presented directly in this archive.
 
 | Local asset group | Original page |

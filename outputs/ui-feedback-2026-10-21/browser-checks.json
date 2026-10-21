@@ -1,0 +1,14 @@
+{
+  "passed": true,
+  "filteredRandomPool": 5,
+  "checks": [
+    "random navigation respects combined filters",
+    "single result and empty result explanations",
+    "desktop and mobile immersive selection",
+    "repeated pointer drags, keyboard full turns on both axes and reset",
+    "TEMNE original cover, two films and six images",
+    "mobile overflow",
+    "random discovery without WebGL"
+  ],
+  "browserErrors": []
+}

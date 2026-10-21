@@ -229,9 +229,9 @@ const curatedProjects: ArchiveProject[] = [
   },
   {
     id: 11, title: 'TEMNE: making together', slug: 'temne-making-together', category: 'Art + participation',
-    year: '2024', date: '2024 programme', venue: 'Manchester', image: photo('workshop-poster'),
-    gallery: ['temne-17', 'temne-20', 'temne-6', 'temne-24', 'temne-9'].map(photo),
-    alt: 'People gathered around a table during a TEMNE art workshop',
+    year: '2024', date: '2024 programme', venue: 'Manchester', image: photo('temne-20'), imageFocusY: 32,
+    gallery: ['temne-17', 'temne-6', 'temne-24', 'temne-9', 'workshop-poster'].map(photo),
+    alt: 'A participant laughing at a TEMNE gathering',
     description: 'Hands at work. Ideas in the room. Two one-minute films move from a creative workshop to the people and conversations around TEMNE.',
     story: [
       'The TEMNE programme brought art, discussion and shared creative activity into the See My World archive in 2024.',
@@ -243,7 +243,7 @@ const curatedProjects: ArchiveProject[] = [
       film('temne', 'People, art and conversation', 59, 'The finished TEMNE event highlights, with artwork, discussion and people gathered together.'),
     ],
     invitation: 'What would you make if you joined this table?', visitLabel: '2 one-minute films + 6 images',
-    photoCaptions: ['A still from the TEMNE workshop film.', 'A speaker at the TEMNE programme.', 'A moment of laughter in the room.', 'Participants listening together.', 'A participant in conversation.', 'Discussion alongside the artwork.'],
+    photoCaptions: ['A moment of laughter at the TEMNE gathering.', 'A speaker at the TEMNE programme.', 'Participants listening together.', 'A participant in conversation.', 'Discussion alongside the artwork.', 'A still from the TEMNE workshop film.'],
     places: ['Manchester'], keywords: ['TEMNE', 'workshop', 'making', 'learning', 'art', 'conversation'],
   },
   {

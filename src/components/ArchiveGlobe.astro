@@ -27,9 +27,10 @@ const serializedProjects = projects.map((project) => ({ ...project, image: asset
         <p class="eyebrow"><span class="pulse" aria-hidden="true"></span> A festival of Pan-African experiences</p>
         <h1 id="page-title">A world of <em>stories.</em></h1>
         <p class="intro-description">
-          Watch a moment. Hear a new perspective. Find a familiar face. Explore the films,
-          photographs and artist voices of See My World, from Manchester to Lagos and beyond.
+          A voice carries. A memory moves. A world opens. Follow the people, places and
+          creative connections of See My World, from Manchester to Lagos and beyond.
         </p>
+        <p class="intro-contents">Step inside for artist films, live performances, recorded conversations, photographs and artwork. Watch, listen or look at your own pace.</p>
         <a class="intro-link" href="#start">Find your first story <span aria-hidden="true">↓</span></a>
       </div>
       <div class="intro-aside" aria-hidden="true">
@@ -42,7 +43,7 @@ const serializedProjects = projects.map((project) => ({ ...project, image: asset
     </section>
 
     <section class="start-section" id="start" aria-labelledby="start-title">
-      <div class="start-heading"><div><span class="section-number">Start anywhere. Stay a while.</span><h2 id="start-title">A little time.<br />A whole world.</h2></div><p>Choose a short trail, or follow your curiosity around the globe. Sound is always your choice; headphones help in a busy room.</p></div>
+      <div class="start-heading"><div><span class="section-number">Start anywhere. Stay a while.</span><h2 id="start-title">A little time.<br />A whole world.</h2></div><p>Each trail connects three stories. Choose one, let “Surprise me” open a story at random, or follow your curiosity around the globe. Press play whenever you’re ready.</p></div>
       <div class="trail-grid">
         {archiveTrails.map((trail, index) => {
           const first = projects.find((project) => project.slug === trail.slugs[0])!;
@@ -52,12 +53,12 @@ const serializedProjects = projects.map((project) => ({ ...project, image: asset
           </a>;
         })}
       </div>
-      <div class="start-bottom"><span>{projects.length} selected projects · Films, photographs, voices & shared histories</span><button type="button" data-surprise>Surprise me <span aria-hidden="true">↗</span></button><a href="#world">Explore the globe ↓</a></div>
+      <div class="start-bottom"><span>{projects.length} selected stories · Film, sound, photography & artwork</span><div class="surprise-choice"><button type="button" data-surprise disabled aria-describedby="surprise-help">Surprise me <span aria-hidden="true">↗</span></button><small id="surprise-help" data-surprise-help>Opens one story at random. Your search and filters apply.</small></div><a href="#world">Explore the globe ↓</a></div>
     </section>
 
     <section class="experience" id="world" aria-label="Interactive archive">
       <div class="globe-side">
-        <div class="section-marker"><span>01 / The world</span><span>Drag to explore · Select an image to open</span></div>
+        <div class="section-marker"><span>01 / The world</span><span>Drag in any direction · Select an image to open</span></div>
         <div class="stage">
           <button class="expand-button" type="button" data-enter-immersive aria-label="Explore the globe full screen"><span aria-hidden="true">⤢</span> Explore full screen</button>
           <div class="immersive-toolbar" data-immersive-toolbar>
@@ -67,12 +68,12 @@ const serializedProjects = projects.map((project) => ({ ...project, image: asset
               <button type="button" data-close-immersive>Exit full screen <span aria-hidden="true">×</span></button>
             </div>
           </div>
-          <canvas id="globe-canvas" aria-label="Interactive archive globe. Browse the event links alongside it for keyboard access."></canvas>
+          <canvas id="globe-canvas" aria-label="Interactive archive globe. Drag in any direction or use arrow keys to rotate; plus and minus to zoom; 0 to reset. Story links are also available alongside the globe."></canvas>
           <div class="globe-center-label" aria-hidden="true"><span>SEE MY</span><span>WORLD</span></div>
           <div class="caption" aria-live="polite">
             <span class="caption-kicker" data-caption-kicker>EXPLORE THE ARCHIVE</span>
             <strong class="caption-title" data-caption-title>Every image holds a story.</strong>
-            <span class="caption-meta" data-caption-meta>Drag the globe or choose an event from the list.</span>
+            <span class="caption-meta" data-caption-meta>Turn the globe in any direction, or choose a story from the list.</span>
           </div>
           <article class="story-preview" data-story-preview hidden aria-labelledby="preview-title">
             <button class="preview-close" type="button" data-close-preview aria-label="Close story preview">×</button>
@@ -169,7 +170,7 @@ const serializedProjects = projects.map((project) => ({ ...project, image: asset
     <section class="browse-section" id="browse" aria-labelledby="browse-title">
       <div class="browse-heading">
         <div><span class="section-number">03 / The collection</span><h2 id="browse-title">Explore every story<span class="green-dot">.</span></h2></div>
-        <p>Stay for thirty seconds or follow a whole thread. Meet the artists, feel the movement and look closer at the people behind each moment.</p>
+        <p>Stay for a short film or follow a whole thread. Each story tells you what’s inside: films to watch, voices to hear, or images to explore.</p>
       </div>
       <div class="project-grid" data-project-grid>
         {projects.map((project) => (
@@ -197,14 +198,14 @@ const serializedProjects = projects.map((project) => ({ ...project, image: asset
 <style>
   .theme-filters { display:flex; flex-wrap:wrap; gap:.35rem; margin:0 0 1rem; }
   .theme-filters button { min-height:44px; border:1px solid #414c40; background:#0c120c; color:#d2d7cc; padding:.5rem .7rem; font:inherit; font-size:.65rem; cursor:pointer; }
-  .theme-filters button.is-active { background:#233b23; color:#a8e5aa; border-color:var(--green); }
+  .theme-filters button.is-active { background:var(--green); color:#050505; border-color:var(--green); }
   .theme-filters button:focus-visible { outline:2px solid #fff; outline-offset:2px; }
-  .start-section { padding: 3.5rem clamp(1.25rem,5vw,6rem); border-bottom: 1px solid #722322; }
+  .start-section { padding: 3.5rem clamp(1.25rem,5vw,6rem); border-bottom: 1px solid var(--line-soft); }
   .start-heading { display: flex; align-items: end; justify-content: space-between; gap: 2rem; margin-bottom: 1.8rem; }
   .start-heading h2 { font-size: clamp(2.4rem,4.3vw,4.8rem); line-height: .98; letter-spacing: -.06em; text-transform: uppercase; margin: .9rem 0 0; }
   .start-heading > p { max-width: 330px; color: #b3b8ae; font-size: .9rem; line-height: 1.6; }
   .trail-grid { display: grid; grid-template-columns: repeat(3,minmax(0,1fr)); gap: 1rem; }
-  .trail-card { position: relative; background: #0e120e; border: 1px solid #59332c; overflow: hidden; }
+  .trail-card { position: relative; background: #0e120e; border: 1px solid var(--line-soft); overflow: hidden; }
   .trail-card > img { width: 100%; height: 210px; object-fit: cover; transition: transform .25s; }
   .trail-card:hover > img { transform: scale(1.025); }
   .trail-card:focus-visible { outline: 2px solid var(--green); outline-offset: 4px; }
@@ -216,7 +217,11 @@ const serializedProjects = projects.map((project) => ({ ...project, image: asset
   .trail-copy > span span { color: var(--green); margin-left: .8rem; }
   .start-bottom { display: flex; flex-wrap: wrap; align-items: center; gap: 1.2rem; margin-top: 1.5rem; font-size: .7rem; }
   .start-bottom > span { color: #aeb4ac; margin-right: auto; }
+  .surprise-choice { display: grid; justify-items: start; gap: .5rem; max-width: 18rem; }
+  .surprise-choice small { color: #aeb4ac; font-size: .7rem; line-height: 1.5; }
   .start-bottom button { font: inherit; color: #050505; background: var(--green); border: 1px solid var(--green); min-height: 44px; padding: .8rem 1rem; font-weight: 800; cursor: pointer; }
+  .start-bottom button:disabled { opacity: .55; cursor: not-allowed; }
+  .start-bottom button:focus-visible { outline: 2px solid #fff; outline-offset: 4px; }
   .start-bottom a { display: inline-flex; align-items: center; min-height: 44px; }
   .format-filters { display: flex; gap: .35rem; flex-wrap: wrap; margin: -.6rem 0 1.2rem; }
   .format-filters button { min-height: 44px; background: #111; border: 1px solid #51534c; color: #d2d7cc; font: inherit; font-size: .68rem; font-weight: 800; padding: .55rem .65rem; cursor: pointer; }
@@ -226,40 +231,41 @@ const serializedProjects = projects.map((project) => ({ ...project, image: asset
   .format-badge { position: absolute; top: .7rem; left: .7rem; background: #050505dc; color: #fff; border: 1px solid #ffffff50; padding: .4rem .6rem; font-size: .6rem; font-weight: 900; letter-spacing: .1em; text-transform: uppercase; }
   @media(max-width:680px) { .start-heading { display: block; } .start-heading > p { max-width: 100%; } .trail-grid { grid-template-columns: 1fr; } .trail-card { display: grid; grid-template-columns: 35% 1fr; } .trail-card > img { height: 100%; min-height: 190px; } .trail-copy { padding: 1rem; } .start-bottom > span { width: 100%; } }
   .archive-shell { min-height: 100vh; background: #050505; color: #f8f8f5; }
-  .site-header { min-height: 106px; border-bottom: 1px solid #722322; display: flex; align-items: center; justify-content: space-between; gap: 2rem; padding: 1.4rem clamp(1.25rem, 3vw, 3.5rem); }
+  .site-header { min-height: 106px; border-bottom: 1px solid var(--line-soft); display: flex; align-items: center; justify-content: space-between; gap: 2rem; padding: 1.4rem clamp(1.25rem, 3vw, 3.5rem); }
   .wordmark { display: block; width: min(430px, 39vw); }
   .wordmark img { width: 100%; height: auto; }
   .site-header nav { display: flex; align-items: center; gap: clamp(1rem, 2.4vw, 2.5rem); }
   .site-header nav a { font-size: .69rem; font-weight: 800; letter-spacing: .13em; text-transform: uppercase; white-space: nowrap; }
-  .site-header nav a:hover, .site-header nav a:focus-visible, .site-footer a:hover { color: #70bd73; }
-  .site-header nav span { color: #ef4b43; }
-  .intro { min-height: 360px; display: flex; align-items: end; justify-content: space-between; gap: 2rem; padding: clamp(3.5rem, 6vw, 6.5rem) clamp(1.25rem, 5vw, 6rem) 3.3rem; border-bottom: 1px solid #722322; position: relative; overflow: hidden; }
-  .intro::after { content: ''; position: absolute; right: 8%; top: -130px; width: 530px; height: 530px; border: 1px solid rgba(239,75,67,.11); border-radius: 50%; pointer-events: none; }
+  .site-header nav a:hover, .site-header nav a:focus-visible, .site-footer a:hover { color: var(--green); }
+  .site-header nav span { color: var(--red); }
+  .intro { min-height: 360px; display: flex; align-items: end; justify-content: space-between; gap: 2rem; padding: clamp(3.5rem, 6vw, 6.5rem) clamp(1.25rem, 5vw, 6rem) 3.3rem; border-bottom: 1px solid var(--line-soft); position: relative; overflow: hidden; }
+  .intro::after { content: ''; position: absolute; right: 8%; top: -130px; width: 530px; height: 530px; border: 1px solid rgba(255,0,0,.11); border-radius: 50%; pointer-events: none; }
   .intro-copy { max-width: 830px; position: relative; z-index: 1; }
-  .eyebrow, .section-number { color: #ef4b43; text-transform: uppercase; letter-spacing: .17em; font-size: .72rem; font-weight: 800; }
+  .eyebrow, .section-number { color: var(--red); text-transform: uppercase; letter-spacing: .17em; font-size: .72rem; font-weight: 800; }
   .eyebrow { margin: 0 0 1.35rem; display: flex; align-items: center; gap: .6rem; }
-  .pulse { width: 7px; height: 7px; border-radius: 50%; background: #ef4b43; box-shadow: 0 0 0 5px rgba(239,75,67,.15); }
+  .pulse { width: 7px; height: 7px; border-radius: 50%; background: var(--red); box-shadow: 0 0 0 5px rgba(255,0,0,.15); }
   h1, h2, h3, p { margin-top: 0; }
   h1 { margin-bottom: 1.25rem; font-size: clamp(3.5rem, 6.3vw, 7.5rem); line-height: .91; letter-spacing: -.075em; text-transform: uppercase; max-width: 12ch; }
   h1 em { color: var(--green); font-style: normal; }
   .intro-description { max-width: 580px; color: #b6b7b1; font-size: clamp(1rem, 1.2vw, 1.16rem); line-height: 1.6; }
-  .intro-link { display: inline-flex; gap: 1.4rem; align-items: center; border-bottom: 1px solid #ef4b43; padding-bottom: .52rem; margin-top: .8rem; font-size: .75rem; font-weight: 800; letter-spacing: .14em; text-transform: uppercase; }
-  .intro-link span { color: #ef4b43; font-size: 1.1rem; }
+  .intro-contents { max-width: 580px; color: #e0e3db; font-size: clamp(.9rem, 1.1vw, 1rem); line-height: 1.6; }
+  .intro-link { display: inline-flex; gap: 1.4rem; align-items: center; border-bottom: 1px solid var(--red); padding-bottom: .52rem; margin-top: .8rem; font-size: .75rem; font-weight: 800; letter-spacing: .14em; text-transform: uppercase; }
+  .intro-link span { color: var(--red); font-size: 1.1rem; }
   .intro-link:hover { color: var(--green); }
   .intro-aside { display: flex; align-items: center; gap: .65rem; writing-mode: vertical-rl; text-transform: uppercase; letter-spacing: .2em; color: #888d86; font-size: .62rem; font-weight: 700; white-space: nowrap; }
-  .intro-line { display: block; height: 28px; width: 1px; background: #ef4b43; }
-  .experience { display: grid; grid-template-columns: minmax(0, 1.45fr) minmax(360px, .8fr); min-height: 660px; border-bottom: 1px solid #722322; }
-  .globe-side { min-width: 0; border-right: 1px solid #722322; display: flex; flex-direction: column; position: relative; }
+  .intro-line { display: block; height: 28px; width: 1px; background: var(--red); }
+  .experience { display: grid; grid-template-columns: minmax(0, 1.45fr) minmax(360px, .8fr); min-height: 660px; border-bottom: 1px solid var(--line-soft); }
+  .globe-side { min-width: 0; border-right: 1px solid var(--line-soft); display: flex; flex-direction: column; position: relative; }
   .section-marker, .stage-footer { display: flex; justify-content: space-between; gap: 1rem; color: #888d86; font-size: .64rem; font-weight: 800; letter-spacing: .14em; text-transform: uppercase; }
-  .section-marker { padding: 1.2rem 1.7rem; border-bottom: 1px solid rgba(165,48,46,.45); }
-  .section-marker span:first-child { color: #ef4b43; }
-  .stage-footer { padding: 1rem 1.7rem; border-top: 1px solid rgba(165,48,46,.45); }
-  .stage { flex: 1; min-height: 580px; position: relative; background: #050303; overflow: hidden; isolation: isolate; }
-  .stage::before { content: ''; position: absolute; z-index: -1; inset: 0; background: radial-gradient(ellipse 70% 64% at 52% 48%, rgba(151,31,25,.48), rgba(35,4,5,.62) 42%, #030303 77%); pointer-events: none; }
+  .section-marker { padding: 1.2rem 1.7rem; border-bottom: 1px solid rgba(255,0,0,.45); }
+  .section-marker span:first-child { color: var(--red); }
+  .stage-footer { padding: 1rem 1.7rem; border-top: 1px solid rgba(255,0,0,.45); }
+  .stage { flex: 1; min-height: 580px; position: relative; background: #050000; overflow: hidden; isolation: isolate; }
+  .stage::before { content: ''; position: absolute; z-index: -1; inset: 0; background: radial-gradient(ellipse 70% 64% at 52% 48%, rgba(151,0,0,.48), rgba(35,0,0,.62) 42%, #030303 77%); pointer-events: none; }
   .stage::after { content: ''; position: absolute; z-index: 0; inset: 0; background: linear-gradient(90deg, #05050588, transparent 23%, transparent 76%, #05050588), linear-gradient(0deg, #050505bd, transparent 25%, transparent 75%, #0505059c); pointer-events: none; }
   #globe-canvas { display: block; width: 100%; height: 100%; touch-action: none; }
   #globe-canvas:focus-visible { outline: 2px solid var(--green); outline-offset: -5px; }
-  .expand-button { position: absolute; z-index: 6; top: 1.1rem; right: 1.2rem; display: flex; align-items: center; gap: .65rem; min-height: 2.8rem; padding: 0 .9rem; border: 1px solid #a03b36; background: #080808ec; color: #fff; text-transform: uppercase; letter-spacing: .12em; font: inherit; font-size: .66rem; font-weight: 900; cursor: pointer; }
+  .expand-button { position: absolute; z-index: 6; top: 1.1rem; right: 1.2rem; display: flex; align-items: center; gap: .65rem; min-height: 2.8rem; padding: 0 .9rem; border: 1px solid var(--line-soft); background: #080808ec; color: #fff; text-transform: uppercase; letter-spacing: .12em; font: inherit; font-size: .66rem; font-weight: 900; cursor: pointer; }
   .expand-button span { color: var(--green); font-size: 1.35rem; line-height: 1; }
   .expand-button:hover, .expand-button:focus-visible { background: var(--green); border-color: var(--green); color: #050505; }
   .expand-button:hover span, .expand-button:focus-visible span { color: #050505; }
@@ -283,27 +289,27 @@ const serializedProjects = projects.map((project) => ({ ...project, image: asset
   .preview-copy h3 { font-size: clamp(1rem, 1.5vw, 1.4rem); line-height: 1.05; text-transform: uppercase; margin: .42rem 0 .5rem; }
   .preview-copy p { color: #c6cbc4; font-size: .73rem; line-height: 1.4; margin: 0 0 .55rem; }
   .preview-copy small { display: block; color: #aeb4ac; letter-spacing: .06em; }
-  .preview-copy a { display: inline-flex; gap: .7rem; margin-top: .7rem; border-bottom: 1px solid #ef4b43; padding-bottom: .28rem; font-size: .64rem; font-weight: 900; letter-spacing: .1em; text-transform: uppercase; }
-  .preview-copy a span { color: #ef4b43; }
+  .preview-copy a { display: inline-flex; gap: .7rem; margin-top: .7rem; border-bottom: 1px solid var(--red); padding-bottom: .28rem; font-size: .64rem; font-weight: 900; letter-spacing: .1em; text-transform: uppercase; }
+  .preview-copy a span { color: var(--red); }
   .preview-copy a:hover { color: var(--green); }
   .preview-close { position: absolute; top: .25rem; right: .35rem; border: 0; background: transparent; color: #fff; font-size: 1.4rem; cursor: pointer; }
   .globe-side.is-immersive, .globe-side:fullscreen { position: fixed; inset: 0; z-index: 1000; width: 100%; height: 100dvh; border: 0; background: #050505; }
   .globe-side.is-immersive .section-marker, .globe-side:fullscreen .section-marker, .globe-side.is-immersive .stage-footer, .globe-side:fullscreen .stage-footer, .globe-side.is-immersive .expand-button, .globe-side:fullscreen .expand-button { display: none; }
   .globe-side.is-immersive .stage, .globe-side:fullscreen .stage { min-height: 0; width: 100%; }
-  .globe-side.is-immersive .immersive-toolbar, .globe-side:fullscreen .immersive-toolbar { position: absolute; z-index: 12; top: 0; left: 0; right: 0; display: flex; align-items: center; justify-content: space-between; gap: 1rem; height: 64px; padding: 0 1.5rem; border-bottom: 1px solid #682421; background: #050505e8; }
+  .globe-side.is-immersive .immersive-toolbar, .globe-side:fullscreen .immersive-toolbar { position: absolute; z-index: 12; top: 0; left: 0; right: 0; display: flex; align-items: center; justify-content: space-between; gap: 1rem; height: 64px; padding: 0 1.5rem; border-bottom: 1px solid var(--line-soft); background: #050505e8; }
   .immersive-brand { font-size: .78rem; font-weight: 900; letter-spacing: .16em; white-space: nowrap; }
   .immersive-brand span { color: var(--green); }
   .immersive-toolbar > div { display: flex; gap: .5rem; }
-  .immersive-toolbar button { border: 1px solid #67312d; background: #111; color: #fff; min-height: 2.3rem; padding: 0 .8rem; font: inherit; font-size: .63rem; font-weight: 900; letter-spacing: .1em; text-transform: uppercase; cursor: pointer; }
+  .immersive-toolbar button { border: 1px solid var(--line-soft); background: #111; color: #fff; min-height: 2.3rem; padding: 0 .8rem; font: inherit; font-size: .63rem; font-weight: 900; letter-spacing: .1em; text-transform: uppercase; cursor: pointer; }
   .immersive-toolbar button:hover, .immersive-toolbar button:focus-visible { border-color: var(--green); color: var(--green); }
-  .immersive-toolbar button span { color: #ef4b43; margin-left: .5rem; font-size: 1rem; }
+  .immersive-toolbar button span { color: var(--red); margin-left: .5rem; font-size: 1rem; }
   .globe-side.is-immersive .caption, .globe-side:fullscreen .caption { bottom: 2rem; }
   .globe-side.has-preview .caption { display: none; }
-  .globe-side.is-immersive.rail-open .immersive-rail, .globe-side:fullscreen.rail-open .immersive-rail { display: flex; flex-direction: column; position: absolute; z-index: 9; top: 64px; right: 0; bottom: 0; width: min(360px, 95vw); padding: 1.4rem; border-left: 1px solid #792c28; background: #080b08f5; box-shadow: -16px 0 60px #0008; }
-  .rail-heading { display: flex; justify-content: space-between; align-items: center; color: #ef4b43; font-size: .68rem; font-weight: 900; letter-spacing: .14em; }
+  .globe-side.is-immersive.rail-open .immersive-rail, .globe-side:fullscreen.rail-open .immersive-rail { display: flex; flex-direction: column; position: absolute; z-index: 9; top: 64px; right: 0; bottom: 0; width: min(360px, 95vw); padding: 1.4rem; border-left: 1px solid var(--line-soft); background: #080b08f5; box-shadow: -16px 0 60px #0008; }
+  .rail-heading { display: flex; justify-content: space-between; align-items: center; color: var(--red); font-size: .68rem; font-weight: 900; letter-spacing: .14em; }
   .rail-heading button { border: 0; background: transparent; color: #fff; font-size: 1.5rem; cursor: pointer; }
   .immersive-rail label { margin: 1.55rem 0 .6rem; color: #aeb4ac; text-transform: uppercase; letter-spacing: .12em; font-size: .62rem; font-weight: 900; }
-  .immersive-rail input { min-height: 2.8rem; border: 1px solid #75403b; padding: 0 .75rem; background: #111; color: #fff; font: inherit; font-size: .77rem; }
+  .immersive-rail input { min-height: 2.8rem; border: 1px solid var(--line-soft); padding: 0 .75rem; background: #111; color: #fff; font: inherit; font-size: .77rem; }
   .immersive-rail input:focus { outline: 2px solid var(--green); outline-offset: 2px; }
   .immersive-years { display: flex; flex-wrap: wrap; gap: .35rem; margin: 1rem 0 1.2rem; }
   .immersive-years button { border: 1px solid #464b45; background: #0b0b0b; color: #afb3ac; padding: .5rem .56rem; font: inherit; font-size: .61rem; font-weight: 900; cursor: pointer; }
@@ -315,7 +321,7 @@ const serializedProjects = projects.map((project) => ({ ...project, image: asset
   .immersive-stories span:nth-child(2) { display: flex; flex-direction: column; gap: .2rem; }
   .immersive-stories small { color: var(--green); font-size: .57rem; font-weight: 900; letter-spacing: .08em; text-transform: uppercase; }
   .immersive-stories strong { font-size: .7rem; line-height: 1.15; text-transform: uppercase; }
-  .immersive-stories button > span:last-child { color: #ef4b43; }
+  .immersive-stories button > span:last-child { color: var(--red); }
   .immersive-empty { color: #c6cbc4; font-size: .8rem; }
   .globe-center-label { position: absolute; z-index: 2; top: 50%; left: 50%; transform: translate(-50%,-50%); pointer-events: none; display: flex; flex-direction: column; text-align: center; font-size: clamp(.68rem, 1vw, 1rem); line-height: 1; letter-spacing: .38em; font-weight: 900; color: rgba(255,255,255,.46); text-shadow: 0 0 16px #000; mix-blend-mode: screen; }
   .caption { position: absolute; z-index: 4; left: 1.7rem; bottom: 1.8rem; max-width: min(60%, 370px); display: flex; flex-direction: column; gap: .3rem; pointer-events: none; text-shadow: 0 2px 12px #000; }
@@ -323,17 +329,17 @@ const serializedProjects = projects.map((project) => ({ ...project, image: asset
   .caption-title { font-size: clamp(1.1rem, 1.9vw, 1.8rem); line-height: 1.05; text-transform: uppercase; letter-spacing: -.035em; }
   .caption-meta { color: #c2c4bd; font-size: .73rem; line-height: 1.4; }
   .globe-controls { position: absolute; right: 1.2rem; bottom: 1.2rem; display: flex; gap: .3rem; }
-  .globe-controls button { min-width: 2.5rem; height: 2.5rem; border: 1px solid #74403d; background: #080808df; color: #fff; font: inherit; font-weight: 700; cursor: pointer; }
-  .globe-controls button:hover, .globe-controls button:focus-visible { border-color: #ef4b43; color: #ef4b43; }
+  .globe-controls button { min-width: 2.5rem; height: 2.5rem; border: 1px solid var(--line-soft); background: #080808df; color: #fff; font: inherit; font-weight: 700; cursor: pointer; }
+  .globe-controls button:hover, .globe-controls button:focus-visible { border-color: var(--red); color: var(--red); }
   .globe-controls .reset-control { padding: 0 .8rem; text-transform: uppercase; letter-spacing: .1em; font-size: .61rem; }
   .discover-panel { display: flex; flex-direction: column; padding: 2.3rem clamp(1.2rem, 2.5vw, 3rem) 0; min-height: 0; }
   .discover-heading h2 { font-size: clamp(2rem, 2.8vw, 3.15rem); text-transform: uppercase; letter-spacing: -.055em; line-height: 1; margin: 1.25rem 0 .8rem; }
   .discover-heading p { color: #a5a8a2; font-size: .87rem; line-height: 1.5; max-width: 30rem; margin-bottom: 2rem; }
   .search-label, .filter-header { color: #b4b8b0; text-transform: uppercase; letter-spacing: .13em; font-size: .63rem; font-weight: 800; }
   .search-label { margin-bottom: .65rem; }
-  .search-field { display: flex; align-items: center; gap: .7rem; border: 1px solid #7a3937; min-height: 3.15rem; padding: 0 .8rem; background: #0d0d0d; }
-  .search-field:focus-within { border-color: #ef4b43; }
-  .search-icon { color: #ef4b43; font-size: 1.5rem; }
+  .search-field { display: flex; align-items: center; gap: .7rem; border: 1px solid var(--line-soft); min-height: 3.15rem; padding: 0 .8rem; background: #0d0d0d; }
+  .search-field:focus-within { border-color: var(--red); }
+  .search-icon { color: var(--red); font-size: 1.5rem; }
   .search-field input { border: 0; outline: 0; min-width: 0; flex: 1; background: transparent; color: #fff; font: inherit; font-size: .85rem; }
   .search-field input::placeholder { color: #858780; }
   .search-field kbd { border: 1px solid #42423f; padding: .1rem .33rem; color: #a5a8a2; font: inherit; font-size: .65rem; }
@@ -350,7 +356,7 @@ const serializedProjects = projects.map((project) => ({ ...project, image: asset
   .result-copy { display: flex; flex-direction: column; gap: .22rem; min-width: 0; }
   .result-copy small { color: var(--green); font-size: .59rem; letter-spacing: .12em; text-transform: uppercase; font-weight: 800; }
   .result-copy strong { font-size: .75rem; line-height: 1.22; text-transform: uppercase; }
-  .result-arrow { color: #ef4b43; }
+  .result-arrow { color: var(--red); }
   .empty-result { color: #b5b5b0; font-size: .85rem; }
   .browse-section { padding: 5rem clamp(1.25rem, 5vw, 6rem) 6rem; }
   .browse-heading { display: flex; justify-content: space-between; align-items: end; gap: 2rem; margin-bottom: 2.2rem; }
@@ -359,7 +365,7 @@ const serializedProjects = projects.map((project) => ({ ...project, image: asset
   .browse-heading p { color: #a5a8a2; max-width: 275px; font-size: .85rem; line-height: 1.5; margin-bottom: 0; }
   .project-grid { display: grid; grid-template-columns: repeat(4, minmax(0,1fr)); gap: 2.5rem 1rem; }
   .project-card { min-width: 0; display: block; }
-  .project-image { position: relative; aspect-ratio: 1 / .78; border: 1px solid #542321; overflow: hidden; background: #111; }
+  .project-image { position: relative; aspect-ratio: 1 / .78; border: 1px solid var(--line-soft); overflow: hidden; background: #111; }
   .project-image img { width: 100%; height: 100%; object-fit: cover; transition: transform .4s ease, filter .4s ease; }
   .project-card:hover .project-image img, .project-card:focus-visible .project-image img { transform: scale(1.045); filter: brightness(1.1); }
   .project-card:focus-visible { outline: 2px solid var(--green); outline-offset: 4px; }
@@ -369,11 +375,11 @@ const serializedProjects = projects.map((project) => ({ ...project, image: asset
   .project-card h3 { font-size: clamp(.95rem, 1.3vw, 1.35rem); text-transform: uppercase; line-height: 1.1; margin: 0 0 .35rem; }
   .project-card p { font-size: .74rem; color: #a3a7a0; margin: 0; }
   .grid-empty { color: #b5b5b0; }
-  .site-footer { display: flex; justify-content: space-between; gap: 1rem; border-top: 1px solid #722322; padding: 1.5rem clamp(1.25rem, 5vw, 6rem); font-size: .63rem; font-weight: 800; letter-spacing: .12em; text-transform: uppercase; }
+  .site-footer { display: flex; justify-content: space-between; gap: 1rem; border-top: 1px solid var(--line-soft); padding: 1.5rem clamp(1.25rem, 5vw, 6rem); font-size: .63rem; font-weight: 800; letter-spacing: .12em; text-transform: uppercase; }
   .footer-green { color: var(--green); }
   @media (max-width: 1020px) {
     .experience { grid-template-columns: 1fr; }
-    .globe-side { border-right: 0; border-bottom: 1px solid #722322; }
+    .globe-side { border-right: 0; border-bottom: 1px solid var(--line-soft); }
     .stage { min-height: 590px; }
     .discover-panel { padding-bottom: 2rem; }
     .result-list { max-height: 270px; }
@@ -394,7 +400,7 @@ const serializedProjects = projects.map((project) => ({ ...project, image: asset
     .globe-side.is-immersive .immersive-toolbar, .globe-side:fullscreen .immersive-toolbar { padding: 0 .65rem; }
     .immersive-brand { font-size: .55rem; letter-spacing: .08em; }
     .immersive-toolbar button { font-size: .55rem; padding: 0 .52rem; }
-    .globe-side.is-immersive.rail-open .immersive-rail, .globe-side:fullscreen.rail-open .immersive-rail { top: auto; bottom: 0; left: 0; width: 100%; height: min(63dvh, 560px); border-left: 0; border-top: 1px solid #792c28; }
+    .globe-side.is-immersive.rail-open .immersive-rail, .globe-side:fullscreen.rail-open .immersive-rail { top: auto; bottom: 0; left: 0; width: 100%; height: min(63dvh, 560px); border-left: 0; border-top: 1px solid var(--line-soft); }
     .story-preview { left: .6rem; bottom: 4.2rem; width: calc(100% - 1.2rem); grid-template-columns: 92px minmax(0,1fr); }
     .preview-copy { padding: .75rem 1.25rem .75rem .75rem; }
     .preview-copy h3 { font-size: .9rem; }

@@ -1,0 +1,186 @@
+[
+  {
+    "mobile": false,
+    "label": "Temne → About → browser Back",
+    "url": "http://127.0.0.1:4329/archive/temne-making-together/",
+    "shows": [
+      {
+        "persisted": false
+      },
+      {
+        "persisted": true
+      }
+    ],
+    "overflow": "auto",
+    "inlineOverflow": "",
+    "scrollY": 0,
+    "scrollHeight": 4203,
+    "viewport": 1000,
+    "dialog": false,
+    "immersive": false,
+    "inert": 0,
+    "title": "TEMNE: making together",
+    "wheelMovement": 700
+  },
+  {
+    "mobile": false,
+    "label": "Temne → next collection → browser Back",
+    "url": "http://127.0.0.1:4329/archive/temne-making-together/",
+    "shows": [
+      {
+        "persisted": false
+      },
+      {
+        "persisted": true
+      },
+      {
+        "persisted": true
+      }
+    ],
+    "overflow": "auto",
+    "inlineOverflow": "",
+    "scrollY": 3203,
+    "scrollHeight": 4203,
+    "viewport": 1000,
+    "dialog": false,
+    "immersive": false,
+    "inert": 0,
+    "title": "TEMNE: making together",
+    "wheelMovement": 0
+  },
+  {
+    "mobile": false,
+    "label": "home → Temne → browser Back",
+    "url": "http://127.0.0.1:4329/",
+    "shows": [
+      {
+        "persisted": false
+      },
+      {
+        "persisted": true
+      }
+    ],
+    "overflow": "auto",
+    "inlineOverflow": "",
+    "scrollY": 3796,
+    "scrollHeight": 4997,
+    "viewport": 1000,
+    "dialog": false,
+    "transitionHidden": false,
+    "transitionActive": true,
+    "immersive": false,
+    "inert": 0,
+    "title": "A world of stories.",
+    "wheelMovement": 201
+  },
+  {
+    "mobile": false,
+    "label": "immersive globe → Temne → browser Back",
+    "url": "http://127.0.0.1:4329/",
+    "shows": [],
+    "overflow": "auto",
+    "inlineOverflow": "",
+    "scrollY": 1063,
+    "scrollHeight": 4997,
+    "viewport": 1000,
+    "dialog": false,
+    "transitionHidden": true,
+    "transitionActive": false,
+    "immersive": false,
+    "inert": 0,
+    "title": "A world of stories.",
+    "wheelMovement": 0
+  },
+  {
+    "mobile": true,
+    "label": "Temne → About → browser Back",
+    "url": "http://127.0.0.1:4329/archive/temne-making-together/",
+    "shows": [
+      {
+        "persisted": false
+      },
+      {
+        "persisted": true
+      }
+    ],
+    "overflow": "auto",
+    "inlineOverflow": "",
+    "scrollY": 0,
+    "scrollHeight": 4212,
+    "viewport": 844,
+    "dialog": false,
+    "immersive": false,
+    "inert": 0,
+    "title": "TEMNE: making together",
+    "wheelMovement": 700
+  },
+  {
+    "mobile": true,
+    "label": "Temne → next collection → browser Back",
+    "url": "http://127.0.0.1:4329/archive/temne-making-together/",
+    "shows": [
+      {
+        "persisted": false
+      },
+      {
+        "persisted": true
+      },
+      {
+        "persisted": true
+      }
+    ],
+    "overflow": "auto",
+    "inlineOverflow": "",
+    "scrollY": 3368,
+    "scrollHeight": 4212,
+    "viewport": 844,
+    "dialog": false,
+    "immersive": false,
+    "inert": 0,
+    "title": "TEMNE: making together",
+    "wheelMovement": 0
+  },
+  {
+    "mobile": true,
+    "label": "home → Temne → browser Back",
+    "url": "http://127.0.0.1:4329/",
+    "shows": [
+      {
+        "persisted": false
+      },
+      {
+        "persisted": true
+      }
+    ],
+    "overflow": "auto",
+    "inlineOverflow": "",
+    "scrollY": 10061,
+    "scrollHeight": 12317,
+    "viewport": 844,
+    "dialog": false,
+    "transitionHidden": false,
+    "transitionActive": true,
+    "immersive": false,
+    "inert": 0,
+    "title": "A world of stories.",
+    "wheelMovement": 700
+  },
+  {
+    "mobile": true,
+    "label": "immersive globe → Temne → browser Back",
+    "url": "http://127.0.0.1:4329/",
+    "shows": [],
+    "overflow": "auto",
+    "inlineOverflow": "",
+    "scrollY": 1432,
+    "scrollHeight": 12317,
+    "viewport": 844,
+    "dialog": false,
+    "transitionHidden": true,
+    "transitionActive": false,
+    "immersive": false,
+    "inert": 0,
+    "title": "A world of stories.",
+    "wheelMovement": 0
+  }
+]

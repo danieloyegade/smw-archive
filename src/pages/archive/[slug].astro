@@ -71,7 +71,7 @@ const related = project.relatedSlugs?.map(slug=>projects.find(item=>item.slug===
         </div>
       </section>
 
-      {project.invitation && <aside class="reflection"><span>A thought to take with you</span><p>{project.invitation}</p><small>Share it with someone beside you, or keep exploring.</small></aside>}
+      {project.invitation && <aside class="reflection"><span>A thought to take with you</span><p>{project.invitation}</p><small>Take a moment for yourself. If you’re exploring with someone, you can share your thoughts.</small></aside>}
       {related.length>0 && <section class="related-stories" aria-labelledby="related-heading"><span>Follow a connection</span><h2 id="related-heading">Another way in<span>.</span></h2><div>{related.map(item=><a href={publicBase+'archive/'+item.slug+'/'}><img src={asset(item.globeImage ?? item.image)} alt="" loading="lazy"/><strong>{item.title}</strong><span aria-hidden="true">↗</span></a>)}</div></section>}
 
       {project.programme && (
@@ -159,6 +159,14 @@ const related = project.relatedSlugs?.map(slug=>projects.find(item=>item.slug===
       if (event.key === 'ArrowLeft') { event.preventDefault(); showPhoto(activePhoto - 1); }
       if (event.key === 'ArrowRight') { event.preventDefault(); showPhoto(activePhoto + 1); }
     });
+    function closePhotoOnNavigation() {
+      panOrigin = null;
+      if (dialog.open) dialog.close();
+    }
+    window.addEventListener('pagehide', closePhotoOnNavigation);
+    window.addEventListener('pageshow', (event) => {
+      if (event.persisted) closePhotoOnNavigation();
+    });
     const trailId = new URLSearchParams(location.search).get('trail');
     const trail = archiveTrails.find((item) => item.id === trailId && item.slugs.includes(projectSlug));
     if (trail) {
@@ -189,7 +197,7 @@ const related = project.relatedSlugs?.map(slug=>projects.find(item=>item.slug===
     }
   </script>
   <style>
-    .related-stories { padding:3rem clamp(1.25rem,5vw,6rem); border-bottom:1px solid #722322; }
+    .related-stories { padding:3rem clamp(1.25rem,5vw,6rem); border-bottom:1px solid var(--line-soft); }
     .related-stories > span { color:var(--green); text-transform:uppercase; font-size:.65rem; font-weight:900; letter-spacing:.1em; }
     .related-stories h2 { font-size:clamp(2rem,4vw,4rem); margin:1rem 0; }
     .related-stories h2 span { color:var(--green); }
@@ -219,13 +227,13 @@ const related = project.relatedSlugs?.map(slug=>projects.find(item=>item.slug===
     .reflection p { font-size: clamp(1.8rem,3.8vw,3.8rem); line-height: 1.15; max-width: 1000px; letter-spacing: -.035em; margin: 1rem 0; }
     .reflection small { color: #b3b8ae; }
     .page { min-height: 100vh; background: #050505; color: #f8f8f5; }
-    .site-header { min-height: 106px; border-bottom: 1px solid #722322; display: flex; align-items: center; justify-content: space-between; gap: 2rem; padding: 1.4rem clamp(1.25rem, 3vw, 3.5rem); }
+    .site-header { min-height: 106px; border-bottom: 1px solid var(--line-soft); display: flex; align-items: center; justify-content: space-between; gap: 2rem; padding: 1.4rem clamp(1.25rem, 3vw, 3.5rem); }
     .wordmark { display: block; width: min(430px, 39vw); }
     .wordmark img { width: 100%; height: auto; }
     nav { display: flex; gap: 2rem; }
     nav a { text-transform: uppercase; font-size: .69rem; font-weight: 800; letter-spacing: .13em; }
     nav a:hover, footer a:hover { color: var(--green); }
-    nav span { color: #ef4b43; margin-right: .4rem; }
+    nav span { color: var(--red); margin-right: .4rem; }
     h1, h2, h3, p { margin-top: 0; }
     .hero { position: relative; display: flex; min-height: min(850px, calc(100svh - 106px)); background: #100e0c; overflow: hidden; }
     .hero-photo, .hero-shade { position: absolute; inset: 0; width: 100%; height: 100%; }
@@ -235,16 +243,16 @@ const related = project.relatedSlugs?.map(slug=>projects.find(item=>item.slug===
     .hero-index, .hero-bottom { display: flex; justify-content: space-between; align-items: center; gap: 2rem; color: #fff; font-size: .67rem; font-weight: 900; letter-spacing: .14em; text-transform: uppercase; }
     .hero-index span:first-child { color: var(--green); }
     .hero-main { margin-top: auto; max-width: 1100px; padding: 3rem 0 2rem; animation: copy-arrive .7s .18s both; }
-    .eyebrow { color: #ef6b62; font-size: .76rem; font-weight: 900; letter-spacing: .16em; text-transform: uppercase; margin-bottom: 1.1rem; }
+    .eyebrow { color: var(--red); font-size: .76rem; font-weight: 900; letter-spacing: .16em; text-transform: uppercase; margin-bottom: 1.1rem; }
     h1 { font-size: clamp(3.2rem, 7vw, 8rem); line-height: .93; letter-spacing: -.067em; text-transform: uppercase; text-wrap: balance; margin-bottom: 1.4rem; }
     .hero-description { max-width: 650px; font-size: clamp(1rem, 1.4vw, 1.3rem); line-height: 1.5; color: #e1e3df; }
-    .scroll-link { display: inline-flex; gap: 1rem; border-bottom: 1px solid #ef4b43; padding-bottom: .45rem; margin-top: .6rem; text-transform: uppercase; font-size: .69rem; font-weight: 900; letter-spacing: .12em; }
-    .scroll-link span, .hero-bottom button span { color: #ef4b43; }
+    .scroll-link { display: inline-flex; gap: 1rem; border-bottom: 1px solid var(--red); padding-bottom: .45rem; margin-top: .6rem; text-transform: uppercase; font-size: .69rem; font-weight: 900; letter-spacing: .12em; }
+    .scroll-link span, .hero-bottom button span { color: var(--red); }
     .scroll-link:hover, .hero-bottom button:hover { color: var(--green); }
     .hero-bottom { border-top: 1px solid #ffffff5a; padding-top: 1rem; }
     .hero-bottom button { border: 0; background: none; color: #fff; font: inherit; font-size: inherit; letter-spacing: inherit; text-transform: uppercase; cursor: pointer; }
-    .story, .gallery-section, .programme { padding: 6rem clamp(1.25rem, 5vw, 6rem); border-bottom: 1px solid #722322; }
-    .story-label { display: flex; justify-content: space-between; gap: 1rem; color: #ef4b43; font-size: .67rem; font-weight: 900; letter-spacing: .15em; text-transform: uppercase; margin-bottom: 2.5rem; }
+    .story, .gallery-section, .programme { padding: 6rem clamp(1.25rem, 5vw, 6rem); border-bottom: 1px solid var(--line-soft); }
+    .story-label { display: flex; justify-content: space-between; gap: 1rem; color: var(--red); font-size: .67rem; font-weight: 900; letter-spacing: .15em; text-transform: uppercase; margin-bottom: 2.5rem; }
     .story-label span:last-child { color: #a1a59d; }
     .story-content { display: grid; grid-template-columns: minmax(220px, .75fr) minmax(0, 1.25fr); gap: clamp(2rem, 5vw, 7rem); }
     h2 { font-size: clamp(2.9rem, 5vw, 6rem); line-height: .94; letter-spacing: -.068em; text-transform: uppercase; margin: 0; }
@@ -253,19 +261,19 @@ const related = project.relatedSlugs?.map(slug=>projects.find(item=>item.slug===
     .story-prose p { color: #c9ccc5; font-size: clamp(1rem, 1.3vw, 1.22rem); line-height: 1.68; margin-bottom: 1.5rem; }
     .story-prose .lead { color: #fff; font-size: clamp(1.15rem, 1.6vw, 1.55rem); line-height: 1.5; }
     .gallery-header, .programme-heading { margin-bottom: 2.5rem; }
-    .gallery-header > span, .programme-heading > span, .next-story > span { color: #ef4b43; font-size: .67rem; font-weight: 900; letter-spacing: .15em; text-transform: uppercase; }
+    .gallery-header > span, .programme-heading > span, .next-story > span { color: var(--red); font-size: .67rem; font-weight: 900; letter-spacing: .15em; text-transform: uppercase; }
     .gallery-header h2, .programme-heading h2 { margin: .85rem 0 1rem; }
     .gallery-header p, .programme-heading p { color: #aeb3aa; font-size: .88rem; }
     .gallery-grid { display: grid; grid-template-columns: repeat(3, minmax(0,1fr)); gap: .7rem; }
-    .gallery-tile { display: block; position: relative; min-width: 0; aspect-ratio: 1 / 1.06; border: 1px solid #5e2926; padding: 0; overflow: hidden; background: #111; color: #fff; cursor: pointer; }
+    .gallery-tile { display: block; position: relative; min-width: 0; aspect-ratio: 1 / 1.06; border: 1px solid var(--line-soft); padding: 0; overflow: hidden; background: #111; color: #fff; cursor: pointer; }
     .gallery-tile img { width: 100%; height: 100%; object-fit: cover; transition: transform .4s ease; }
     .gallery-tile:hover img, .gallery-tile:focus-visible img { transform: scale(1.05); }
     .gallery-tile:focus-visible { outline: 2px solid var(--green); outline-offset: 3px; }
     .gallery-number { position: absolute; bottom: 1rem; left: 1rem; background: #050505d9; padding: .5rem; font-size: .63rem; font-weight: 900; letter-spacing: .13em; }
     .gallery-open { position: absolute; bottom: 1rem; right: 1rem; display: grid; place-items: center; width: 2.3rem; height: 2.3rem; background: var(--green); color: #050505; font-size: 1.25rem; }
-    .programme-list { border-top: 1px solid #64302c; }
-    .programme-list article { display: grid; grid-template-columns: 5rem 1fr; gap: 1.5rem; padding: 1.6rem 0; border-bottom: 1px solid #3f302d; }
-    .programme-number { color: #ef4b43; font-size: 1.4rem; font-weight: 900; }
+    .programme-list { border-top: 1px solid var(--line-soft); }
+    .programme-list article { display: grid; grid-template-columns: 5rem 1fr; gap: 1.5rem; padding: 1.6rem 0; border-bottom: 1px solid var(--line-soft); }
+    .programme-number { color: var(--red); font-size: 1.4rem; font-weight: 900; }
     .programme-list small { color: var(--green); text-transform: uppercase; font-size: .66rem; font-weight: 900; letter-spacing: .12em; }
     .programme-list h3 { font-size: clamp(1.25rem, 2vw, 2rem); line-height: 1.1; text-transform: uppercase; margin: .3rem 0 .9rem; }
     .programme-list ul { color: #bcc1b9; line-height: 1.55; margin: 0; padding-left: 1rem; }
@@ -275,15 +283,15 @@ const related = project.relatedSlugs?.map(slug=>projects.find(item=>item.slug===
     .next-story strong { font-size: clamp(2.4rem, 5vw, 6rem); line-height: .95; letter-spacing: -.06em; text-transform: uppercase; }
     .next-story a > span { color: var(--green); font-size: 2.5rem; }
     .next-story a:hover strong { color: var(--green); }
-    footer { border-top: 1px solid #722322; padding: 1.5rem clamp(1.25rem, 5vw, 6rem); display: flex; justify-content: space-between; gap: 1rem; font-size: .63rem; font-weight: 800; letter-spacing: .12em; text-transform: uppercase; }
+    footer { border-top: 1px solid var(--line-soft); padding: 1.5rem clamp(1.25rem, 5vw, 6rem); display: flex; justify-content: space-between; gap: 1rem; font-size: .63rem; font-weight: 800; letter-spacing: .12em; text-transform: uppercase; }
     footer div { display: flex; gap: 2rem; }
     .photo-dialog { position: fixed; inset: 0; width: 100vw; max-width: none; height: 100dvh; max-height: none; margin: 0; padding: 0; border: 0; background: #050505; color: #fff; }
     .photo-dialog::backdrop { background: #000; }
-    .dialog-toolbar { display: flex; align-items: center; justify-content: space-between; height: 64px; padding: 0 1.5rem; border-bottom: 1px solid #722322; color: var(--green); font-size: .72rem; font-weight: 900; letter-spacing: .15em; }
+    .dialog-toolbar { display: flex; align-items: center; justify-content: space-between; height: 64px; padding: 0 1.5rem; border-bottom: 1px solid var(--line-soft); color: var(--green); font-size: .72rem; font-weight: 900; letter-spacing: .15em; }
     .dialog-toolbar button { border: 0; background: none; color: #fff; font-size: 2rem; cursor: pointer; }
     .dialog-image { display: grid; grid-template-columns: 4rem minmax(0,1fr) 4rem; align-items: center; height: calc(100dvh - 150px); gap: 1rem; padding: 1rem; }
     .dialog-image img { max-width: 100%; max-height: 100%; width: 100%; height: 100%; object-fit: contain; }
-    .dialog-image button { border: 1px solid #75403b; background: #0c0c0c; color: #fff; width: 3rem; height: 3rem; font: inherit; font-size: 1.2rem; cursor: pointer; }
+    .dialog-image button { border: 1px solid var(--line-soft); background: #0c0c0c; color: #fff; width: 3rem; height: 3rem; font: inherit; font-size: 1.2rem; cursor: pointer; }
     .dialog-image button:hover, .dialog-image button:focus-visible { border-color: var(--green); color: var(--green); }
     .photo-dialog > p { margin: 0; text-align: center; text-transform: uppercase; font-size: .7rem; font-weight: 900; letter-spacing: .12em; }
     @keyframes photo-arrive { from { transform: scale(1.08); filter: brightness(.5); } to { transform: scale(1); filter: brightness(1); } }

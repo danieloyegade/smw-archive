@@ -47,6 +47,7 @@ const asset = (name: string) => publicBase + 'images/events/' + name + '.webp';
           <h2>Manchester<br /><span>meets Lagos.</span></h2>
           <p>See My World has brought artists from Manchester and Lagos into an international exchange. Their collaborations move across film, photography, sound and performance, reflecting the cities they inhabit and the relationships between them.</p>
           <p>This archive preserves those encounters alongside the festivals, exhibitions and community moments that continue to shape the programme.</p>
+          <p>Inside, you can watch artist films and live performances, listen to recorded conversations, and explore photographs and artwork. Follow a three-story trail, search for a person or place, or turn the globe and see where your curiosity takes you.</p>
           <a href={publicBase + '#world'}>Enter the archive <span aria-hidden="true">↗</span></a>
         </div>
       </section>
@@ -55,29 +56,29 @@ const asset = (name: string) => publicBase + 'images/events/' + name + '.webp';
   </div>
   <style>
     .page { min-height: 100vh; background: #050505; color: #f8f8f5; }
-    .site-header { min-height: 106px; border-bottom: 1px solid #722322; display: flex; align-items: center; justify-content: space-between; gap: 2rem; padding: 1.4rem clamp(1.25rem, 3vw, 3.5rem); }
+    .site-header { min-height: 106px; border-bottom: 1px solid var(--line-soft); display: flex; align-items: center; justify-content: space-between; gap: 2rem; padding: 1.4rem clamp(1.25rem, 3vw, 3.5rem); }
     .wordmark { display: block; width: min(430px, 39vw); }
     .wordmark img { width: 100%; height: auto; }
     nav { display: flex; gap: 2rem; }
     nav a { font-size: .69rem; font-weight: 800; letter-spacing: .13em; text-transform: uppercase; }
     nav a[aria-current], nav a:hover, footer a:hover { color: var(--green); }
-    .hero { display: grid; grid-template-columns: 1fr 43%; min-height: min(760px, calc(100svh - 106px)); border-bottom: 1px solid #722322; }
+    .hero { display: grid; grid-template-columns: 1fr 43%; min-height: min(760px, calc(100svh - 106px)); border-bottom: 1px solid var(--line-soft); }
     .hero-copy { display: flex; flex-direction: column; align-items: start; justify-content: end; padding: clamp(3rem, 6vw, 7rem); }
-    .eyebrow, .section-label { color: #ef4b43; font-size: .7rem; font-weight: 900; letter-spacing: .17em; text-transform: uppercase; }
+    .eyebrow, .section-label { color: var(--red); font-size: .7rem; font-weight: 900; letter-spacing: .17em; text-transform: uppercase; }
     h1, h2, p { margin-top: 0; }
     h1 { font-size: clamp(4rem, 7vw, 8rem); line-height: .9; letter-spacing: -.075em; text-transform: uppercase; margin: 1rem 0 2rem; }
     h1 span, h2 span { color: var(--green); }
     .lead { max-width: 36rem; font-size: clamp(1.1rem, 1.6vw, 1.5rem); line-height: 1.5; color: #d0d3ce; }
-    .hero-copy a, .exchange-copy a { display: inline-flex; gap: 1rem; padding-bottom: .45rem; border-bottom: 1px solid #ef4b43; margin-top: 1.2rem; text-transform: uppercase; font-size: .69rem; font-weight: 900; letter-spacing: .11em; }
-    .hero-copy a span, .exchange-copy a span { color: #ef4b43; }
+    .hero-copy a, .exchange-copy a { display: inline-flex; gap: 1rem; padding-bottom: .45rem; border-bottom: 1px solid var(--red); margin-top: 1.2rem; text-transform: uppercase; font-size: .69rem; font-weight: 900; letter-spacing: .11em; }
+    .hero-copy a span, .exchange-copy a span { color: var(--red); }
     .hero-copy a:hover, .exchange-copy a:hover { color: var(--green); }
     .hero-image, .practice-image, .exchange-image { overflow: hidden; background: #111; }
     .hero-image img, .practice-image img, .exchange-image img { width: 100%; height: 100%; object-fit: cover; }
-    .origin { display: grid; grid-template-columns: 1fr 2fr; gap: 2rem; padding: 6rem clamp(1.25rem, 5vw, 6rem); border-bottom: 1px solid #722322; }
+    .origin { display: grid; grid-template-columns: 1fr 2fr; gap: 2rem; padding: 6rem clamp(1.25rem, 5vw, 6rem); border-bottom: 1px solid var(--line-soft); }
     .origin-copy { max-width: 860px; }
     h2 { font-size: clamp(2.7rem, 5vw, 5.7rem); line-height: .97; letter-spacing: -.065em; text-transform: uppercase; margin-bottom: 2rem; }
     .origin-copy p, .practice-copy p, .exchange-copy p { color: #c5c9c2; font-size: clamp(1rem, 1.25vw, 1.2rem); line-height: 1.65; max-width: 42rem; }
-    .practice, .exchange { display: grid; grid-template-columns: 1fr 1fr; border-bottom: 1px solid #722322; min-height: 600px; }
+    .practice, .exchange { display: grid; grid-template-columns: 1fr 1fr; border-bottom: 1px solid var(--line-soft); min-height: 600px; }
     .practice-copy, .exchange-copy { align-self: center; padding: clamp(3rem, 6vw, 7rem); }
     .practice-copy h2, .exchange-copy h2 { margin-top: 1.1rem; }
     footer { display: flex; justify-content: space-between; gap: 1rem; padding: 1.5rem clamp(1.25rem, 5vw, 6rem); font-size: .63rem; font-weight: 800; letter-spacing: .12em; text-transform: uppercase; }

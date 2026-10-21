@@ -1,6 +1,7 @@
 import * as THREE from 'three';
 import type { ArchiveProject } from '../data/projects';
 import { experienceTypes } from '../data/experience';
+import { rotateInView, orientationForProject } from './globe-motion';
 
 const canvas = document.querySelector<HTMLCanvasElement>('#globe-canvas');
 const dataEl = document.querySelector<HTMLScriptElement>('#archive-project-data');
@@ -42,6 +43,26 @@ if (canvas && dataEl && titleEl && kickerEl && metaEl) {
   let query = '';
   let updateGlobeFilter: ((slugs: Set<string>) => void) | undefined;
   let navigating = false;
+  let navigationTimeout: number | undefined;
+  let transitionFrame: number | undefined;
+  let resetGlobeInteraction: (() => void) | undefined;
+
+  function resetNavigation() {
+    navigating = false;
+    window.clearTimeout(navigationTimeout);
+    if (transitionFrame !== undefined) cancelAnimationFrame(transitionFrame);
+    navigationTimeout = transitionFrame = undefined;
+    storyTransition?.classList.remove('is-active');
+    if (storyTransition) storyTransition.hidden = true;
+    resetGlobeInteraction?.();
+  }
+
+  // History can restore this document without rerunning the script. Never cache
+  // a departing story cover, pending navigation or the immersive scroll lock.
+  window.addEventListener('pagehide', resetNavigation);
+  window.addEventListener('pageshow', (event) => {
+    if (event.persisted) resetNavigation();
+  });
 
   function navigateToStory(project: ArchiveProject) {
     if (navigating) return;
@@ -55,8 +76,8 @@ if (canvas && dataEl && titleEl && kickerEl && metaEl) {
     transitionImage.style.objectPosition = `50% ${project.imageFocusY ?? 50}%`;
     transitionTitle.textContent = project.title;
     storyTransition.hidden = false;
-    requestAnimationFrame(() => storyTransition.classList.add('is-active'));
-    window.setTimeout(() => window.location.assign(destination), 640);
+    transitionFrame = requestAnimationFrame(() => storyTransition.classList.add('is-active'));
+    navigationTimeout = window.setTimeout(() => window.location.assign(destination), 640);
   }
 
   function interceptStoryLink(link: HTMLAnchorElement, slug: string) {
@@ -102,6 +123,14 @@ if (canvas && dataEl && titleEl && kickerEl && metaEl) {
     if (immersiveEmpty) immersiveEmpty.hidden = visible.length > 0;
     const surprise = document.querySelector<HTMLButtonElement>('[data-surprise]');
     if (surprise) surprise.disabled = visible.length === 0;
+    const surpriseHelp = document.querySelector<HTMLElement>('[data-surprise-help]');
+    if (surpriseHelp) {
+      surpriseHelp.textContent = visible.length === 0
+        ? 'No matching stories. Clear your search or filters to try again.'
+        : visible.length === 1
+          ? 'Opens the one story matching your search and filters.'
+          : `Opens one of ${visible.length}${visible.length === projects.length ? '' : ' matching'} stories at random. Your search and filters apply.`;
+    }
     updateGlobeFilter?.(slugs);
   }
 
@@ -160,7 +189,7 @@ if (canvas && dataEl && titleEl && kickerEl && metaEl) {
   }
   document.querySelector('[data-surprise]')?.addEventListener('click', () => {
     const candidates = projects.filter(matches);
-    if (!candidates.length) { setYear('all'); setQuery(''); return; }
+    if (!candidates.length) return;
     navigateToStory(candidates[Math.floor(Math.random() * candidates.length)]);
   });
   for (const button of document.querySelectorAll<HTMLButtonElement>('[data-theme-button]')) {
@@ -175,10 +204,13 @@ if (canvas && dataEl && titleEl && kickerEl && metaEl) {
     });
   }
 
+  updateFilters();
+
   try {
     const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: true, powerPreference: 'high-performance' });
     renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 1.7));
     renderer.setClearColor(0x050505, 0);
+    const accentRed = new THREE.Color(getComputedStyle(document.documentElement).getPropertyValue('--red').trim() || '#FF0000');
     const scene = new THREE.Scene();
     const camera = new THREE.PerspectiveCamera(39, 1, 0.1, 100);
     const globe = new THREE.Group();
@@ -189,21 +221,21 @@ if (canvas && dataEl && titleEl && kickerEl && metaEl) {
     scene.add(atmosphere);
     const core = new THREE.Mesh(
       new THREE.SphereGeometry(radius * .96, 48, 32),
-      new THREE.MeshBasicMaterial({ color: 0x150304, transparent: true, opacity: .72, side: THREE.BackSide }),
+      new THREE.MeshBasicMaterial({ color: 0x150000, transparent: true, opacity: .72, side: THREE.BackSide }),
     );
     const wireframe = new THREE.LineSegments(
       new THREE.WireframeGeometry(new THREE.SphereGeometry(radius, 38, 28)),
-      new THREE.LineBasicMaterial({ color: 0xea433a, transparent: true, opacity: .28 }),
+      new THREE.LineBasicMaterial({ color: accentRed, transparent: true, opacity: .28 }),
     );
     const latitude = new THREE.LineSegments(
       new THREE.WireframeGeometry(new THREE.SphereGeometry(radius * 1.015, 17, 10)),
-      new THREE.LineBasicMaterial({ color: 0xb8322b, transparent: true, opacity: .24 }),
+      new THREE.LineBasicMaterial({ color: accentRed, transparent: true, opacity: .24 }),
     );
     globe.add(core, wireframe, latitude);
 
     const glowShell = new THREE.Mesh(
       new THREE.SphereGeometry(radius * 1.11, 32, 24),
-      new THREE.MeshBasicMaterial({ color: 0x7b1716, transparent: true, opacity: .06, side: THREE.BackSide }),
+      new THREE.MeshBasicMaterial({ color: 0x7b0000, transparent: true, opacity: .06, side: THREE.BackSide }),
     );
     atmosphere.add(glowShell);
 
@@ -220,7 +252,7 @@ if (canvas && dataEl && titleEl && kickerEl && metaEl) {
       );
     }
     dustGeometry.setAttribute('position', new THREE.Float32BufferAttribute(dustPositions, 3));
-    const dust = new THREE.Points(dustGeometry, new THREE.PointsMaterial({ color: 0xff5b50, size: .032, transparent: true, opacity: .76, depthWrite: false }));
+    const dust = new THREE.Points(dustGeometry, new THREE.PointsMaterial({ color: accentRed, size: .032, transparent: true, opacity: .76, depthWrite: false }));
     scene.add(dust);
 
     const orbitGroup = new THREE.Group();
@@ -231,7 +263,7 @@ if (canvas && dataEl && titleEl && kickerEl && metaEl) {
         const angle = (step / 90) * Math.PI * 2;
         points.push(new THREE.Vector3(Math.cos(angle) * (radius + .5 + index * .12), Math.sin(angle) * (radius * .18 + index * .08), 0));
       }
-      const orbit = new THREE.Line(new THREE.BufferGeometry().setFromPoints(points), new THREE.LineBasicMaterial({ color: index === 1 ? 0xef4b43 : 0x79211f, transparent: true, opacity: index === 1 ? .48 : .25 }));
+      const orbit = new THREE.Line(new THREE.BufferGeometry().setFromPoints(points), new THREE.LineBasicMaterial({ color: accentRed, transparent: true, opacity: index === 1 ? .48 : .25 }));
       orbit.rotation.set(tilt, .45 + index * .72, .16 * index);
       orbitGroup.add(orbit);
     }
@@ -255,9 +287,9 @@ if (canvas && dataEl && titleEl && kickerEl && metaEl) {
     });
     const networkGeometry = new THREE.BufferGeometry();
     networkGeometry.setAttribute('position', new THREE.Float32BufferAttribute(networkPositions, 3));
-    globe.add(new THREE.LineSegments(networkGeometry, new THREE.LineBasicMaterial({ color: 0xef4b43, transparent: true, opacity: .23 })));
+    globe.add(new THREE.LineSegments(networkGeometry, new THREE.LineBasicMaterial({ color: accentRed, transparent: true, opacity: .23 })));
     const nodesGeometry = new THREE.BufferGeometry().setFromPoints(networkNodePositions);
-    globe.add(new THREE.Points(nodesGeometry, new THREE.PointsMaterial({ color: 0xff665b, size: .046, transparent: true, opacity: .88, depthWrite: false })));
+    globe.add(new THREE.Points(nodesGeometry, new THREE.PointsMaterial({ color: accentRed, size: .046, transparent: true, opacity: .88, depthWrite: false })));
 
     // Keep the archive legible as a constellation. The previous card size meant
     // that a front-facing card could sit directly on top of the feature story.
@@ -284,12 +316,12 @@ if (canvas && dataEl && titleEl && kickerEl && metaEl) {
       mesh.userData.matchesFilter = true;
       mesh.userData.baseScale = index === 0 ? 1.1 : .68 + (index % 3) * .045;
       mesh.scale.setScalar(mesh.userData.baseScale);
-      const halo = new THREE.Mesh(new THREE.PlaneGeometry(1.55, 1.09), new THREE.MeshBasicMaterial({ color: 0xaa2a25, transparent: true, opacity: .13, side: THREE.DoubleSide, depthWrite: false }));
+      const halo = new THREE.Mesh(new THREE.PlaneGeometry(1.55, 1.09), new THREE.MeshBasicMaterial({ color: accentRed, transparent: true, opacity: .13, side: THREE.DoubleSide, depthWrite: false }));
       halo.position.z = -.015;
       mesh.add(halo);
       const border = new THREE.LineSegments(
         new THREE.EdgesGeometry(geometry),
-        new THREE.LineBasicMaterial({ color: 0xef4b43, transparent: true, opacity: .76 }),
+        new THREE.LineBasicMaterial({ color: accentRed, transparent: true, opacity: .76 }),
       );
       mesh.add(border);
       globe.add(mesh);
@@ -314,9 +346,10 @@ if (canvas && dataEl && titleEl && kickerEl && metaEl) {
     });
 
     const state = {
-      rotationX: -0.12, rotationY: 0.1, velocityX: 0, velocityY: 0,
+      orientation: new THREE.Quaternion().setFromEuler(new THREE.Euler(-0.12, 0.1, 0)),
+      velocityX: 0, velocityY: 0,
       zoom: 1, fitDistance: 10, dragging: false, hoverSlug: '',
-      selectedSlug: '', focusRotationY: null as number | null,
+      selectedSlug: '', focusOrientation: null as THREE.Quaternion | null,
       pointerX: 0, pointerY: 0, downX: 0, downY: 0,
       reducedMotion: window.matchMedia('(prefers-reduced-motion: reduce)').matches,
     };
@@ -343,8 +376,8 @@ if (canvas && dataEl && titleEl && kickerEl && metaEl) {
     }
 
     function resetView() {
-      state.rotationX = -0.12;
-      state.rotationY = 0.1;
+      state.orientation.setFromEuler(new THREE.Euler(-0.12, 0.1, 0));
+      state.focusOrientation = null;
       state.velocityX = 0;
       state.velocityY = 0;
       setZoom(1);
@@ -360,7 +393,7 @@ if (canvas && dataEl && titleEl && kickerEl && metaEl) {
     function setCaption(project: ArchiveProject | null) {
       kickerEl!.textContent = project ? project.category + ' / ' + project.year : 'EXPLORE THE ARCHIVE';
       titleEl!.textContent = project ? project.title : 'Every image holds a story.';
-      metaEl!.textContent = project ? project.venue + ' · Select to open' : 'Drag the globe or choose an event from the list.';
+      metaEl!.textContent = project ? project.venue + ' · Select to open' : 'Turn the globe in any direction, or choose a story from the list.';
     }
 
     function hidePreview() {
@@ -390,10 +423,7 @@ if (canvas && dataEl && titleEl && kickerEl && metaEl) {
     function focusProject(project: ArchiveProject) {
       const mesh = meshBySlug.get(project.slug);
       if (!mesh) return;
-      const desired = -Math.atan2(mesh.position.x, mesh.position.z);
-      const difference = Math.atan2(Math.sin(desired - state.rotationY), Math.cos(desired - state.rotationY));
-      state.focusRotationY = state.rotationY + difference;
-      state.rotationX = Math.atan2(mesh.position.y, Math.hypot(mesh.position.x, mesh.position.z));
+      state.focusOrientation = orientationForProject(mesh.position);
       state.velocityX = state.velocityY = 0;
       setZoom(Math.max(state.zoom, 1.1));
       showPreview(project);
@@ -416,12 +446,13 @@ if (canvas && dataEl && titleEl && kickerEl && metaEl) {
       background.forEach((element) => { element.inert = true; });
       hidePreview();
       try { await globeSide.requestFullscreen?.(); } catch { /* CSS still fills the viewport. */ }
+      if (!globeSide.classList.contains('is-immersive')) return;
       setRail(window.innerWidth > 760);
       requestAnimationFrame(resize);
       closeImmersiveButton?.focus();
     }
 
-    function closeImmersive() {
+    function closeImmersive(restoreFocus = true) {
       if (!globeSide?.classList.contains('is-immersive')) return;
       globeSide.classList.remove('is-immersive');
       globeSide.removeAttribute('role');
@@ -433,11 +464,20 @@ if (canvas && dataEl && titleEl && kickerEl && metaEl) {
       hidePreview();
       if (document.fullscreenElement === globeSide) document.exitFullscreen().catch(() => {});
       requestAnimationFrame(resize);
-      enterImmersiveButton?.focus();
+      if (restoreFocus) enterImmersiveButton?.focus({ preventScroll: true });
     }
 
+    resetGlobeInteraction = () => {
+      closeImmersive(false);
+      state.dragging = false;
+      state.hoverSlug = '';
+      state.velocityX = state.velocityY = 0;
+      state.focusOrientation = null;
+      canvas.style.cursor = 'grab';
+    };
+
     enterImmersiveButton?.addEventListener('click', enterImmersive);
-    closeImmersiveButton?.addEventListener('click', closeImmersive);
+    closeImmersiveButton?.addEventListener('click', () => closeImmersive());
     toggleRailButton?.addEventListener('click', () => setRail(!globeSide?.classList.contains('rail-open')));
     document.querySelector('[data-hide-rail]')?.addEventListener('click', () => setRail(false));
     document.querySelector('[data-close-preview]')?.addEventListener('click', hidePreview);
@@ -482,7 +522,7 @@ if (canvas && dataEl && titleEl && kickerEl && metaEl) {
     canvas.tabIndex = 0;
     canvas.addEventListener('pointerdown', (event) => {
       state.dragging = true;
-      state.focusRotationY = null;
+      state.focusOrientation = null;
       state.pointerX = state.downX = event.clientX;
       state.pointerY = state.downY = event.clientY;
       state.velocityX = state.velocityY = 0;
@@ -493,8 +533,7 @@ if (canvas && dataEl && titleEl && kickerEl && metaEl) {
       if (state.dragging) {
         const dx = event.clientX - state.pointerX;
         const dy = event.clientY - state.pointerY;
-        state.rotationY += dx * 0.006;
-        state.rotationX = THREE.MathUtils.clamp(state.rotationX + dy * 0.006, -0.9, 0.9);
+        rotateInView(state.orientation, dy * 0.006, dx * 0.006);
         state.velocityY = dx * 0.00035;
         state.velocityX = dy * 0.00035;
         state.pointerX = event.clientX;
@@ -536,14 +575,16 @@ if (canvas && dataEl && titleEl && kickerEl && metaEl) {
     }, { passive: false });
     canvas.addEventListener('keydown', (event) => {
       const step = event.shiftKey ? 0.32 : 0.16;
-      if (event.key === 'ArrowLeft') state.rotationY -= step;
-      else if (event.key === 'ArrowRight') state.rotationY += step;
-      else if (event.key === 'ArrowUp') state.rotationX -= step;
-      else if (event.key === 'ArrowDown') state.rotationX += step;
+      if (event.key === 'ArrowLeft') rotateInView(state.orientation, 0, -step);
+      else if (event.key === 'ArrowRight') rotateInView(state.orientation, 0, step);
+      else if (event.key === 'ArrowUp') rotateInView(state.orientation, -step, 0);
+      else if (event.key === 'ArrowDown') rotateInView(state.orientation, step, 0);
       else if (event.key === '+' || event.key === '=') setZoom(state.zoom * 1.12);
       else if (event.key === '-') setZoom(state.zoom / 1.12);
       else if (event.key === '0') resetView();
       else return;
+      state.focusOrientation = null;
+      state.velocityX = state.velocityY = 0;
       event.preventDefault();
     });
     document.querySelector('[data-zoom-in]')?.addEventListener('click', () => setZoom(state.zoom * 1.15));
@@ -593,18 +634,18 @@ if (canvas && dataEl && titleEl && kickerEl && metaEl) {
     function render() {
       const dt = Math.min(clock.getDelta(), 0.05);
       if (!state.dragging) {
-        if (state.focusRotationY !== null) {
-          const difference = state.focusRotationY - state.rotationY;
-          state.rotationY += difference * Math.min(1, dt * 7);
-          if (Math.abs(difference) < 0.002) state.focusRotationY = null;
-        } else if (!state.reducedMotion && !state.hoverSlug && !state.selectedSlug) state.rotationY += 0.08 * dt;
-        state.rotationY += state.velocityY;
-        state.rotationX += state.velocityX;
+        if (state.focusOrientation !== null) {
+          state.orientation.slerp(state.focusOrientation, state.reducedMotion ? 1 : Math.min(1, dt * 7));
+          if (state.orientation.angleTo(state.focusOrientation) < 0.002) {
+            state.orientation.copy(state.focusOrientation);
+            state.focusOrientation = null;
+          }
+        } else if (!state.reducedMotion && !state.hoverSlug && !state.selectedSlug) rotateInView(state.orientation, 0, 0.08 * dt);
+        rotateInView(state.orientation, state.velocityX, state.velocityY);
         state.velocityX *= 0.93;
         state.velocityY *= 0.93;
       }
-      state.rotationX = THREE.MathUtils.clamp(state.rotationX, -0.9, 0.9);
-      globe.rotation.set(state.rotationX, state.rotationY, 0);
+      globe.quaternion.copy(state.orientation);
       orbitGroup.rotation.y += state.reducedMotion ? 0 : dt * .035;
       orbitGroup.rotation.z = Math.sin(clock.elapsedTime * .12) * .035;
       atmosphere.rotation.y -= state.reducedMotion ? 0 : dt * .02;

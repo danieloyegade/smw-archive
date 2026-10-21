@@ -1,0 +1,7 @@
+{
+  "sequence": "Temne image viewer open → browser Back to About → browser Forward to Temne",
+  "persisted": true,
+  "dialogOpen": true,
+  "modal": true,
+  "bodyOverflowY": "auto"
+}

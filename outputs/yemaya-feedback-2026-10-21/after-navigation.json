@@ -1,0 +1,563 @@
+{
+  "base": "http://127.0.0.1:4329/",
+  "devices": [
+    {
+      "name": "desktop",
+      "checks": [
+        "temne-making-together: initial scroll",
+        "temne-making-together: About → Back",
+        "temne-making-together: Forward → Back",
+        "temne-making-together: next collection",
+        "temne-making-together: next collection → Back",
+        "portico-supper-club: initial scroll",
+        "portico-supper-club: About → Back",
+        "portico-supper-club: Forward → Back",
+        "portico-supper-club: next collection",
+        "portico-supper-club: next collection → Back",
+        "archive available before temne-making-together",
+        "temne-making-together: repeated entry",
+        "cached archive restored after temne-making-together",
+        "temne-making-together: Forward to collection",
+        "archive available before portico-supper-club",
+        "portico-supper-club: repeated entry",
+        "cached archive restored after portico-supper-club",
+        "portico-supper-club: Forward to collection",
+        "archive available before temne-making-together",
+        "temne-making-together: repeated entry",
+        "cached archive restored after temne-making-together",
+        "temne-making-together: Forward to collection",
+        "Temne from native immersive globe",
+        "immersive return: native",
+        "immersive controls and Exit after history restore",
+        "Temne from CSS immersive globe",
+        "immersive return: CSS",
+        "immersive controls and Exit after history restore",
+        "interrupted navigation does not resume on Back",
+        "temne-making-together: image viewer history restore",
+        "temne-making-together: viewer Escape cleanup",
+        "portico-supper-club: image viewer history restore",
+        "portico-supper-club: viewer Escape cleanup",
+        "All 23 collection prompts checked in context"
+      ],
+      "history": [
+        {
+          "direction": "goBack",
+          "url": "http://127.0.0.1:4329/archive/temne-making-together/",
+          "persisted": true
+        },
+        {
+          "direction": "goForward",
+          "url": "http://127.0.0.1:4329/about/",
+          "persisted": true
+        },
+        {
+          "direction": "goBack",
+          "url": "http://127.0.0.1:4329/archive/temne-making-together/",
+          "persisted": true
+        },
+        {
+          "direction": "goBack",
+          "url": "http://127.0.0.1:4329/archive/temne-making-together/",
+          "persisted": true
+        },
+        {
+          "direction": "goBack",
+          "url": "http://127.0.0.1:4329/archive/portico-supper-club/",
+          "persisted": true
+        },
+        {
+          "direction": "goForward",
+          "url": "http://127.0.0.1:4329/about/",
+          "persisted": true
+        },
+        {
+          "direction": "goBack",
+          "url": "http://127.0.0.1:4329/archive/portico-supper-club/",
+          "persisted": true
+        },
+        {
+          "direction": "goBack",
+          "url": "http://127.0.0.1:4329/archive/portico-supper-club/",
+          "persisted": true
+        },
+        {
+          "direction": "goBack",
+          "url": "http://127.0.0.1:4329/",
+          "persisted": true
+        },
+        {
+          "direction": "goForward",
+          "url": "http://127.0.0.1:4329/archive/temne-making-together/",
+          "persisted": true
+        },
+        {
+          "direction": "goBack",
+          "url": "http://127.0.0.1:4329/",
+          "persisted": true
+        },
+        {
+          "direction": "goBack",
+          "url": "http://127.0.0.1:4329/",
+          "persisted": true
+        },
+        {
+          "direction": "goForward",
+          "url": "http://127.0.0.1:4329/archive/portico-supper-club/",
+          "persisted": true
+        },
+        {
+          "direction": "goBack",
+          "url": "http://127.0.0.1:4329/",
+          "persisted": true
+        },
+        {
+          "direction": "goBack",
+          "url": "http://127.0.0.1:4329/",
+          "persisted": true
+        },
+        {
+          "direction": "goForward",
+          "url": "http://127.0.0.1:4329/archive/temne-making-together/",
+          "persisted": true
+        },
+        {
+          "direction": "goBack",
+          "url": "http://127.0.0.1:4329/",
+          "persisted": true
+        },
+        {
+          "direction": "goBack",
+          "url": "http://127.0.0.1:4329/",
+          "persisted": false
+        },
+        {
+          "direction": "goBack",
+          "url": "http://127.0.0.1:4329/",
+          "persisted": true
+        },
+        {
+          "direction": "goBack",
+          "url": "http://127.0.0.1:4329/",
+          "persisted": true
+        },
+        {
+          "direction": "goBack",
+          "url": "http://127.0.0.1:4329/about/",
+          "persisted": true
+        },
+        {
+          "direction": "goForward",
+          "url": "http://127.0.0.1:4329/archive/temne-making-together/",
+          "persisted": true
+        },
+        {
+          "direction": "goBack",
+          "url": "http://127.0.0.1:4329/about/",
+          "persisted": true
+        },
+        {
+          "direction": "goForward",
+          "url": "http://127.0.0.1:4329/archive/portico-supper-club/",
+          "persisted": true
+        }
+      ],
+      "prompts": [
+        {
+          "slug": "gloria-rose-design",
+          "question": "What would you try if you gave your first idea a chance?",
+          "help": "Take a moment for yourself. If you’re exploring with someone, you can share your thoughts."
+        },
+        {
+          "slug": "sampha-we-out-here",
+          "question": "What makes a live performance feel different from a recording?",
+          "help": "Take a moment for yourself. If you’re exploring with someone, you can share your thoughts."
+        },
+        {
+          "slug": "linford-everyday-people",
+          "question": "Which place holds a story your city should remember?",
+          "help": "Take a moment for yourself. If you’re exploring with someone, you can share your thoughts."
+        },
+        {
+          "slug": "homage-manchester-moves",
+          "question": "Where in your city would you turn an ordinary space into a stage?",
+          "help": "Take a moment for yourself. If you’re exploring with someone, you can share your thoughts."
+        },
+        {
+          "slug": "dialled-in-voices",
+          "question": "Which sounds connect you to the places your people come from?",
+          "help": "Take a moment for yourself. If you’re exploring with someone, you can share your thoughts."
+        },
+        {
+          "slug": "closer-to-my-dreams",
+          "question": "Who helped you get closer to something you dreamed of?",
+          "help": "Take a moment for yourself. If you’re exploring with someone, you can share your thoughts."
+        },
+        {
+          "slug": "shirley-may-belonging",
+          "question": "Who made a space where you could be yourself?",
+          "help": "Take a moment for yourself. If you’re exploring with someone, you can share your thoughts."
+        },
+        {
+          "slug": "yaya-bey-we-out-here",
+          "question": "Which moment makes you feel closest to the person behind the performance?",
+          "help": "Take a moment for yourself. If you’re exploring with someone, you can share your thoughts."
+        },
+        {
+          "slug": "manchester-lagos-me",
+          "question": "Which detail makes you want to know more about this place?",
+          "help": "Take a moment for yourself. If you’re exploring with someone, you can share your thoughts."
+        },
+        {
+          "slug": "pie-radio-opportunities",
+          "question": "If someone gave you a radio show, what would you talk about?",
+          "help": "Take a moment for yourself. If you’re exploring with someone, you can share your thoughts."
+        },
+        {
+          "slug": "corinne-bailey-rae-we-out-here",
+          "question": "What draws you in first: a voice, a face or a story?",
+          "help": "Take a moment for yourself. If you’re exploring with someone, you can share your thoughts."
+        },
+        {
+          "slug": "misha-b-live-lounge",
+          "question": "What makes a performance feel like you are in the room?",
+          "help": "Take a moment for yourself. If you’re exploring with someone, you can share your thoughts."
+        },
+        {
+          "slug": "we-out-here-2024",
+          "question": "Who did you notice before you recognised a name?",
+          "help": "Take a moment for yourself. If you’re exploring with someone, you can share your thoughts."
+        },
+        {
+          "slug": "hakim-adi-history",
+          "question": "Whose history would you like to see in the books you grew up with?",
+          "help": "Take a moment for yourself. If you’re exploring with someone, you can share your thoughts."
+        },
+        {
+          "slug": "isaiah-hull-at-soup",
+          "question": "What do you remember most from a performance: the words or the feeling in the room?",
+          "help": "Take a moment for yourself. If you’re exploring with someone, you can share your thoughts."
+        },
+        {
+          "slug": "junior-akinola-belonging",
+          "question": "Has being somewhere new changed the way you see yourself?",
+          "help": "Take a moment for yourself. If you’re exploring with someone, you can share your thoughts."
+        },
+        {
+          "slug": "sainte-we-out-here",
+          "question": "What would you ask an artist just before they went on stage?",
+          "help": "Take a moment for yourself. If you’re exploring with someone, you can share your thoughts."
+        },
+        {
+          "slug": "haus-x-dance-workshop",
+          "question": "Which gesture would you try?",
+          "help": "Take a moment for yourself. If you’re exploring with someone, you can share your thoughts."
+        },
+        {
+          "slug": "temne-making-together",
+          "question": "What would you make if you joined this table?",
+          "help": "Take a moment for yourself. If you’re exploring with someone, you can share your thoughts."
+        },
+        {
+          "slug": "liberation-speakeasy",
+          "question": "What makes a room feel like it belongs to everyone in it?",
+          "help": "Take a moment for yourself. If you’re exploring with someone, you can share your thoughts."
+        },
+        {
+          "slug": "portico-supper-club",
+          "question": "What meal brings your people together?",
+          "help": "Take a moment for yourself. If you’re exploring with someone, you can share your thoughts."
+        },
+        {
+          "slug": "connected-fragments-exhibition",
+          "question": "Which detail changes the longer you look?",
+          "help": "Take a moment for yourself. If you’re exploring with someone, you can share your thoughts."
+        },
+        {
+          "slug": "movement-across-distance",
+          "question": "What can movement express that words leave out?",
+          "help": "Take a moment for yourself. If you’re exploring with someone, you can share your thoughts."
+        }
+      ]
+    },
+    {
+      "name": "mobile",
+      "checks": [
+        "temne-making-together: initial scroll",
+        "temne-making-together: About → Back",
+        "temne-making-together: Forward → Back",
+        "temne-making-together: next collection",
+        "temne-making-together: next collection → Back",
+        "portico-supper-club: initial scroll",
+        "portico-supper-club: About → Back",
+        "portico-supper-club: Forward → Back",
+        "portico-supper-club: next collection",
+        "portico-supper-club: next collection → Back",
+        "archive available before temne-making-together",
+        "temne-making-together: repeated entry",
+        "cached archive restored after temne-making-together",
+        "temne-making-together: Forward to collection",
+        "archive available before portico-supper-club",
+        "portico-supper-club: repeated entry",
+        "cached archive restored after portico-supper-club",
+        "portico-supper-club: Forward to collection",
+        "archive available before temne-making-together",
+        "temne-making-together: repeated entry",
+        "cached archive restored after temne-making-together",
+        "temne-making-together: Forward to collection",
+        "Temne from native immersive globe",
+        "immersive return: native",
+        "immersive controls and Exit after history restore",
+        "Temne from CSS immersive globe",
+        "immersive return: CSS",
+        "immersive controls and Exit after history restore",
+        "interrupted navigation does not resume on Back",
+        "temne-making-together: image viewer history restore",
+        "temne-making-together: viewer Escape cleanup",
+        "portico-supper-club: image viewer history restore",
+        "portico-supper-club: viewer Escape cleanup",
+        "All 23 collection prompts checked in context"
+      ],
+      "history": [
+        {
+          "direction": "goBack",
+          "url": "http://127.0.0.1:4329/archive/temne-making-together/",
+          "persisted": true
+        },
+        {
+          "direction": "goForward",
+          "url": "http://127.0.0.1:4329/about/",
+          "persisted": true
+        },
+        {
+          "direction": "goBack",
+          "url": "http://127.0.0.1:4329/archive/temne-making-together/",
+          "persisted": true
+        },
+        {
+          "direction": "goBack",
+          "url": "http://127.0.0.1:4329/archive/temne-making-together/",
+          "persisted": true
+        },
+        {
+          "direction": "goBack",
+          "url": "http://127.0.0.1:4329/archive/portico-supper-club/",
+          "persisted": true
+        },
+        {
+          "direction": "goForward",
+          "url": "http://127.0.0.1:4329/about/",
+          "persisted": true
+        },
+        {
+          "direction": "goBack",
+          "url": "http://127.0.0.1:4329/archive/portico-supper-club/",
+          "persisted": true
+        },
+        {
+          "direction": "goBack",
+          "url": "http://127.0.0.1:4329/archive/portico-supper-club/",
+          "persisted": true
+        },
+        {
+          "direction": "goBack",
+          "url": "http://127.0.0.1:4329/",
+          "persisted": true
+        },
+        {
+          "direction": "goForward",
+          "url": "http://127.0.0.1:4329/archive/temne-making-together/",
+          "persisted": true
+        },
+        {
+          "direction": "goBack",
+          "url": "http://127.0.0.1:4329/",
+          "persisted": true
+        },
+        {
+          "direction": "goBack",
+          "url": "http://127.0.0.1:4329/",
+          "persisted": true
+        },
+        {
+          "direction": "goForward",
+          "url": "http://127.0.0.1:4329/archive/portico-supper-club/",
+          "persisted": true
+        },
+        {
+          "direction": "goBack",
+          "url": "http://127.0.0.1:4329/",
+          "persisted": true
+        },
+        {
+          "direction": "goBack",
+          "url": "http://127.0.0.1:4329/",
+          "persisted": true
+        },
+        {
+          "direction": "goForward",
+          "url": "http://127.0.0.1:4329/archive/temne-making-together/",
+          "persisted": true
+        },
+        {
+          "direction": "goBack",
+          "url": "http://127.0.0.1:4329/",
+          "persisted": true
+        },
+        {
+          "direction": "goBack",
+          "url": "http://127.0.0.1:4329/",
+          "persisted": false
+        },
+        {
+          "direction": "goBack",
+          "url": "http://127.0.0.1:4329/",
+          "persisted": true
+        },
+        {
+          "direction": "goBack",
+          "url": "http://127.0.0.1:4329/",
+          "persisted": true
+        },
+        {
+          "direction": "goBack",
+          "url": "http://127.0.0.1:4329/about/",
+          "persisted": true
+        },
+        {
+          "direction": "goForward",
+          "url": "http://127.0.0.1:4329/archive/temne-making-together/",
+          "persisted": true
+        },
+        {
+          "direction": "goBack",
+          "url": "http://127.0.0.1:4329/about/",
+          "persisted": true
+        },
+        {
+          "direction": "goForward",
+          "url": "http://127.0.0.1:4329/archive/portico-supper-club/",
+          "persisted": true
+        }
+      ],
+      "prompts": [
+        {
+          "slug": "gloria-rose-design",
+          "question": "What would you try if you gave your first idea a chance?",
+          "help": "Take a moment for yourself. If you’re exploring with someone, you can share your thoughts."
+        },
+        {
+          "slug": "sampha-we-out-here",
+          "question": "What makes a live performance feel different from a recording?",
+          "help": "Take a moment for yourself. If you’re exploring with someone, you can share your thoughts."
+        },
+        {
+          "slug": "linford-everyday-people",
+          "question": "Which place holds a story your city should remember?",
+          "help": "Take a moment for yourself. If you’re exploring with someone, you can share your thoughts."
+        },
+        {
+          "slug": "homage-manchester-moves",
+          "question": "Where in your city would you turn an ordinary space into a stage?",
+          "help": "Take a moment for yourself. If you’re exploring with someone, you can share your thoughts."
+        },
+        {
+          "slug": "dialled-in-voices",
+          "question": "Which sounds connect you to the places your people come from?",
+          "help": "Take a moment for yourself. If you’re exploring with someone, you can share your thoughts."
+        },
+        {
+          "slug": "closer-to-my-dreams",
+          "question": "Who helped you get closer to something you dreamed of?",
+          "help": "Take a moment for yourself. If you’re exploring with someone, you can share your thoughts."
+        },
+        {
+          "slug": "shirley-may-belonging",
+          "question": "Who made a space where you could be yourself?",
+          "help": "Take a moment for yourself. If you’re exploring with someone, you can share your thoughts."
+        },
+        {
+          "slug": "yaya-bey-we-out-here",
+          "question": "Which moment makes you feel closest to the person behind the performance?",
+          "help": "Take a moment for yourself. If you’re exploring with someone, you can share your thoughts."
+        },
+        {
+          "slug": "manchester-lagos-me",
+          "question": "Which detail makes you want to know more about this place?",
+          "help": "Take a moment for yourself. If you’re exploring with someone, you can share your thoughts."
+        },
+        {
+          "slug": "pie-radio-opportunities",
+          "question": "If someone gave you a radio show, what would you talk about?",
+          "help": "Take a moment for yourself. If you’re exploring with someone, you can share your thoughts."
+        },
+        {
+          "slug": "corinne-bailey-rae-we-out-here",
+          "question": "What draws you in first: a voice, a face or a story?",
+          "help": "Take a moment for yourself. If you’re exploring with someone, you can share your thoughts."
+        },
+        {
+          "slug": "misha-b-live-lounge",
+          "question": "What makes a performance feel like you are in the room?",
+          "help": "Take a moment for yourself. If you’re exploring with someone, you can share your thoughts."
+        },
+        {
+          "slug": "we-out-here-2024",
+          "question": "Who did you notice before you recognised a name?",
+          "help": "Take a moment for yourself. If you’re exploring with someone, you can share your thoughts."
+        },
+        {
+          "slug": "hakim-adi-history",
+          "question": "Whose history would you like to see in the books you grew up with?",
+          "help": "Take a moment for yourself. If you’re exploring with someone, you can share your thoughts."
+        },
+        {
+          "slug": "isaiah-hull-at-soup",
+          "question": "What do you remember most from a performance: the words or the feeling in the room?",
+          "help": "Take a moment for yourself. If you’re exploring with someone, you can share your thoughts."
+        },
+        {
+          "slug": "junior-akinola-belonging",
+          "question": "Has being somewhere new changed the way you see yourself?",
+          "help": "Take a moment for yourself. If you’re exploring with someone, you can share your thoughts."
+        },
+        {
+          "slug": "sainte-we-out-here",
+          "question": "What would you ask an artist just before they went on stage?",
+          "help": "Take a moment for yourself. If you’re exploring with someone, you can share your thoughts."
+        },
+        {
+          "slug": "haus-x-dance-workshop",
+          "question": "Which gesture would you try?",
+          "help": "Take a moment for yourself. If you’re exploring with someone, you can share your thoughts."
+        },
+        {
+          "slug": "temne-making-together",
+          "question": "What would you make if you joined this table?",
+          "help": "Take a moment for yourself. If you’re exploring with someone, you can share your thoughts."
+        },
+        {
+          "slug": "liberation-speakeasy",
+          "question": "What makes a room feel like it belongs to everyone in it?",
+          "help": "Take a moment for yourself. If you’re exploring with someone, you can share your thoughts."
+        },
+        {
+          "slug": "portico-supper-club",
+          "question": "What meal brings your people together?",
+          "help": "Take a moment for yourself. If you’re exploring with someone, you can share your thoughts."
+        },
+        {
+          "slug": "connected-fragments-exhibition",
+          "question": "Which detail changes the longer you look?",
+          "help": "Take a moment for yourself. If you’re exploring with someone, you can share your thoughts."
+        },
+        {
+          "slug": "movement-across-distance",
+          "question": "What can movement express that words leave out?",
+          "help": "Take a moment for yourself. If you’re exploring with someone, you can share your thoughts."
+        }
+      ]
+    }
+  ],
+  "errors": [],
+  "passed": true
+}
